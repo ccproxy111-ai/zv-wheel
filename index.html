@@ -44,7 +44,6 @@
     position: relative;
   }
 
-  /* ★ Логотип с быстрым радужным переливом */
   .logo {
     position: fixed;
     top: 20px;
@@ -71,7 +70,6 @@
     100% { color: #ff0000; }
   }
 
-  /* ★ Копирайт слева снизу */
   .copyright {
     position: fixed;
     bottom: 12px;
@@ -362,7 +360,6 @@
   .mode-btn:active:not(:disabled) { transform: scale(0.97); }
   .mode-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-  /* ★ Заголовок списка с счётчиком */
   .list-header {
     display: flex;
     justify-content: space-between;
@@ -422,12 +419,6 @@
     border-radius: 10px;
     border: 1px solid var(--border);
     transition: border-color 0.2s ease, transform 0.2s ease;
-    animation: rowIn 0.35s cubic-bezier(0.22, 1, 0.36, 1);
-  }
-
-  @keyframes rowIn {
-    from { opacity: 0; transform: translateX(-10px); }
-    to { opacity: 1; transform: translateX(0); }
   }
 
   .variant-row:hover {
@@ -586,11 +577,6 @@
     justify-content: center;
     z-index: 1000;
     padding: 20px;
-    animation: overlayIn 0.35s cubic-bezier(0.22, 1, 0.36, 1);
-  }
-  @keyframes overlayIn {
-    from { opacity: 0; backdrop-filter: blur(0px); }
-    to { opacity: 1; backdrop-filter: blur(10px); }
   }
   .overlay.hidden { display: none; }
 
@@ -603,18 +589,10 @@
     width: 100%;
     text-align: center;
     box-shadow: 0 30px 80px rgba(0,0,0,0.9);
-    animation: modalIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
     position: relative;
     overflow: hidden;
   }
 
-  @keyframes modalIn {
-    0% { opacity: 0; transform: scale(0.7) translateY(30px); }
-    60% { opacity: 1; transform: scale(1.03) translateY(-3px); }
-    100% { opacity: 1; transform: scale(1) translateY(0); }
-  }
-
-  /* ★ Свечение победителя за модалкой результата */
   .modal.winner-modal {
     isolation: isolate;
   }
@@ -648,16 +626,10 @@
     margin: 12px 0 24px;
     word-break: break-word;
     line-height: 1.2;
-    animation: resultPop 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
     position: relative;
     z-index: 1;
-  }
-
-  @keyframes resultPop {
-    0% { opacity: 0; transform: scale(0.3) rotate(-10deg); }
-    50% { opacity: 1; transform: scale(1.15) rotate(3deg); }
-    70% { transform: scale(0.95) rotate(-1deg); }
-    100% { opacity: 1; transform: scale(1) rotate(0); }
+    /* ★ Тень за текстом для читаемости */
+    text-shadow: 0 2px 12px rgba(0,0,0,0.95), 0 4px 24px rgba(0,0,0,0.8), 0 0 40px rgba(0,0,0,0.6);
   }
 
   .modal-actions {
@@ -684,17 +656,6 @@
 
   .setting {
     margin-bottom: 18px;
-    animation: settingIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) backwards;
-  }
-  .setting:nth-child(1) { animation-delay: 0.05s; }
-  .setting:nth-child(2) { animation-delay: 0.1s; }
-  .setting:nth-child(3) { animation-delay: 0.15s; }
-  .setting:nth-child(4) { animation-delay: 0.2s; }
-  .setting:nth-child(5) { animation-delay: 0.25s; }
-
-  @keyframes settingIn {
-    from { opacity: 0; transform: translateX(-15px); }
-    to { opacity: 1; transform: translateX(0); }
   }
 
   .setting > label {
@@ -756,12 +717,6 @@
     border: solid #fff;
     border-width: 0 2px 2px 0;
     transform: rotate(45deg);
-    animation: checkIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-
-  @keyframes checkIn {
-    from { transform: rotate(45deg) scale(0); }
-    to { transform: rotate(45deg) scale(1); }
   }
 
   .setting input[type="range"] {
@@ -836,7 +791,6 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
-    animation: modalIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
   .emoji-header {
@@ -891,11 +845,6 @@
     transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1);
     overflow: hidden;
     padding: 2px;
-    animation: emojiIn 0.3s cubic-bezier(0.22, 1, 0.36, 1) backwards;
-  }
-  @keyframes emojiIn {
-    from { opacity: 0; transform: scale(0.5); }
-    to { opacity: 1; transform: scale(1); }
   }
   .emoji-item:hover {
     background: #2a2a2a;
@@ -1176,6 +1125,9 @@
 
   const MAX_NAME_LENGTH = 15;
   const MAX_VARIANTS = 15;
+  const BG_FRAME_INTERVAL = 1000 / 30; // ★ фон 30 fps вместо 60 — экономия CPU/GPU
+  const PARTICLE_LINK_DIST_SQ = 150 * 150; // ★ сравнение квадратов расстояний
+  const PARTICLE_LINK_DIST = 150;
 
   let state = {
     variants: [],
@@ -1187,7 +1139,25 @@
     gifUrl: ''
   };
 
-  // ★ Дефолтные варианты: Вариант 1/2/3 с равными шансами
+  // ★ Кэш для определения светлых цветов — экономия повторных parse
+  const lightColorCache = new Map();
+  function isLightColor(hex) {
+    if (!hex) return false;
+    if (lightColorCache.has(hex)) return lightColorCache.get(hex);
+    const c = hex.replace('#', '');
+    if (c.length !== 6) { lightColorCache.set(hex, false); return false; }
+    const r = parseInt(c.substring(0, 2), 16);
+    const g = parseInt(c.substring(2, 4), 16);
+    const b = parseInt(c.substring(4, 6), 16);
+    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+    const result = luminance > 0.7;
+    lightColorCache.set(hex, result);
+    return result;
+  }
+
+  // ★ Кэш сгенерированных SVG-эмодзи — не пересоздаём строки каждый раз
+  const emojiSvgCache = new Map();
+
   function defaultVariants() {
     return [
       { name: 'Вариант 1', percent: 33.3, color: randomColor() },
@@ -1247,8 +1217,13 @@
     sanitizePercents();
   }
 
+  let saveTimer = null;
   function saveState() {
-    try { localStorage.setItem('fortuneWheelState_v9', JSON.stringify(state)); } catch (e) {}
+    // ★ Дебаунс сохранения — не пишем в localStorage на каждый ввод символа
+    if (saveTimer) clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => {
+      try { localStorage.setItem('fortuneWheelState_v9', JSON.stringify(state)); } catch (e) {}
+    }, 250);
   }
 
   function sanitizePercents() {
@@ -1272,22 +1247,10 @@
     el.classList.toggle('warn', Math.abs(sum - 100) > 0.05);
   }
 
-  // ★ Обновление счётчика вариантов
   function updateVariantCounter() {
     const el = document.getElementById('variantCounter');
     if (!el) return;
     el.textContent = state.variants.length + '/' + MAX_VARIANTS;
-  }
-
-  function isLightColor(hex) {
-    if (!hex) return false;
-    const c = hex.replace('#', '');
-    if (c.length !== 6) return false;
-    const r = parseInt(c.substring(0, 2), 16);
-    const g = parseInt(c.substring(2, 4), 16);
-    const b = parseInt(c.substring(4, 6), 16);
-    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-    return luminance > 0.7;
   }
 
   const canvas = document.getElementById('wheelCanvas');
@@ -1450,20 +1413,24 @@
     });
   }
 
-  // ---------- ФОН ----------
+  // ---------- ФОН (оптимизированный) ----------
   const bgCanvas = document.getElementById('bgCanvas');
-  const bgCtx = bgCanvas.getContext('2d');
+  const bgCtx = bgCanvas.getContext('2d', { alpha: false });
   let bgParticles = [];
   let bgNebulae = [];
   let bgW, bgH;
   let bgTime = 0;
+  let bgLastFrame = 0;
+  let bgRunning = true;
+  let bgPaused = false;
 
   function initBg() {
     bgW = bgCanvas.width = window.innerWidth;
     bgH = bgCanvas.height = window.innerHeight;
 
+    // ★ Меньше частиц для экономии
     bgParticles = [];
-    const count = Math.min(110, Math.floor((bgW * bgH) / 18000));
+    const count = Math.min(60, Math.floor((bgW * bgH) / 30000));
     for (let i = 0; i < count; i++) {
       bgParticles.push({
         x: Math.random() * bgW,
@@ -1478,7 +1445,7 @@
     }
 
     bgNebulae = [];
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 3; i++) {
       bgNebulae.push({
         x: Math.random() * bgW,
         y: Math.random() * bgH,
@@ -1491,18 +1458,42 @@
     }
   }
 
-  function drawBg() {
-    bgTime += 0.005;
+  // ★ Предвычисленный градиент фона — не пересоздаётся каждый кадр
+  let bgBaseGradient = null;
+  function rebuildBaseGradient() {
+    bgBaseGradient = bgCtx.createRadialGradient(bgW/2, bgH/2, 0, bgW/2, bgH/2, Math.max(bgW, bgH) * 0.75);
+    bgBaseGradient.addColorStop(0, '#141420');
+    bgBaseGradient.addColorStop(0.5, '#0d0d14');
+    bgBaseGradient.addColorStop(1, '#050508');
+  }
 
-    const grad = bgCtx.createRadialGradient(bgW/2, bgH/2, 0, bgW/2, bgH/2, Math.max(bgW, bgH) * 0.75);
-    grad.addColorStop(0, '#141420');
-    grad.addColorStop(0.5, '#0d0d14');
-    grad.addColorStop(1, '#050508');
-    bgCtx.fillStyle = grad;
+  // ★ Кэш градиентов туманностей — пересоздаём раз в N кадров, а не каждый кадр
+  const nebGradCache = new Map();
+
+  function drawBg(now) {
+    if (!bgRunning) return;
+    if (bgPaused) {
+      requestAnimationFrame(drawBg);
+      return;
+    }
+
+    // ★ Ограничение до 30 FPS
+    if (now - bgLastFrame < BG_FRAME_INTERVAL) {
+      requestAnimationFrame(drawBg);
+      return;
+    }
+    bgLastFrame = now;
+
+    bgTime += 0.01;
+
+    bgCtx.fillStyle = bgBaseGradient;
     bgCtx.fillRect(0, 0, bgW, bgH);
 
     bgCtx.globalCompositeOperation = 'lighter';
-    bgNebulae.forEach(n => {
+
+    // ★ Туманности — рисуем как простые мягкие круги без пересоздания градиента каждый кадр
+    for (let i = 0; i < bgNebulae.length; i++) {
+      const n = bgNebulae[i];
       n.x += n.vx;
       n.y += n.vy;
       if (n.x < -n.r) n.x = bgW + n.r;
@@ -1510,21 +1501,36 @@
       if (n.y < -n.r) n.y = bgH + n.r;
       if (n.y > bgH + n.r) n.y = -n.r;
 
-      const nebGrad = bgCtx.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.r);
-      nebGrad.addColorStop(0, `hsla(${n.hue}, 80%, 50%, ${n.a})`);
-      nebGrad.addColorStop(0.5, `hsla(${n.hue}, 70%, 40%, ${n.a * 0.4})`);
-      nebGrad.addColorStop(1, 'transparent');
-      bgCtx.fillStyle = nebGrad;
+      const key = i + '_' + Math.round(n.hue);
+      let grad = nebGradCache.get(key);
+      // Пересоздаём только если изменились координаты значительно
+      const cx = Math.round(n.x / 20) * 20;
+      const cy = Math.round(n.y / 20) * 20;
+      const cacheKey = key + '_' + cx + '_' + cy;
+      grad = nebGradCache.get(cacheKey);
+      if (!grad) {
+        grad = bgCtx.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.r);
+        grad.addColorStop(0, `hsla(${n.hue}, 80%, 50%, ${n.a})`);
+        grad.addColorStop(0.5, `hsla(${n.hue}, 70%, 40%, ${n.a * 0.4})`);
+        grad.addColorStop(1, 'transparent');
+        // Ограничиваем кэш
+        if (nebGradCache.size > 60) nebGradCache.clear();
+        nebGradCache.set(cacheKey, grad);
+      }
+      bgCtx.fillStyle = grad;
       bgCtx.beginPath();
       bgCtx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
       bgCtx.fill();
-    });
+    }
+
     bgCtx.globalCompositeOperation = 'source-over';
 
-    bgParticles.forEach(p => {
+    // ★ Частицы — рисуем без свечения (glow только для крупных)
+    for (let i = 0; i < bgParticles.length; i++) {
+      const p = bgParticles[i];
       p.x += p.vx;
       p.y += p.vy;
-      p.pulse += 0.03;
+      p.pulse += 0.05;
       if (p.x < 0) p.x = bgW;
       if (p.x > bgW) p.x = 0;
       if (p.y < 0) p.y = bgH;
@@ -1535,28 +1541,24 @@
       bgCtx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
       bgCtx.fillStyle = `hsla(${p.hue}, 70%, 70%, ${pulseA})`;
       bgCtx.fill();
+    }
 
-      if (p.r > 1.5) {
-        const glowGrad = bgCtx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 6);
-        glowGrad.addColorStop(0, `hsla(${p.hue}, 80%, 70%, ${pulseA * 0.3})`);
-        glowGrad.addColorStop(1, 'transparent');
-        bgCtx.fillStyle = glowGrad;
-        bgCtx.beginPath();
-        bgCtx.arc(p.x, p.y, p.r * 6, 0, Math.PI * 2);
-        bgCtx.fill();
-      }
-    });
-
-    for (let i = 0; i < bgParticles.length; i++) {
-      for (let j = i + 1; j < bgParticles.length; j++) {
-        const dx = bgParticles[i].x - bgParticles[j].x;
-        const dy = bgParticles[i].y - bgParticles[j].y;
-        const dist = Math.sqrt(dx*dx + dy*dy);
-        if (dist < 150) {
-          const alpha = 0.12 * (1 - dist/150);
+    // ★ Связи между частицами — только близкие, используем квадрат расстояния
+    // Проходим с шагом 1, но фильтруем только крупные частицы для связей
+    const linkableParticles = bgParticles;
+    for (let i = 0; i < linkableParticles.length; i++) {
+      const pi = linkableParticles[i];
+      for (let j = i + 1; j < linkableParticles.length; j++) {
+        const pj = linkableParticles[j];
+        const dx = pi.x - pj.x;
+        const dy = pi.y - pj.y;
+        const distSq = dx*dx + dy*dy;
+        if (distSq < PARTICLE_LINK_DIST_SQ) {
+          const dist = Math.sqrt(distSq);
+          const alpha = 0.12 * (1 - dist/PARTICLE_LINK_DIST);
           bgCtx.beginPath();
-          bgCtx.moveTo(bgParticles[i].x, bgParticles[i].y);
-          bgCtx.lineTo(bgParticles[j].x, bgParticles[j].y);
+          bgCtx.moveTo(pi.x, pi.y);
+          bgCtx.lineTo(pj.x, pj.y);
           bgCtx.strokeStyle = `hsla(220, 60%, 60%, ${alpha})`;
           bgCtx.lineWidth = 0.6;
           bgCtx.stroke();
@@ -1564,28 +1566,32 @@
       }
     }
 
-    bgCtx.globalCompositeOperation = 'lighter';
-    for (let k = 0; k < 3; k++) {
-      const t = bgTime + k * 2.1;
-      const x1 = bgW * (0.5 + 0.4 * Math.sin(t * 0.7));
-      const y1 = bgH * (0.5 + 0.4 * Math.cos(t * 0.5));
-      const x2 = bgW * (0.5 + 0.4 * Math.sin(t * 0.7 + 1.5));
-      const y2 = bgH * (0.5 + 0.4 * Math.cos(t * 0.5 + 1.5));
-      const lineGrad = bgCtx.createLinearGradient(x1, y1, x2, y2);
-      lineGrad.addColorStop(0, 'hsla(280, 80%, 60%, 0)');
-      lineGrad.addColorStop(0.5, `hsla(${260 + k * 40}, 80%, 60%, 0.06)`);
-      lineGrad.addColorStop(1, 'hsla(280, 80%, 60%, 0)');
-      bgCtx.strokeStyle = lineGrad;
-      bgCtx.lineWidth = 1.5;
-      bgCtx.beginPath();
-      bgCtx.moveTo(x1, y1);
-      bgCtx.lineTo(x2, y2);
-      bgCtx.stroke();
+    // ★ Плавающие линии — рисуем реже (каждые 2 кадра)
+    if (Math.floor(bgTime * 50) % 2 === 0) {
+      bgCtx.globalCompositeOperation = 'lighter';
+      for (let k = 0; k < 2; k++) {
+        const t = bgTime + k * 2.1;
+        const x1 = bgW * (0.5 + 0.4 * Math.sin(t * 0.7));
+        const y1 = bgH * (0.5 + 0.4 * Math.cos(t * 0.5));
+        const x2 = bgW * (0.5 + 0.4 * Math.sin(t * 0.7 + 1.5));
+        const y2 = bgH * (0.5 + 0.4 * Math.cos(t * 0.5 + 1.5));
+        bgCtx.strokeStyle = `hsla(${260 + k * 40}, 80%, 60%, 0.05)`;
+        bgCtx.lineWidth = 1.5;
+        bgCtx.beginPath();
+        bgCtx.moveTo(x1, y1);
+        bgCtx.lineTo(x2, y2);
+        bgCtx.stroke();
+      }
+      bgCtx.globalCompositeOperation = 'source-over';
     }
-    bgCtx.globalCompositeOperation = 'source-over';
 
     requestAnimationFrame(drawBg);
   }
+
+  // ★ Пауза фона, когда страница не видна
+  document.addEventListener('visibilitychange', () => {
+    bgPaused = document.hidden;
+  });
 
   // ---------- АНИМАЦИЯ ПОКАЧИВАНИЯ СТРЕЛКИ ----------
   let pointerAnimId = null;
@@ -1638,7 +1644,6 @@
     const variants = state.variants;
     if (!variants.length) return;
 
-    // ★ Только варианты с > 0% рисуются на колесе
     const visibleVariants = variants.filter(v => (Number(v.percent) || 0) > 0);
     if (!visibleVariants.length) return;
 
@@ -1646,10 +1651,14 @@
     if (total <= 0) total = 100;
 
     let start = rotationAngle;
+    const twoPi = Math.PI * 2;
+    const baseFont = 56 - visibleVariants.length * 1.6;
+    const fontSize = Math.max(22, Math.min(48, baseFont));
+    const font = `800 ${fontSize}px Inter, sans-serif`;
 
     visibleVariants.forEach((v) => {
       const percent = Number(v.percent) || 0;
-      const angle = (percent / total) * Math.PI * 2;
+      const angle = (percent / total) * twoPi;
       const end = start + angle;
 
       ctx.beginPath();
@@ -1675,19 +1684,16 @@
 
       const lightBg = isLightColor(v.color);
       ctx.fillStyle = lightBg ? '#000000' : '#ffffff';
-
-      const baseFont = 56 - visibleVariants.length * 1.6;
-      const fontSize = Math.max(22, Math.min(48, baseFont));
-      ctx.font = `800 ${fontSize}px Inter, sans-serif`;
+      ctx.font = font;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
 
-      // ★ Усиленная тень за буквами — чтобы текст чётко виднелся
+      // ★ Тень за буквами
       ctx.shadowColor = lightBg ? 'rgba(255,255,255,0.95)' : 'rgba(0,0,0,0.95)';
       ctx.shadowBlur = 10;
       ctx.shadowOffsetX = 0;
       ctx.shadowOffsetY = 0;
-      // Двойная отрисовка для более сильной тени
+
       let name = v.name || '';
       if (name.length > MAX_NAME_LENGTH) {
         name = name.slice(0, MAX_NAME_LENGTH - 1) + '…';
@@ -1710,11 +1716,12 @@
   }
 
   function renderVariantList() {
-    variantListEl.innerHTML = '';
+    // ★ DocumentFragment для одного reflow вместо N
+    const frag = document.createDocumentFragment();
+
     state.variants.forEach((v, i) => {
       const row = document.createElement('div');
       row.className = 'variant-row';
-      row.style.animationDelay = (i * 0.03) + 's';
 
       const dot = document.createElement('input');
       dot.type = 'color';
@@ -1786,8 +1793,12 @@
       row.appendChild(name);
       row.appendChild(pct);
       row.appendChild(rm);
-      variantListEl.appendChild(row);
+      frag.appendChild(row);
     });
+
+    variantListEl.innerHTML = '';
+    variantListEl.appendChild(frag);
+
     attachSounds(variantListEl);
     updateSumIndicator();
     updateVariantCounter();
@@ -1892,7 +1903,6 @@
   function spin() {
     if (isSpinning) return;
     if (state.variants.length === 0) return;
-    // Проверяем, что есть варианты с > 0%
     const visible = state.variants.filter(v => (Number(v.percent) || 0) > 0);
     if (!visible.length) return;
 
@@ -2054,12 +2064,10 @@
     resultLabel.textContent = isEliminate ? 'Выбывает' : 'Победитель';
     resultText.textContent = winner.name;
     resultText.style.color = winner.color;
-    resultText.style.textShadow = 'none';
+    resultText.style.textShadow = '0 2px 12px rgba(0,0,0,0.95), 0 4px 24px rgba(0,0,0,0.8), 0 0 40px rgba(0,0,0,0.6)';
 
-    // ★ Свечение победителя на фоне рамки (за модалкой)
     winnerGlow.style.background = `radial-gradient(circle at center, ${winner.color}, transparent 70%)`;
     winnerGlow.style.opacity = '0';
-    // Форсируем reflow, чтобы transition сработал
     void winnerGlow.offsetWidth;
     winnerGlow.style.opacity = '0.55';
 
@@ -2090,7 +2098,7 @@
           resultLabel.textContent = 'Победитель';
           resultText.textContent = last.name;
           resultText.style.color = last.color;
-          resultText.style.textShadow = 'none';
+          resultText.style.textShadow = '0 2px 12px rgba(0,0,0,0.95), 0 4px 24px rgba(0,0,0,0.8), 0 0 40px rgba(0,0,0,0.6)';
           winnerGlow.style.background = `radial-gradient(circle at center, ${last.color}, transparent 70%)`;
           resultText.style.animation = 'none';
           void resultText.offsetWidth;
@@ -2229,29 +2237,35 @@
   });
 
   // ---------- ЭМОДЗИ ----------
-  const EMOJI_DATA = [
-    '😀','😃','😄','😁','😆','😅','😂','🤣','😊','😇','🙂','🙃','😉','😌','😍','🥰','😘','😗','😙','😚','😋','😛','😝','😜','🤪','🤨','🧐','🤓','😎','🤩','🥳','😏','😒','😞','😔','😟','😕','🙁','☹️','😣','😖','😫','😩','🥺','😢','😭','😤','😠','😡','🤬','🤯','😳','🥵','🥶','😱','😨','😰','😥','😓','🤗','🤔','🤭','🤫','🤥','😶','😐','😑','😬','🙄','😯','😦','😧','😮','😲','🥱','😴','🤤','😪','😵','🤐','🥴','🤢','🤮','🤧','😷','🤒','🤕','🤑','🤠','😈','👿','👹','👺','🤡','💩','👻','💀','☠️','👽','👾','🤖','🎃','😺','😸','😹','😻','😼','😽','🙀','😿','😾',
-    '🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐨','🐯','🦁','🐮','🐷','🐸','🐵','🐔','🐧','🐦','🐤','🦆','🦅','🦉','🦇','🐺','🐗','🐴','🦄','🐝','🐛','🦋','🐌','🐞','🐜','🦗','🕷','🦂','🐢','🐍','🦎','🦖','🦕','🐙','🦑','🦐','🦞','🦀','🐡','🐠','🐟','🐬','🐳','🐋','🦈','🐊','🐅','🐆','🦓','🦍','🦧','🐘','🦛','🦏','🐪','🐫','🦒','🦘','🐃','🐂','🐄','🐎','🐖','🐏','🐑','🦙','🐐','🦌','🐕','🐩','🦮','🐕‍🦺','🐈','🐈‍⬛','🐓','🦃','🦚','🦜','🦢','🦩','🕊','🐇','🦝','🦨','🦡','🦦','🦥','🐁','🐀','🐿','🦔',
-    '🍏','🍎','🍐','🍊','🍋','🍌','🍉','🍇','🍓','🫐','🍈','🍒','🍑','🥭','🍍','🥥','🥝','🍅','🍆','🥑','🥦','🥬','🥒','🌶','🫑','🌽','🥕','🫒','🧄','🧅','🥔','🍠','🥐','🥯','🍞','🥖','🥨','🧀','🥚','🍳','🧈','🥞','🧇','🥓','🥩','🍗','🍖','🦴','🌭','🍔','🍟','🍕','🫓','🥪','🥙','🧆','🌮','🌯','🫔','🥗','🥘','🫕','🥫','🍝','🍜','🍲','🍛','🍣','🍱','🥟','🦪','🍤','🍙','🍚','🍘','🍥','🥠','🥮','🍢','🍡','🍧','🍨','🍦','🥧','🧁','🍰','🎂','🍮','🍭','🍬','🍫','🍿','🍩','🍪','🌰','🥜','🍯','🥛','🍼','🫖','☕','🍵','🧃','🥤','🧋','🍶','🍺','🍻','🥂','🍷','🥃','🍸','🍹','🧉','🍾','🧊','🥄','🍴','🍽','🥣','🥡','🥢','🧂'
-  ];
+  // ★ Компактная строка вместо массива — экономия памяти при загрузке
+  const EMOJI_DATA = ('😀😃😄😁😆😅😂🤣😊😇🙂🙃😉😌😍🥰😘😗😙😚😋😛😝😜🤪🤨🧐🤓😎🤩🥳😏😒😞😔😟😕🙁☹️😣😖😫😩🥺😢😭😤😠😡🤬🤯😳🥵🥶😱😨😰😥😓🤗🤔🤭🤫🤥😶😐😑😬🙄😯😦😧😮😲🥱😴🤤😪😵🤐🥴🤢🤮🤧😷🤒🤕🤑🤠😈👿👹👺🤡💩👻💀☠️👽👾🤖🎃😺😸😹😻😼😽🙀😿😾' +
+    '🐶🐱🐭🐹🐰🦊🐻🐼🐨🐯🦁🐮🐷🐸🐵🐔🐧🐦🐤🦆🦅🦉🦇🐺🐗🐴🦄🐝🐛🦋🐌🐞🐜🦗🕷🦂🐢🐍🦎🦖🦕🐙🦑🦐🦞🦀🐡🐠🐟🐬🐳🐋🦈🐊🐅🐆🦓🦍🦧🐘🦛🦏🐪🐫🦒🦘🐃🐂🐄🐎🐖🐏🐑🦙🐐🦌🐕🐩🦮🐈🐓🦃🦚🦜🦢🦩🕊🐇🦝🦨🦡🦦🦥🐁🐀🐿🦔' +
+    '🍏🍎🍐🍊🍋🍌🍉🍇🍓🫐🍈🍒🍑🥭🍍🥥🥝🍅🍆🥑🥦🥬🥒🌶🫑🌽🥕🫒🧄🧅🥔🍠🥐🥯🍞🥖🥨🧀🥚🍳🧈🥞🧇🥓🥩🍗🍖🦴🌭🍔🍟🍕🫓🥪🥙🧆🌮🌯🫔🥗🥘🫕🥫🍝🍜🍲🍛🍣🍱🥟🦪🍤🍙🍚🍘🍥🥠🥮🍢🍡🍧🍨🍦🥧🧁🍰🎂🍮🍭🍬🍫🍿🍩🍪🌰🥜🍯🥛🍼🫖☕🍵🧃🥤🧋🍶🍺🍻🥂🍷🥃🍸🍹🧉🍾🧊🥄🍴🍽🥣🥡🥢🧂').match(/./gu);
 
   function renderEmojiGrid() {
     const grid = document.getElementById('emojiGrid');
-    grid.innerHTML = '';
+    const frag = document.createDocumentFragment();
+
     EMOJI_DATA.forEach((e, idx) => {
       const item = document.createElement('div');
       item.className = 'emoji-item';
-      item.style.animationDelay = (idx * 0.003) + 's';
       item.textContent = e;
       item.addEventListener('click', () => {
-        const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="75" font-size="75" text-anchor="middle" x="50">${e}</text></svg>`;
-        state.gifUrl = 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+        let svg = emojiSvgCache.get(e);
+        if (!svg) {
+          svg = 'data:image/svg+xml;utf8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="75" font-size="75" text-anchor="middle" x="50">${e}</text></svg>`);
+          emojiSvgCache.set(e, svg);
+        }
+        state.gifUrl = svg;
         gifUrlInput.value = state.gifUrl;
         updateCenterGif();
         emojiModal.classList.add('hidden');
       });
-      grid.appendChild(item);
+      frag.appendChild(item);
     });
+
+    grid.innerHTML = '';
+    grid.appendChild(frag);
     attachSounds(grid);
   }
 
@@ -2293,6 +2307,17 @@
     }
   });
 
+  // ★ Дебаунс resize
+  let resizeTimer = null;
+  function handleResize() {
+    if (resizeTimer) clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      drawWheel();
+      initBg();
+      rebuildBaseGradient();
+    }, 150);
+  }
+
   function init() {
     loadState();
     renderVariantList();
@@ -2303,15 +2328,24 @@
     updateControlsState();
     updateVariantCounter();
     initBg();
-    drawBg();
+    rebuildBaseGradient();
+    requestAnimationFrame(drawBg);
   }
 
   init();
 
-  window.addEventListener('beforeunload', saveState);
-  window.addEventListener('resize', () => {
-    drawWheel();
-    initBg();
+  window.addEventListener('beforeunload', () => {
+    if (saveTimer) clearTimeout(saveTimer);
+    try { localStorage.setItem('fortuneWheelState_v9', JSON.stringify(state)); } catch (e) {}
+  });
+
+  window.addEventListener('resize', handleResize);
+
+  // ★ Освобождаем кэши при выгрузке
+  window.addEventListener('pagehide', () => {
+    lightColorCache.clear();
+    emojiSvgCache.clear();
+    nebGradCache.clear();
   });
 
 })();
