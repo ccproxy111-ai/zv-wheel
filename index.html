@@ -1,0 +1,2049 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Колесо</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23141414' stroke='%23333' stroke-width='2'/%3E%3Cpath d='M32 6 L32 32 L54 20 Z' fill='%23e74c3c'/%3E%3Cpath d='M32 32 L54 20 A26 26 0 0 1 54 44 Z' fill='%23f1c40f'/%3E%3Cpath d='M32 32 L54 44 A26 26 0 0 1 32 58 Z' fill='%233498db'/%3E%3Cpath d='M32 32 L32 58 A26 26 0 0 1 10 44 Z' fill='%232ecc71'/%3E%3Cpath d='M32 32 L10 44 A26 26 0 0 1 10 20 Z' fill='%239b59b6'/%3E%3Cpath d='M32 32 L10 20 A26 26 0 0 1 32 6 Z' fill='%23e67e22'/%3E%3Ccircle cx='32' cy='32' r='6' fill='%230a0a0a' stroke='%23333' stroke-width='2'/%3E%3C/svg%3E">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0a0a;
+    --panel: #141414;
+    --panel-2: #1a1a1a;
+    --border: #262626;
+    --border-2: #333;
+    --text: #e8e8e8;
+    --text-dim: #888;
+    --text-dim-2: #666;
+  }
+
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
+    font-size: 14px;
+    overflow: hidden;
+  }
+
+  .bg-canvas {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.55;
+  }
+
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    position: relative;
+  }
+
+  .logo {
+    position: fixed;
+    top: 20px;
+    left: 24px;
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    z-index: 100;
+    pointer-events: none;
+    user-select: none;
+    color: #ff4d4d;
+    text-shadow: 0 0 14px rgba(255,77,77,0.75), 0 0 28px rgba(255,77,77,0.4);
+    animation: logoGlow 3s ease-in-out infinite;
+  }
+
+  @keyframes logoGlow {
+    0%, 100% { text-shadow: 0 0 14px rgba(255,77,77,0.75), 0 0 28px rgba(255,77,77,0.4); }
+    50% { text-shadow: 0 0 20px rgba(255,77,77,1), 0 0 40px rgba(255,77,77,0.6); }
+  }
+
+  .app {
+    display: flex;
+    gap: 28px;
+    width: 100%;
+    max-width: 1400px;
+    height: calc(100vh - 32px);
+    max-height: 860px;
+    align-items: stretch;
+    position: relative;
+    z-index: 1;
+    animation: appIn 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  @keyframes appIn {
+    from { opacity: 0; transform: translateY(20px) scale(0.97); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .wheel-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    min-width: 0;
+  }
+
+  /* КОНУСНАЯ СТРЕЛКА (SVG), перекрывает колесо */
+  .pointer {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 56px;
+    height: 64px;
+    transform-origin: 50% 0%;
+    z-index: 30;
+    pointer-events: none;
+    filter:
+      drop-shadow(0 6px 12px rgba(0,0,0,0.95))
+      drop-shadow(0 0 10px rgba(255,255,255,0.7))
+      drop-shadow(0 0 24px rgba(255,255,255,0.35));
+    will-change: transform;
+  }
+
+  .pointer svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .wheel-outer {
+    position: relative;
+    width: min(72vh, 100%);
+    aspect-ratio: 1 / 1;
+    cursor: pointer;
+    user-select: none;
+    transition: filter 0.25s ease, transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    margin-top: 20px;
+    animation: wheelEnter 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  @keyframes wheelEnter {
+    from { opacity: 0; transform: scale(0.85) rotate(-15deg); }
+    to { opacity: 1; transform: scale(1) rotate(0); }
+  }
+
+  .wheel-outer:hover { filter: brightness(1.08); transform: scale(1.015); }
+  .wheel-outer:active { filter: brightness(0.95); transform: scale(0.985); }
+
+  canvas#wheelCanvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    border-radius: 50%;
+    box-shadow:
+      0 0 0 4px #0f0f0f,
+      0 0 0 5px #1f1f1f,
+      0 25px 70px rgba(0,0,0,0.9);
+    transition: box-shadow 0.3s ease;
+  }
+
+  .wheel-outer:hover canvas {
+    box-shadow:
+      0 0 0 4px #0f0f0f,
+      0 0 0 5px #262626,
+      0 25px 80px rgba(0,0,0,1),
+      0 0 40px rgba(255,255,255,0.05);
+  }
+
+  .center-gif {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 18%;
+    height: 18%;
+    border-radius: 50%;
+    background: #050505;
+    border: 4px solid #2a2a2a;
+    box-shadow: 0 0 0 3px #0a0a0a, 0 0 25px rgba(255,255,255,0.1);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    z-index: 10;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .wheel-outer:hover .center-gif {
+    border-color: #3a3a3a;
+    box-shadow: 0 0 0 3px #0a0a0a, 0 0 30px rgba(255,255,255,0.18);
+  }
+
+  .center-gif img, .center-gif video {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+  }
+
+  .center-gif .placeholder {
+    font-size: 26px;
+    color: #444;
+    user-select: none;
+  }
+
+  .spin-btn {
+    margin-top: 28px;
+    padding: 16px 60px;
+    background: #1c1c1c;
+    border: 1px solid #333;
+    border-radius: 14px;
+    color: #fff;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease, box-shadow 0.25s ease;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+    overflow: hidden;
+  }
+  .spin-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgba(255,255,255,0.15), transparent 60%);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .spin-btn:hover:not(:disabled)::before { opacity: 1; }
+  .spin-btn:hover:not(:disabled) {
+    background: #252525;
+    border-color: #444;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5), 0 0 30px rgba(255,255,255,0.05);
+  }
+  .spin-btn:active:not(:disabled) { transform: scale(0.97); }
+  .spin-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .spin-btn svg { width: 22px; height: 22px; transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1); }
+  .spin-btn:hover:not(:disabled) svg { transform: rotate(360deg); }
+
+  .side-panel {
+    width: 400px;
+    flex-shrink: 0;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow: hidden;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+  .side-panel:hover { border-color: #2e2e2e; box-shadow: 0 0 40px rgba(255,255,255,0.02); }
+
+  .settings-bar {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .btn-settings {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    background: transparent;
+    border: 1px solid #2a2a2a;
+    border-radius: 7px;
+    color: var(--text-dim);
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    font-family: inherit;
+  }
+  .btn-settings:hover {
+    color: var(--text);
+    border-color: #444;
+    background: #1a1a1a;
+    transform: translateY(-1px);
+  }
+  .btn-settings:active { transform: scale(0.96); }
+  .btn-settings:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn-settings svg { width: 12px; height: 12px; transition: transform 0.4s ease; }
+  .btn-settings:hover svg { transform: rotate(180deg); }
+
+  .modes {
+    display: flex;
+    gap: 4px;
+    background: var(--panel-2);
+    padding: 3px;
+    border-radius: 9px;
+    border: 1px solid var(--border);
+  }
+  .mode-btn {
+    flex: 1;
+    padding: 7px 6px;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    color: var(--text-dim);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+    font-family: inherit;
+    position: relative;
+  }
+  .mode-btn.active {
+    background: #2a2a2a;
+    color: #fff;
+    transform: scale(1.02);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+  }
+  .mode-btn:hover:not(.active):not(:disabled) { color: #bbb; }
+  .mode-btn:active:not(:disabled) { transform: scale(0.97); }
+  .mode-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 4px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-dim-2);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .list-header .sum {
+    font-size: 11px;
+    color: #666;
+    text-transform: none;
+    letter-spacing: 0;
+    font-weight: 500;
+  }
+  .list-header .sum.warn { color: #ff8888; }
+
+  .variant-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    overflow-y: auto;
+    flex: 1;
+    padding-right: 4px;
+    min-height: 0;
+  }
+
+  .variant-list::-webkit-scrollbar { width: 4px; }
+  .variant-list::-webkit-scrollbar-track { background: transparent; }
+  .variant-list::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+  .variant-list::-webkit-scrollbar-thumb:hover { background: #444; }
+
+  .variant-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--panel-2);
+    padding: 5px 6px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    transition: border-color 0.2s ease, transform 0.2s ease;
+    animation: rowIn 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  @keyframes rowIn {
+    from { opacity: 0; transform: translateX(-10px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .variant-row:hover {
+    border-color: var(--border-2);
+    transform: translateX(2px);
+  }
+
+  /* ★ Кликабельный цветной кружок — открывает color picker */
+  .color-dot {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    border: 2px solid #333;
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    padding: 0;
+    background-clip: padding-box;
+  }
+  .color-dot::-webkit-color-swatch-wrapper { padding: 0; }
+  .color-dot::-webkit-color-swatch { border: none; border-radius: 50%; }
+  .color-dot::-moz-color-swatch { border: none; border-radius: 50%; }
+  .variant-row:hover .color-dot {
+    transform: scale(1.18);
+    border-color: #555;
+    box-shadow: 0 0 0 3px rgba(255,255,255,0.06);
+  }
+  .color-dot:hover { border-color: #888; }
+
+  .v-name {
+    flex: 1;
+    min-width: 0;
+    background: #0d0d0d;
+    border: 1px solid #2a2a2a;
+    color: var(--text);
+    padding: 6px 10px;
+    border-radius: 7px;
+    font-size: 12px;
+    font-family: inherit;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .v-name:focus { outline: none; border-color: #555; box-shadow: 0 0 0 2px rgba(255,255,255,0.05); }
+  .v-name:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .v-percent {
+    width: 62px;
+    background: #0d0d0d;
+    border: 1px solid #2a2a2a;
+    color: #d0d0d0;
+    padding: 6px 4px;
+    border-radius: 7px;
+    font-size: 12px;
+    text-align: center;
+    font-weight: 600;
+    font-family: inherit;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .v-percent:focus { outline: none; border-color: #555; box-shadow: 0 0 0 2px rgba(255,255,255,0.05); }
+  .v-percent:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .v-remove {
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    background: transparent;
+    border: 1px solid #2a2a2a;
+    color: #666;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+    padding: 0;
+  }
+  .v-remove:hover:not(:disabled) {
+    background: #2a1515;
+    color: #ff6b6b;
+    border-color: #4a2020;
+    transform: rotate(90deg);
+  }
+  .v-remove:disabled { opacity: 0.4; cursor: not-allowed; }
+  .v-remove svg { width: 12px; height: 12px; }
+
+  .actions {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 9px 12px;
+    border-radius: 9px;
+    font-size: 12px;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+    border: 1px solid var(--border-2);
+    background: var(--panel-2);
+    color: var(--text);
+    position: relative;
+    overflow: hidden;
+  }
+  .btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgba(255,255,255,0.15), transparent 60%);
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+  }
+  .btn:hover:not(:disabled)::after { opacity: 1; }
+  .btn:hover:not(:disabled) { background: #222; border-color: #444; transform: translateY(-1px); }
+  .btn:active:not(:disabled) { transform: translateY(0) scale(0.98); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn svg { width: 14px; height: 14px; flex-shrink: 0; transition: transform 0.25s ease; }
+  .btn:hover:not(:disabled) svg { transform: scale(1.15); }
+
+  .btn-danger {
+    background: #1a0f0f;
+    border-color: #3a1a1a;
+    color: #ff8888;
+  }
+  .btn-danger:hover:not(:disabled) {
+    background: #2a1414;
+    border-color: #5a2020;
+    color: #ffaaaa;
+  }
+
+  .btn-accent {
+    background: #0f1a0f;
+    border-color: #1a3a1a;
+    color: #88ff88;
+  }
+  .btn-accent:hover:not(:disabled) {
+    background: #142a14;
+    border-color: #205a20;
+    color: #aaffaa;
+  }
+
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+    animation: overlayIn 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  @keyframes overlayIn {
+    from { opacity: 0; backdrop-filter: blur(0px); }
+    to { opacity: 1; backdrop-filter: blur(10px); }
+  }
+  .overlay.hidden { display: none; }
+
+  .modal {
+    background: #141414;
+    border: 1px solid #2a2a2a;
+    border-radius: 18px;
+    padding: 28px 32px;
+    max-width: 460px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.9);
+    animation: modalIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  @keyframes modalIn {
+    0% { opacity: 0; transform: scale(0.7) translateY(30px); }
+    60% { opacity: 1; transform: scale(1.03) translateY(-3px); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  .modal h2 {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 18px;
+    color: #fff;
+    letter-spacing: 0.5px;
+  }
+
+  .modal .big-result {
+    font-size: 44px;
+    font-weight: 800;
+    margin: 12px 0 24px;
+    word-break: break-word;
+    line-height: 1.2;
+    animation: resultPop 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  @keyframes resultPop {
+    0% { opacity: 0; transform: scale(0.3) rotate(-10deg); }
+    50% { opacity: 1; transform: scale(1.15) rotate(3deg); }
+    70% { transform: scale(0.95) rotate(-1deg); }
+    100% { opacity: 1; transform: scale(1) rotate(0); }
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .modal-actions .btn { flex: 1; padding: 12px; font-size: 13px; }
+
+  .settings-modal {
+    text-align: left;
+    max-width: 520px;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  .settings-modal::-webkit-scrollbar { width: 5px; }
+  .settings-modal::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+  .settings-modal h2 {
+    text-align: center;
+    margin-bottom: 22px;
+  }
+
+  .setting {
+    margin-bottom: 18px;
+    animation: settingIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  }
+  .setting:nth-child(1) { animation-delay: 0.05s; }
+  .setting:nth-child(2) { animation-delay: 0.1s; }
+  .setting:nth-child(3) { animation-delay: 0.15s; }
+  .setting:nth-child(4) { animation-delay: 0.2s; }
+  .setting:nth-child(5) { animation-delay: 0.25s; }
+
+  @keyframes settingIn {
+    from { opacity: 0; transform: translateX(-15px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .setting > label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    color: #888;
+    margin-bottom: 7px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
+
+  .switch-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    padding: 10px 14px;
+    cursor: pointer;
+    transition: border-color 0.2s ease, background 0.2s ease;
+    user-select: none;
+  }
+  .switch-row:hover { border-color: #3a3a3a; background: #1e1e1e; }
+  .switch-row span { font-size: 13px; }
+
+  .switch-row input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    background: #0d0d0d;
+    border: 1.5px solid #3a3a3a;
+    border-radius: 4px;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+    flex-shrink: 0;
+    outline: none;
+    margin: 0;
+  }
+
+  .switch-row input[type="checkbox"]:hover { border-color: #555; }
+
+  .switch-row input[type="checkbox"]:checked {
+    background: #3a6a3a;
+    border-color: #5a8a5a;
+    transform: scale(1.1);
+  }
+
+  .switch-row input[type="checkbox"]:checked::after {
+    content: '';
+    position: absolute;
+    left: 4.5px;
+    top: 1px;
+    width: 5px;
+    height: 9px;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+    animation: checkIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  @keyframes checkIn {
+    from { transform: rotate(45deg) scale(0); }
+    to { transform: rotate(45deg) scale(1); }
+  }
+
+  .setting input[type="range"] {
+    width: 100%;
+    accent-color: #888;
+    height: 4px;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .time-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: #666;
+    margin-top: 4px;
+  }
+
+  .setting select,
+  .setting input[type="text"] {
+    width: 100%;
+    background: #0d0d0d;
+    border: 1px solid #2a2a2a;
+    color: #fff;
+    padding: 10px 14px;
+    border-radius: 9px;
+    font-size: 13px;
+    font-family: inherit;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .setting select:focus,
+  .setting input[type="text"]:focus {
+    outline: none;
+    border-color: #555;
+    box-shadow: 0 0 0 3px rgba(255,255,255,0.05);
+  }
+
+  .hint {
+    font-size: 11px;
+    color: #666;
+    margin-top: 5px;
+  }
+
+  .emoji-picker-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+    padding: 10px;
+    background: #0d0d0d;
+    border: 1px solid #2a2a2a;
+    border-radius: 9px;
+    color: #ccc;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    margin-top: 6px;
+  }
+  .emoji-picker-btn:hover { background: #1a1a1a; border-color: #444; transform: translateY(-1px); }
+  .emoji-picker-btn:active { transform: translateY(0) scale(0.98); }
+
+  .emoji-picker {
+    background: #141414;
+    border: 1px solid #2a2a2a;
+    border-radius: 14px;
+    padding: 14px;
+    max-width: 460px;
+    width: 100%;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    animation: modalIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .emoji-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: #fff;
+    font-weight: 600;
+    font-size: 14px;
+  }
+
+  .emoji-upload {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px;
+    background: #0d0d0d;
+    border: 1px dashed #3a3a3a;
+    border-radius: 10px;
+    color: #8bc4ff;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+  }
+  .emoji-upload:hover { background: #151515; border-color: #4a4a4a; transform: translateY(-1px); }
+  .emoji-upload input { display: none; }
+
+  .emoji-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    overflow-y: auto;
+    padding-right: 4px;
+    max-height: 280px;
+  }
+  .emoji-grid::-webkit-scrollbar { width: 4px; }
+  .emoji-grid::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+
+  .emoji-item {
+    aspect-ratio: 1 / 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #1a1a1a;
+    border: 1px solid #262626;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 24px;
+    transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+    overflow: hidden;
+    padding: 2px;
+    animation: emojiIn 0.3s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  }
+  @keyframes emojiIn {
+    from { opacity: 0; transform: scale(0.5); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  .emoji-item:hover {
+    background: #2a2a2a;
+    border-color: #444;
+    transform: scale(1.15) rotate(-3deg);
+    z-index: 2;
+  }
+  .emoji-item:active { transform: scale(0.95); }
+
+  .emoji-footer {
+    font-size: 11px;
+    color: #666;
+    text-align: center;
+    padding-top: 6px;
+    border-top: 1px solid #222;
+    line-height: 1.5;
+  }
+
+  @media (max-width: 1100px) {
+    .side-panel { width: 340px; }
+  }
+
+  @media (max-width: 900px) {
+    body { overflow: auto; }
+    html, body { height: auto; }
+    .app { flex-direction: column; height: auto; }
+    .wheel-outer { width: min(80vw, 500px); }
+    .side-panel { width: 100%; }
+    .logo { font-size: 20px; top: 14px; left: 14px; }
+  }
+</style>
+</head>
+<body>
+
+<canvas class="bg-canvas" id="bgCanvas"></canvas>
+<div class="logo">Колесо</div>
+
+<div class="app">
+  <div class="wheel-area">
+    <div class="wheel-outer" id="wheelOuter">
+      <div class="pointer" id="pointer">
+        <svg viewBox="0 0 56 64" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="ptrGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#ffffff"/>
+              <stop offset="55%" stop-color="#f0f0f0"/>
+              <stop offset="100%" stop-color="#b8b8b8"/>
+            </linearGradient>
+            <linearGradient id="ptrShine" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="rgba(255,255,255,0)"/>
+              <stop offset="45%" stop-color="rgba(255,255,255,0.85)"/>
+              <stop offset="55%" stop-color="rgba(255,255,255,0.85)"/>
+              <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+            </linearGradient>
+          </defs>
+          <path d="M 4 2
+                   Q 6 -2 12 -2
+                   L 44 -2
+                   Q 50 -2 52 2
+                   Q 54 10 50 20
+                   Q 42 40 32 60
+                   Q 30 64 28 60
+                   Q 18 40 6 20
+                   Q 2 10 4 2 Z"
+                fill="url(#ptrGrad)"
+                stroke="rgba(0,0,0,0.3)"
+                stroke-width="0.5"/>
+          <path d="M 22 0 Q 28 30 28 58 Q 28 30 34 0 Z"
+                fill="url(#ptrShine)"
+                opacity="0.6"/>
+        </svg>
+      </div>
+      <canvas id="wheelCanvas" width="1400" height="1400"></canvas>
+      <div class="center-gif" id="centerGifContainer">
+        <div class="placeholder">◆</div>
+      </div>
+    </div>
+    <button class="spin-btn" id="spinBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="23 4 23 10 17 10"></polyline>
+        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+      </svg>
+      КРУТИТЬ
+    </button>
+  </div>
+
+  <div class="side-panel">
+    <div class="settings-bar">
+      <button class="btn-settings" id="openSettingsBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+        Настройки
+      </button>
+    </div>
+
+    <div class="modes">
+      <button class="mode-btn active" data-mode="drop">На выпадение</button>
+      <button class="mode-btn" data-mode="eliminate">На выбывание</button>
+    </div>
+
+    <div class="list-header">
+      <span>Варианты</span>
+      <span class="sum" id="sumIndicator">0%</span>
+    </div>
+
+    <div class="variant-list" id="variantList"></div>
+
+    <div class="actions">
+      <button class="btn" id="addVariantBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        Добавить вариант
+      </button>
+      <button class="btn btn-accent" id="autoDistributeBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+        </svg>
+        Авто-распределение шанса
+      </button>
+      <button class="btn btn-danger" id="clearAllBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="3 6 5 6 21 6"></polyline>
+          <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+          <path d="M10 11v6"></path>
+          <path d="M14 11v6"></path>
+          <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path>
+        </svg>
+        Очистить все варианты
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay hidden" id="resultModal">
+  <div class="modal">
+    <h2 id="resultLabel">Победитель</h2>
+    <div class="big-result" id="resultText"></div>
+    <div class="modal-actions" id="resultActions">
+      <button class="btn" id="modalCloseBtn">Закрыть</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay hidden" id="confirmModal">
+  <div class="modal">
+    <h2>Очистить все варианты?</h2>
+    <p style="color:#888; font-size:13px; margin-bottom:20px;">
+      Все текущие варианты будут удалены и заменены на три стандартных.
+    </p>
+    <div class="modal-actions">
+      <button class="btn" id="confirmCancel">Отмена</button>
+      <button class="btn btn-danger" id="confirmOk">Очистить</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay hidden" id="autoDistributeModal">
+  <div class="modal">
+    <h2>Авто-распределение шанса?</h2>
+    <p style="color:#888; font-size:13px; margin-bottom:20px;">
+      Все шансы будут распределены равномерно между вариантами.
+    </p>
+    <div class="modal-actions">
+      <button class="btn" id="autoDistributeCancel">Отмена</button>
+      <button class="btn btn-accent" id="autoDistributeOk">Распределить</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay hidden" id="settingsModal">
+  <div class="modal settings-modal">
+    <h2>Настройки колеса</h2>
+
+    <div class="setting">
+      <label>Звук</label>
+      <label class="switch-row">
+        <span>Звук вращения</span>
+        <input type="checkbox" id="soundToggle">
+      </label>
+    </div>
+
+    <div class="setting">
+      <label>Время вращения</label>
+      <input type="range" id="spinTimeRange" min="0" max="300" value="5" step="1">
+      <div class="time-row">
+        <span>0 сек</span>
+        <span id="spinTimeValue" style="color:#ccc; font-weight:600;">5 сек</span>
+        <span>300 сек</span>
+      </div>
+    </div>
+
+    <div class="setting">
+      <label>Анимация вращения</label>
+      <select id="easingSelect">
+        <option value="easeInOut">Плавно туда-обратно</option>
+        <option value="easeOut">Плавное торможение</option>
+        <option value="easeIn">Плавный разгон</option>
+      </select>
+    </div>
+
+    <div class="setting">
+      <label>Паттерн выпадения</label>
+      <select id="patternSelect">
+        <option value="random">Случайный (микс всех)</option>
+        <option value="center">По центру сегмента</option>
+        <option value="edge">У границы (на стыке)</option>
+        <option value="nearStart">Ближе к началу</option>
+        <option value="nearEnd">Ближе к концу</option>
+        <option value="full">По всему сегменту</option>
+        <option value="middleOut">От центра к краям</option>
+      </select>
+      <div class="hint">Куда встанет стрелка внутри выигравшего сегмента</div>
+    </div>
+
+    <div class="setting">
+      <label>GIF / видео по центру (URL)</label>
+      <input type="text" id="gifUrlInput" placeholder="https://...">
+      <button class="emoji-picker-btn" id="openEmojiBtn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
+          <line x1="9" y1="9" x2="9.01" y2="9"></line>
+          <line x1="15" y1="9" x2="15.01" y2="9"></line>
+        </svg>
+        Выбрать смайлик / гифку
+      </button>
+      <div class="hint">Вставьте ссылку или выберите из галереи. Оставьте пустым, чтобы убрать.</div>
+    </div>
+
+    <button class="btn" id="closeSettingsBtn" style="width:100%; padding:12px; margin-top:8px;">Сохранить</button>
+  </div>
+</div>
+
+<div class="overlay hidden" id="emojiModal">
+  <div class="emoji-picker">
+    <div class="emoji-header">
+      <span>Выбор изображения</span>
+      <button class="btn" id="closeEmojiBtn" style="padding:4px 10px; font-size:11px;">Закрыть</button>
+    </div>
+
+    <label class="emoji-upload">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+        <polyline points="17 8 12 3 7 8"></polyline>
+        <line x1="12" y1="3" x2="12" y2="15"></line>
+      </svg>
+      Загрузить свое изображение
+      <input type="file" id="emojiFileInput" accept="image/*,video/mp4,video/webm">
+    </label>
+
+    <div class="emoji-grid" id="emojiGrid"></div>
+
+    <div class="emoji-footer">
+      Подключите Twitch, чтобы выбрать больше изображений в колесо (7TV, BTTV, FFZ)
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  'use strict';
+
+  const MAX_NAME_LENGTH = 15;
+
+  let state = {
+    variants: [],
+    mode: 'drop',
+    soundEnabled: true,
+    spinDuration: 5,
+    easing: 'easeInOut',
+    pattern: 'random',
+    gifUrl: ''
+  };
+
+  // ★ Стартовые дефолты — с одной десятой (33.3 / 33.3 / 33.4)
+  function defaultVariants() {
+    return [
+      { name: 'тест1', percent: 33.3, color: randomColor() },
+      { name: 'тест2', percent: 33.3, color: randomColor() },
+      { name: 'тест3', percent: 33.4, color: randomColor() }
+    ];
+  }
+
+  // ★ Случайный насыщенный цвет
+  function randomColor() {
+    const h = Math.floor(Math.random() * 360);
+    const s = 65 + Math.floor(Math.random() * 20);  // 65–85%
+    const l = 50 + Math.floor(Math.random() * 12);  // 50–62%
+    return hslToHex(h, s, l);
+  }
+
+  function hslToHex(h, s, l) {
+    s /= 100; l /= 100;
+    const c = (1 - Math.abs(2 * l - 1)) * s;
+    const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+    const m = l - c / 2;
+    let r = 0, g = 0, b = 0;
+    if (h < 60) { r = c; g = x; b = 0; }
+    else if (h < 120) { r = x; g = c; b = 0; }
+    else if (h < 180) { r = 0; g = c; b = x; }
+    else if (h < 240) { r = 0; g = x; b = c; }
+    else if (h < 300) { r = x; g = 0; b = c; }
+    else { r = c; g = 0; b = x; }
+    const toHex = v => {
+      const hv = Math.round((v + m) * 255);
+      return hv.toString(16).padStart(2, '0');
+    };
+    return '#' + toHex(r) + toHex(g) + toHex(b);
+  }
+
+  // ★ Формат процента: целое — без точки, дробное — с одной десятой
+  function formatPercent(p) {
+    const num = Number(p) || 0;
+    if (Number.isInteger(num)) return String(num);
+    return num.toFixed(1).replace(/\.0$/, '');
+  }
+
+  function loadState() {
+    try {
+      const raw = localStorage.getItem('fortuneWheelState_v8');
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed && Array.isArray(parsed.variants) && parsed.variants.length > 0) {
+          state = Object.assign(state, parsed);
+        } else {
+          state.variants = defaultVariants();
+        }
+      } else {
+        state.variants = defaultVariants();
+      }
+    } catch (e) {
+      state.variants = defaultVariants();
+    }
+    sanitizePercents();
+  }
+
+  function saveState() {
+    try { localStorage.setItem('fortuneWheelState_v8', JSON.stringify(state)); } catch (e) {}
+  }
+
+  function sanitizePercents() {
+    state.variants.forEach(v => {
+      let p = Number(v.percent) || 0;
+      if (p < 0) p = 0;
+      if (p > 100) p = 100;
+      // округляем до одной десятой
+      v.percent = Math.round(p * 10) / 10;
+    });
+  }
+
+  function getSum() {
+    return state.variants.reduce((a, v) => a + (Number(v.percent) || 0), 0);
+  }
+
+  function updateSumIndicator() {
+    const el = document.getElementById('sumIndicator');
+    if (!el) return;
+    const sum = Math.round(getSum() * 10) / 10;
+    el.textContent = formatPercent(sum) + '%';
+    el.classList.toggle('warn', Math.abs(sum - 100) > 0.05);
+  }
+
+  // ★ Определяет, является ли цвет очень светлым
+  function isLightColor(hex) {
+    if (!hex) return false;
+    const c = hex.replace('#', '');
+    if (c.length !== 6) return false;
+    const r = parseInt(c.substring(0, 2), 16);
+    const g = parseInt(c.substring(2, 4), 16);
+    const b = parseInt(c.substring(4, 6), 16);
+    // воспринимаемая яркость
+    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+    return luminance > 0.7;
+  }
+
+  const canvas = document.getElementById('wheelCanvas');
+  const ctx = canvas.getContext('2d');
+  const variantListEl = document.getElementById('variantList');
+  const spinBtn = document.getElementById('spinBtn');
+  const addVariantBtn = document.getElementById('addVariantBtn');
+  const autoDistributeBtn = document.getElementById('autoDistributeBtn');
+  const clearAllBtn = document.getElementById('clearAllBtn');
+  const modeBtns = document.querySelectorAll('.mode-btn');
+  const wheelOuter = document.getElementById('wheelOuter');
+  const centerGifContainer = document.getElementById('centerGifContainer');
+  const resultModal = document.getElementById('resultModal');
+  const resultLabel = document.getElementById('resultLabel');
+  const resultText = document.getElementById('resultText');
+  const resultActions = document.getElementById('resultActions');
+  const confirmModal = document.getElementById('confirmModal');
+  const autoDistributeModal = document.getElementById('autoDistributeModal');
+  const settingsModal = document.getElementById('settingsModal');
+  const openSettingsBtn = document.getElementById('openSettingsBtn');
+  const closeSettingsBtn = document.getElementById('closeSettingsBtn');
+  const soundToggle = document.getElementById('soundToggle');
+  const spinTimeRange = document.getElementById('spinTimeRange');
+  const spinTimeValue = document.getElementById('spinTimeValue');
+  const easingSelect = document.getElementById('easingSelect');
+  const patternSelect = document.getElementById('patternSelect');
+  const gifUrlInput = document.getElementById('gifUrlInput');
+  const emojiModal = document.getElementById('emojiModal');
+  const openEmojiBtn = document.getElementById('openEmojiBtn');
+  const closeEmojiBtn = document.getElementById('closeEmojiBtn');
+  const emojiFileInput = document.getElementById('emojiFileInput');
+  const pointerEl = document.getElementById('pointer');
+
+  // ---------- АУДИО ----------
+  let audioCtx = null;
+  let isSpinning = false;
+
+  function initAudio() {
+    if (!audioCtx) {
+      try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {}
+    }
+    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+  }
+
+  function playTick() {
+    if (!state.soundEnabled || !audioCtx) return;
+    try {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'square';
+      osc.frequency.value = 1500;
+      gain.gain.setValueAtTime(0.02, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.025);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.03);
+    } catch(e) {}
+  }
+
+  function playClick() {
+    if (!state.soundEnabled || !audioCtx) return;
+    try {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(180, audioCtx.currentTime + 0.07);
+      gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.09);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.1);
+    } catch(e) {}
+  }
+
+  // ★ Звук наведения (лёгкий мягкий tick)
+  function playHover() {
+    if (!state.soundEnabled || !audioCtx) return;
+    try {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(1100, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(1500, audioCtx.currentTime + 0.04);
+      gain.gain.setValueAtTime(0.014, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.06);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.07);
+    } catch(e) {}
+  }
+
+  function playClack() {
+    if (!state.soundEnabled) return;
+    initAudio();
+    if (!audioCtx) return;
+    try {
+      const now = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(2200, now);
+      osc.frequency.exponentialRampToValueAtTime(700, now + 0.03);
+      gain.gain.setValueAtTime(0.09, now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.05);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(now);
+      osc.stop(now + 0.06);
+      const osc2 = audioCtx.createOscillator();
+      const gain2 = audioCtx.createGain();
+      osc2.type = 'triangle';
+      osc2.frequency.setValueAtTime(180, now + 0.005);
+      gain2.gain.setValueAtTime(0.07, now + 0.005);
+      gain2.gain.exponentialRampToValueAtTime(0.0001, now + 0.08);
+      osc2.connect(gain2);
+      gain2.connect(audioCtx.destination);
+      osc2.start(now + 0.005);
+      osc2.stop(now + 0.09);
+    } catch(e) {}
+  }
+
+  function playWinSound() {
+    if (!state.soundEnabled) return;
+    initAudio();
+    if (!audioCtx) return;
+    try {
+      const now = audioCtx.currentTime;
+      [523.25, 659.25, 783.99, 1046.5].forEach((freq, i) => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.0001, now + i*0.09);
+        gain.gain.exponentialRampToValueAtTime(0.13, now + i*0.09 + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + i*0.09 + 0.7);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now + i*0.09);
+        osc.stop(now + i*0.09 + 0.75);
+      });
+    } catch(e) {}
+  }
+
+  // ★ Привязка звуков: hover + click
+  function attachSounds(root) {
+    (root || document).querySelectorAll('button, .mode-btn, .btn, .btn-settings, .v-remove, .switch-row, .emoji-item, .emoji-upload, .emoji-picker-btn').forEach(el => {
+      if (el.dataset.soundAttached) return;
+      el.dataset.soundAttached = '1';
+      el.addEventListener('mouseenter', () => { initAudio(); playHover(); });
+      el.addEventListener('click', () => { initAudio(); playClick(); });
+      el.addEventListener('mousemove', (e) => {
+        const rect = el.getBoundingClientRect();
+        el.style.setProperty('--mx', ((e.clientX - rect.left) / rect.width * 100) + '%');
+        el.style.setProperty('--my', ((e.clientY - rect.top) / rect.height * 100) + '%');
+      });
+    });
+  }
+
+  // ---------- ФОН ----------
+  const bgCanvas = document.getElementById('bgCanvas');
+  const bgCtx = bgCanvas.getContext('2d');
+  let bgParticles = [];
+  let bgW, bgH;
+
+  function initBg() {
+    bgW = bgCanvas.width = window.innerWidth;
+    bgH = bgCanvas.height = window.innerHeight;
+    bgParticles = [];
+    const count = Math.min(70, Math.floor((bgW * bgH) / 28000));
+    for (let i = 0; i < count; i++) {
+      bgParticles.push({
+        x: Math.random() * bgW,
+        y: Math.random() * bgH,
+        vx: (Math.random() - 0.5) * 0.18,
+        vy: (Math.random() - 0.5) * 0.18,
+        r: 0.5 + Math.random() * 1.8,
+        a: 0.15 + Math.random() * 0.4
+      });
+    }
+  }
+
+  function drawBg() {
+    bgCtx.clearRect(0, 0, bgW, bgH);
+    bgCtx.fillStyle = '#0a0a0a';
+    bgCtx.fillRect(0, 0, bgW, bgH);
+
+    bgParticles.forEach(p => {
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.x < 0) p.x = bgW;
+      if (p.x > bgW) p.x = 0;
+      if (p.y < 0) p.y = bgH;
+      if (p.y > bgH) p.y = 0;
+
+      bgCtx.beginPath();
+      bgCtx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      bgCtx.fillStyle = `rgba(140, 160, 200, ${p.a})`;
+      bgCtx.fill();
+    });
+
+    for (let i = 0; i < bgParticles.length; i++) {
+      for (let j = i + 1; j < bgParticles.length; j++) {
+        const dx = bgParticles[i].x - bgParticles[j].x;
+        const dy = bgParticles[i].y - bgParticles[j].y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        if (dist < 140) {
+          bgCtx.beginPath();
+          bgCtx.moveTo(bgParticles[i].x, bgParticles[i].y);
+          bgCtx.lineTo(bgParticles[j].x, bgParticles[j].y);
+          bgCtx.strokeStyle = `rgba(120, 140, 180, ${0.09 * (1 - dist/140)})`;
+          bgCtx.lineWidth = 0.6;
+          bgCtx.stroke();
+        }
+      }
+    }
+
+    requestAnimationFrame(drawBg);
+  }
+
+  // ---------- АНИМАЦИЯ ПОКАЧИВАНИЯ СТРЕЛКИ ----------
+  let pointerAnimId = null;
+
+  function shakePointer() {
+    if (pointerAnimId) cancelAnimationFrame(pointerAnimId);
+
+    const startTime = performance.now();
+    const DURATION = 1200;
+    const FREQ = 14;
+    const AMP_START = 6;
+    const DAMPING = 4.5;
+
+    function frame(now) {
+      const t = (now - startTime) / 1000;
+      const progress = Math.min(t / (DURATION / 1000), 1);
+      const amp = AMP_START * Math.exp(-DAMPING * t);
+      const angle = amp * Math.sin(FREQ * t * 2 * Math.PI);
+      pointerEl.style.transform = `translateX(-50%) rotate(${angle}deg)`;
+
+      if (progress < 1) {
+        pointerAnimId = requestAnimationFrame(frame);
+      } else {
+        pointerEl.style.transform = 'translateX(-50%) rotate(0deg)';
+        pointerAnimId = null;
+      }
+    }
+
+    pointerAnimId = requestAnimationFrame(frame);
+  }
+
+  // ---------- КОЛЕСО ----------
+  let rotationAngle = -Math.PI / 2;
+
+  function drawWheel() {
+    const w = canvas.width;
+    const h = canvas.height;
+    const cx = w / 2;
+    const cy = h / 2;
+    const radius = Math.min(w, h) * 0.44;
+
+    ctx.clearRect(0, 0, w, h);
+
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius + 10, 0, Math.PI * 2);
+    ctx.fillStyle = '#0f0f0f';
+    ctx.fill();
+
+    const variants = state.variants;
+    if (!variants.length) return;
+
+    let total = variants.reduce((a, v) => a + (Number(v.percent) || 0), 0);
+    if (total <= 0) total = 100;
+
+    let start = rotationAngle;
+
+    variants.forEach((v) => {
+      const percent = Number(v.percent) || 0;
+      const angle = (percent / total) * Math.PI * 2;
+      const end = start + angle;
+
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.arc(cx, cy, radius, start, end);
+      ctx.closePath();
+      ctx.fillStyle = v.color || '#666';
+      ctx.fill();
+      ctx.strokeStyle = '#0a0a0a';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      const mid = start + angle / 2;
+      const textR = radius * 0.68;
+      const tx = cx + Math.cos(mid) * textR;
+      const ty = cy + Math.sin(mid) * textR;
+
+      ctx.save();
+      ctx.translate(tx, ty);
+      let rot = mid;
+      if (rot > Math.PI / 2 && rot < Math.PI * 1.5) rot += Math.PI;
+      ctx.rotate(rot);
+
+      // ★ Цвет текста в зависимости от яркости фона
+      const lightBg = isLightColor(v.color);
+      ctx.fillStyle = lightBg ? '#000000' : '#ffffff';
+
+      const baseFont = 56 - variants.length * 1.6;
+      const fontSize = Math.max(22, Math.min(48, baseFont));
+      ctx.font = `800 ${fontSize}px Inter, sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.shadowColor = lightBg ? 'rgba(255,255,255,0.75)' : 'rgba(0,0,0,0.75)';
+      ctx.shadowBlur = 8;
+
+      let name = v.name || '';
+      if (name.length > MAX_NAME_LENGTH) {
+        name = name.slice(0, MAX_NAME_LENGTH - 1) + '…';
+      }
+      ctx.fillText(name, 0, 0);
+      ctx.restore();
+
+      start = end;
+    });
+
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius * 0.18, 0, Math.PI * 2);
+    ctx.fillStyle = '#050505';
+    ctx.shadowBlur = 0;
+    ctx.fill();
+    ctx.strokeStyle = '#2a2a2a';
+    ctx.lineWidth = 5;
+    ctx.stroke();
+  }
+
+  function renderVariantList() {
+    variantListEl.innerHTML = '';
+    state.variants.forEach((v, i) => {
+      const row = document.createElement('div');
+      row.className = 'variant-row';
+      row.style.animationDelay = (i * 0.03) + 's';
+
+      // ★ Кружок как <input type="color"> — клик открывает пикер
+      const dot = document.createElement('input');
+      dot.type = 'color';
+      dot.className = 'color-dot';
+      dot.value = v.color;
+      dot.disabled = isSpinning;
+      dot.title = 'Изменить цвет';
+      dot.addEventListener('input', (e) => {
+        v.color = e.target.value;
+        saveState();
+        drawWheel();
+      });
+      dot.addEventListener('click', (e) => {
+        if (isSpinning) e.preventDefault();
+        initAudio();
+        playClick();
+      });
+
+      const name = document.createElement('input');
+      name.className = 'v-name';
+      name.value = v.name;
+      name.maxLength = MAX_NAME_LENGTH;
+      name.disabled = isSpinning;
+      name.addEventListener('input', (e) => {
+        v.name = e.target.value.slice(0, MAX_NAME_LENGTH);
+        saveState();
+        drawWheel();
+      });
+
+      const pct = document.createElement('input');
+      pct.className = 'v-percent';
+      pct.value = formatPercent(v.percent);
+      pct.disabled = isSpinning;
+      pct.addEventListener('input', (e) => {
+        let cleaned = e.target.value.replace(',', '.').replace(/[^\d.]/g, '');
+        let val = parseFloat(cleaned);
+        if (isNaN(val)) val = 0;
+        if (val > 100) val = 100;
+        v.percent = Math.round(val * 10) / 10;
+        updateSumIndicator();
+      });
+      pct.addEventListener('change', () => {
+        sanitizePercents();
+        saveState();
+        // обновляем отображение
+        pct.value = formatPercent(v.percent);
+        updateSumIndicator();
+        drawWheel();
+      });
+      pct.addEventListener('blur', () => {
+        pct.value = formatPercent(v.percent);
+      });
+
+      const rm = document.createElement('button');
+      rm.className = 'v-remove';
+      rm.disabled = isSpinning;
+      rm.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>';
+      rm.addEventListener('click', () => {
+        if (isSpinning) return;
+        if (state.variants.length <= 1) return;
+        state.variants.splice(i, 1);
+        saveState();
+        renderVariantList();
+        drawWheel();
+        updateSumIndicator();
+      });
+
+      row.appendChild(dot);
+      row.appendChild(name);
+      row.appendChild(pct);
+      row.appendChild(rm);
+      variantListEl.appendChild(row);
+    });
+    attachSounds(variantListEl);
+    updateSumIndicator();
+  }
+
+  function updateControlsState() {
+    addVariantBtn.disabled = isSpinning || state.variants.length >= 15;
+    autoDistributeBtn.disabled = isSpinning;
+    clearAllBtn.disabled = isSpinning;
+    modeBtns.forEach(b => b.disabled = isSpinning);
+    openSettingsBtn.disabled = isSpinning;
+  }
+
+  function updateCenterGif() {
+    centerGifContainer.innerHTML = '';
+    const url = (state.gifUrl || '').trim();
+    if (url) {
+      if (/\.(mp4|webm|ogg)(\?.*)?$/i.test(url) || url.startsWith('data:video')) {
+        const video = document.createElement('video');
+        video.src = url;
+        video.autoplay = true;
+        video.loop = true;
+        video.muted = true;
+        video.playsInline = true;
+        video.onerror = () => { centerGifContainer.innerHTML = '<div class="placeholder">◆</div>'; };
+        centerGifContainer.appendChild(video);
+      } else {
+        const img = document.createElement('img');
+        img.src = url;
+        img.onerror = () => { centerGifContainer.innerHTML = '<div class="placeholder">◆</div>'; };
+        centerGifContainer.appendChild(img);
+      }
+    } else {
+      centerGifContainer.innerHTML = '<div class="placeholder">◆</div>';
+    }
+  }
+
+  // ★ Переключение режима — БЕЗ инверсии процентов, только смена режима
+  function setMode(mode) {
+    if (state.mode === mode || isSpinning) return;
+    state.mode = mode;
+    saveState();
+    modeBtns.forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
+  }
+
+  function getEasing(name) {
+    switch(name) {
+      case 'easeOut': return t => 1 - Math.pow(1 - t, 3);
+      case 'easeIn': return t => t * t * t;
+      default: return t => t < 0.5 ? 2*t*t : 1 - Math.pow(-2*t+2, 2)/2;
+    }
+  }
+
+  function getSegmentUnderPointer(angle) {
+    const variants = state.variants;
+    if (!variants.length) return -1;
+    let total = variants.reduce((a, v) => a + (Number(v.percent) || 0), 0);
+    if (total <= 0) total = 100;
+
+    let rel = -Math.PI / 2 - angle;
+    rel = ((rel % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
+
+    let cum = 0;
+    for (let i = 0; i < variants.length; i++) {
+      const segAngle = ((Number(variants[i].percent) || 0) / total) * Math.PI * 2;
+      if (rel < cum + segAngle) return i;
+      cum += segAngle;
+    }
+    return variants.length - 1;
+  }
+
+  function getPatternPosition() {
+    const pattern = state.pattern || 'random';
+    const r = Math.random();
+
+    switch (pattern) {
+      case 'center': return 0.48 + r * 0.04;
+      case 'edge': return r < 0.5 ? 0.03 + r * 0.14 : 0.86 + (r - 0.5) * 0.22;
+      case 'nearStart': return 0.10 + r * 0.20;
+      case 'nearEnd': return 0.70 + r * 0.20;
+      case 'full': return 0.05 + r * 0.90;
+      case 'middleOut': return 0.15 + r * 0.70;
+      case 'random':
+      default: {
+        const mix = Math.floor(Math.random() * 5);
+        if (mix === 0) return 0.48 + Math.random() * 0.04;
+        if (mix === 1) return Math.random() < 0.5
+          ? 0.03 + Math.random() * 0.14
+          : 0.86 + Math.random() * 0.11;
+        if (mix === 2) return 0.10 + Math.random() * 0.20;
+        if (mix === 3) return 0.70 + Math.random() * 0.20;
+        return 0.05 + Math.random() * 0.90;
+      }
+    }
+  }
+
+  // ---------- ВРАЩЕНИЕ ----------
+  function spin() {
+    if (isSpinning) return;
+    if (state.variants.length === 0) return;
+
+    initAudio();
+    isSpinning = true;
+    spinBtn.disabled = true;
+    updateControlsState();
+    renderVariantList();
+
+    const variants = state.variants;
+    const totalPct = variants.reduce((a, v) => a + (Number(v.percent) || 0), 0);
+
+    let effectiveTotal = totalPct;
+    if (effectiveTotal <= 0) effectiveTotal = variants.length;
+
+    const rand = Math.random() * effectiveTotal;
+    let cum = 0;
+    let plannedWinner = variants.length - 1;
+    for (let i = 0; i < variants.length; i++) {
+      const w = totalPct > 0 ? (Number(variants[i].percent) || 0) : 1;
+      cum += w;
+      if (rand < cum) { plannedWinner = i; break; }
+    }
+
+    const denom = totalPct > 0 ? totalPct : variants.length;
+    let segStart = 0;
+    for (let i = 0; i < plannedWinner; i++) {
+      const w = totalPct > 0 ? (Number(variants[i].percent) || 0) : 1;
+      segStart += (w / denom) * Math.PI * 2;
+    }
+    const winnerWeight = totalPct > 0 ? (Number(variants[plannedWinner].percent) || 0) : 1;
+    const segSize = (winnerWeight / denom) * Math.PI * 2;
+
+    const inside = getPatternPosition();
+    const targetMid = segStart + segSize * inside;
+
+    const baseDelta = -Math.PI / 2 - targetMid;
+    const turns = 6 + Math.floor(Math.random() * 4);
+    const targetDelta = baseDelta + turns * Math.PI * 2;
+
+    const startAngle = rotationAngle;
+    const endAngle = startAngle + targetDelta;
+    const duration = Math.max(0, state.spinDuration * 1000);
+    const easingFn = getEasing(state.easing);
+    const startTime = performance.now();
+
+    let lastTickSegment = -1;
+
+    if (duration <= 0) {
+      rotationAngle = endAngle;
+      drawWheel();
+      const realWinner = getSegmentUnderPointer(rotationAngle);
+      finishSpin(realWinner >= 0 ? realWinner : plannedWinner);
+      return;
+    }
+
+    function animate(now) {
+      const elapsed = now - startTime;
+      let t = Math.min(elapsed / duration, 1);
+      const eased = easingFn(t);
+      rotationAngle = startAngle + targetDelta * eased;
+      drawWheel();
+
+      const seg = getSegmentUnderPointer(rotationAngle);
+      if (seg !== lastTickSegment) {
+        lastTickSegment = seg;
+        playTick();
+      }
+
+      if (t < 1) {
+        requestAnimationFrame(animate);
+      } else {
+        rotationAngle = endAngle;
+        drawWheel();
+        playClack();
+        shakePointer();
+        const realWinner = getSegmentUnderPointer(rotationAngle);
+        finishSpin(realWinner >= 0 ? realWinner : plannedWinner);
+      }
+    }
+
+    requestAnimationFrame(animate);
+  }
+
+  function finishSpin(winnerIdx) {
+    isSpinning = false;
+    spinBtn.disabled = false;
+    updateControlsState();
+    renderVariantList();
+    const winner = state.variants[winnerIdx];
+    if (!winner) return;
+    playWinSound();
+    showResult(winner, state.mode === 'eliminate');
+  }
+
+  function showResult(winner, isEliminate) {
+    resultLabel.textContent = isEliminate ? 'Выбывает' : 'Победитель';
+    resultText.textContent = winner.name;
+    resultText.style.color = winner.color;
+    resultText.style.textShadow = `0 0 24px ${winner.color}, 0 0 60px ${winner.color}, 0 0 100px ${winner.color}`;
+
+    resultText.style.animation = 'none';
+    void resultText.offsetWidth;
+    resultText.style.animation = '';
+
+    resultActions.innerHTML = '';
+    if (isEliminate) {
+      const btn = document.createElement('button');
+      btn.className = 'btn btn-danger';
+      btn.textContent = 'Удалить вариант';
+      btn.addEventListener('click', () => {
+        if (state.variants.length <= 1) {
+          resultModal.classList.add('hidden');
+          return;
+        }
+        const idx = state.variants.indexOf(winner);
+        if (idx !== -1) {
+          state.variants.splice(idx, 1);
+          saveState();
+          renderVariantList();
+          drawWheel();
+          updateSumIndicator();
+        }
+        if (state.variants.length === 1) {
+          const last = state.variants[0];
+          resultLabel.textContent = 'Победитель';
+          resultText.textContent = last.name;
+          resultText.style.color = last.color;
+          resultText.style.textShadow = `0 0 24px ${last.color}, 0 0 60px ${last.color}, 0 0 100px ${last.color}`;
+          resultText.style.animation = 'none';
+          void resultText.offsetWidth;
+          resultText.style.animation = '';
+          resultActions.innerHTML = '';
+          const closeBtn = document.createElement('button');
+          closeBtn.className = 'btn';
+          closeBtn.textContent = 'Закрыть';
+          closeBtn.addEventListener('click', () => resultModal.classList.add('hidden'));
+          resultActions.appendChild(closeBtn);
+          attachSounds(resultActions);
+        } else {
+          resultModal.classList.add('hidden');
+        }
+      });
+      resultActions.appendChild(btn);
+    } else {
+      const btn = document.createElement('button');
+      btn.className = 'btn';
+      btn.textContent = 'Закрыть';
+      btn.addEventListener('click', () => resultModal.classList.add('hidden'));
+      resultActions.appendChild(btn);
+    }
+    attachSounds(resultActions);
+    resultModal.classList.remove('hidden');
+  }
+
+  // ---------- ОБРАБОТЧИКИ ----------
+  spinBtn.addEventListener('click', spin);
+  wheelOuter.addEventListener('click', () => {
+    if (isSpinning) return;
+    initAudio();
+    playClick();
+    spin();
+  });
+
+  addVariantBtn.addEventListener('click', () => {
+    if (isSpinning) return;
+    if (state.variants.length >= 15) return;
+    const used = state.variants.length;
+    const sum = getSum();
+    let newPercent = 0;
+    if (sum < 100) {
+      newPercent = Math.round((100 - sum) * 10) / 10;
+    }
+    state.variants.push({
+      name: `Вариант ${used + 1}`,
+      percent: newPercent,
+      color: randomColor()  // ★ Случайный цвет
+    });
+    saveState();
+    renderVariantList();
+    drawWheel();
+    updateSumIndicator();
+  });
+
+  // ★ Авто-распределение шанса
+  autoDistributeBtn.addEventListener('click', () => {
+    if (isSpinning) return;
+    if (state.variants.length === 0) return;
+    autoDistributeModal.classList.remove('hidden');
+  });
+
+  document.getElementById('autoDistributeCancel').addEventListener('click', () => {
+    autoDistributeModal.classList.add('hidden');
+  });
+
+  document.getElementById('autoDistributeOk').addEventListener('click', () => {
+    const count = state.variants.length;
+    if (count > 0) {
+      const base = Math.floor(1000 / count) / 10; // округление до 0.1 в меньшую сторону
+      let remainder = Math.round((100 - base * count) * 10) / 10;
+      state.variants.forEach((v, i) => {
+        let p = base;
+        if (i === count - 1) {
+          p = Math.round((base + remainder) * 10) / 10;
+        }
+        v.percent = p;
+      });
+    }
+    saveState();
+    renderVariantList();
+    drawWheel();
+    updateSumIndicator();
+    autoDistributeModal.classList.add('hidden');
+  });
+
+  clearAllBtn.addEventListener('click', () => {
+    if (isSpinning) return;
+    confirmModal.classList.remove('hidden');
+  });
+
+  document.getElementById('confirmCancel').addEventListener('click', () => {
+    confirmModal.classList.add('hidden');
+  });
+
+  document.getElementById('confirmOk').addEventListener('click', () => {
+    state.variants = defaultVariants();
+    state.mode = 'drop';
+    saveState();
+    renderVariantList();
+    drawWheel();
+    updateSumIndicator();
+    modeBtns.forEach(b => b.classList.toggle('active', b.dataset.mode === 'drop'));
+    confirmModal.classList.add('hidden');
+  });
+
+  modeBtns.forEach(btn => {
+    btn.addEventListener('click', () => setMode(btn.dataset.mode));
+  });
+
+  openSettingsBtn.addEventListener('click', () => {
+    if (isSpinning) return;
+    soundToggle.checked = state.soundEnabled;
+    spinTimeRange.value = state.spinDuration;
+    spinTimeValue.textContent = state.spinDuration + ' сек';
+    easingSelect.value = state.easing;
+    patternSelect.value = state.pattern || 'random';
+    gifUrlInput.value = state.gifUrl || '';
+    settingsModal.classList.remove('hidden');
+  });
+
+  closeSettingsBtn.addEventListener('click', () => {
+    state.soundEnabled = soundToggle.checked;
+    state.spinDuration = Number(spinTimeRange.value);
+    state.easing = easingSelect.value;
+    state.pattern = patternSelect.value;
+    state.gifUrl = gifUrlInput.value.trim();
+    saveState();
+    updateCenterGif();
+    settingsModal.classList.add('hidden');
+  });
+
+  spinTimeRange.addEventListener('input', (e) => {
+    spinTimeValue.textContent = e.target.value + ' сек';
+  });
+
+  // ---------- ЭМОДЗИ ----------
+  const EMOJI_DATA = [
+    '😀','😃','😄','😁','😆','😅','😂','🤣','😊','😇','🙂','🙃','😉','😌','😍','🥰','😘','😗','😙','😚','😋','😛','😝','😜','🤪','🤨','🧐','🤓','😎','🤩','🥳','😏','😒','😞','😔','😟','😕','🙁','☹️','😣','😖','😫','😩','🥺','😢','😭','😤','😠','😡','🤬','🤯','😳','🥵','🥶','😱','😨','😰','😥','😓','🤗','🤔','🤭','🤫','🤥','😶','😐','😑','😬','🙄','😯','😦','😧','😮','😲','🥱','😴','🤤','😪','😵','🤐','🥴','🤢','🤮','🤧','😷','🤒','🤕','🤑','🤠','😈','👿','👹','👺','🤡','💩','👻','💀','☠️','👽','👾','🤖','🎃','😺','😸','😹','😻','😼','😽','🙀','😿','😾',
+    '🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐨','🐯','🦁','🐮','🐷','🐸','🐵','🐔','🐧','🐦','🐤','🦆','🦅','🦉','🦇','🐺','🐗','🐴','🦄','🐝','🐛','🦋','🐌','🐞','🐜','🦗','🕷','🦂','🐢','🐍','🦎','🦖','🦕','🐙','🦑','🦐','🦞','🦀','🐡','🐠','🐟','🐬','🐳','🐋','🦈','🐊','🐅','🐆','🦓','🦍','🦧','🐘','🦛','🦏','🐪','🐫','🦒','🦘','🐃','🐂','🐄','🐎','🐖','🐏','🐑','🦙','🐐','🦌','🐕','🐩','🦮','🐕‍🦺','🐈','🐈‍⬛','🐓','🦃','🦚','🦜','🦢','🦩','🕊','🐇','🦝','🦨','🦡','🦦','🦥','🐁','🐀','🐿','🦔',
+    '🍏','🍎','🍐','🍊','🍋','🍌','🍉','🍇','🍓','🫐','🍈','🍒','🍑','🥭','🍍','🥥','🥝','🍅','🍆','🥑','🥦','🥬','🥒','🌶','🫑','🌽','🥕','🫒','🧄','🧅','🥔','🍠','🥐','🥯','🍞','🥖','🥨','🧀','🥚','🍳','🧈','🥞','🧇','🥓','🥩','🍗','🍖','🦴','🌭','🍔','🍟','🍕','🫓','🥪','🥙','🧆','🌮','🌯','🫔','🥗','🥘','🫕','🥫','🍝','🍜','🍲','🍛','🍣','🍱','🥟','🦪','🍤','🍙','🍚','🍘','🍥','🥠','🥮','🍢','🍡','🍧','🍨','🍦','🥧','🧁','🍰','🎂','🍮','🍭','🍬','🍫','🍿','🍩','🍪','🌰','🥜','🍯','🥛','🍼','🫖','☕','🍵','🧃','🥤','🧋','🍶','🍺','🍻','🥂','🍷','🥃','🍸','🍹','🧉','🍾','🧊','🥄','🍴','🍽','🥣','🥡','🥢','🧂'
+  ];
+
+  function renderEmojiGrid() {
+    const grid = document.getElementById('emojiGrid');
+    grid.innerHTML = '';
+    EMOJI_DATA.forEach((e, idx) => {
+      const item = document.createElement('div');
+      item.className = 'emoji-item';
+      item.style.animationDelay = (idx * 0.003) + 's';
+      item.textContent = e;
+      item.addEventListener('click', () => {
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="75" font-size="75" text-anchor="middle" x="50">${e}</text></svg>`;
+        state.gifUrl = 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+        gifUrlInput.value = state.gifUrl;
+        updateCenterGif();
+        emojiModal.classList.add('hidden');
+      });
+      grid.appendChild(item);
+    });
+    attachSounds(grid);
+  }
+
+  openEmojiBtn.addEventListener('click', () => {
+    renderEmojiGrid();
+    emojiModal.classList.remove('hidden');
+  });
+
+  closeEmojiBtn.addEventListener('click', () => {
+    emojiModal.classList.add('hidden');
+  });
+
+  emojiFileInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      state.gifUrl = ev.target.result;
+      gifUrlInput.value = state.gifUrl;
+      updateCenterGif();
+      emojiModal.classList.add('hidden');
+    };
+    reader.readAsDataURL(file);
+  });
+
+  [resultModal, confirmModal, autoDistributeModal, settingsModal, emojiModal].forEach(m => {
+    m.addEventListener('click', (e) => {
+      if (e.target === m) m.classList.add('hidden');
+    });
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      resultModal.classList.add('hidden');
+      confirmModal.classList.add('hidden');
+      autoDistributeModal.classList.add('hidden');
+      settingsModal.classList.add('hidden');
+      emojiModal.classList.add('hidden');
+    }
+  });
+
+  function init() {
+    loadState();
+    renderVariantList();
+    drawWheel();
+    updateCenterGif();
+    modeBtns.forEach(b => b.classList.toggle('active', b.dataset.mode === state.mode));
+    attachSounds(document);
+    updateControlsState();
+    initBg();
+    drawBg();
+  }
+
+  init();
+
+  window.addEventListener('beforeunload', saveState);
+  window.addEventListener('resize', () => {
+    drawWheel();
+    initBg();
+  });
+
+})();
+</script>
+</body>
+</html>
