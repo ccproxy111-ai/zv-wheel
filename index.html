@@ -44,6 +44,7 @@
     position: relative;
   }
 
+  /* ★ Логотип с быстрым радужным переливом */
   .logo {
     position: fixed;
     top: 20px;
@@ -55,14 +56,34 @@
     z-index: 100;
     pointer-events: none;
     user-select: none;
-    color: #ff4d4d;
-    text-shadow: 0 0 14px rgba(255,77,77,0.75), 0 0 28px rgba(255,77,77,0.4);
-    animation: logoGlow 3s ease-in-out infinite;
+    animation: rainbow 2s linear infinite;
+    text-shadow: 0 0 14px currentColor, 0 0 28px currentColor;
   }
 
-  @keyframes logoGlow {
-    0%, 100% { text-shadow: 0 0 14px rgba(255,77,77,0.75), 0 0 28px rgba(255,77,77,0.4); }
-    50% { text-shadow: 0 0 20px rgba(255,77,77,1), 0 0 40px rgba(255,77,77,0.6); }
+  @keyframes rainbow {
+    0%   { color: #ff0000; }
+    14%  { color: #ff8800; }
+    28%  { color: #ffff00; }
+    42%  { color: #00ff00; }
+    57%  { color: #00ffff; }
+    71%  { color: #0088ff; }
+    85%  { color: #8800ff; }
+    100% { color: #ff0000; }
+  }
+
+  /* ★ Копирайт слева снизу */
+  .copyright {
+    position: fixed;
+    bottom: 12px;
+    left: 18px;
+    font-size: 11px;
+    color: #ffffff;
+    opacity: 0.45;
+    z-index: 100;
+    pointer-events: none;
+    user-select: none;
+    font-weight: 400;
+    letter-spacing: 0.5px;
   }
 
   .app {
@@ -93,7 +114,6 @@
     min-width: 0;
   }
 
-  /* КОНУСНАЯ СТРЕЛКА (SVG), перекрывает колесо */
   .pointer {
     position: absolute;
     top: -20px;
@@ -232,7 +252,6 @@
   .spin-btn svg { width: 22px; height: 22px; transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1); }
   .spin-btn:hover:not(:disabled) svg { transform: rotate(360deg); }
 
-  /* ★ Кнопка отмены прокрута */
   .cancel-spin-btn {
     margin-top: 12px;
     padding: 12px 40px;
@@ -343,6 +362,7 @@
   .mode-btn:active:not(:disabled) { transform: scale(0.97); }
   .mode-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
+  /* ★ Заголовок списка с счётчиком */
   .list-header {
     display: flex;
     justify-content: space-between;
@@ -353,6 +373,21 @@
     color: var(--text-dim-2);
     text-transform: uppercase;
     letter-spacing: 1px;
+  }
+  .list-header .list-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .list-header .counter {
+    color: #888;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    font-size: 10px;
+    background: #1a1a1a;
+    padding: 2px 7px;
+    border-radius: 6px;
+    border: 1px solid #262626;
   }
   .list-header .sum {
     font-size: 11px;
@@ -400,7 +435,6 @@
     transform: translateX(2px);
   }
 
-  /* ★ Кликабельный цветной кружок — открывает color picker */
   .color-dot {
     width: 22px;
     height: 22px;
@@ -570,6 +604,8 @@
     text-align: center;
     box-shadow: 0 30px 80px rgba(0,0,0,0.9);
     animation: modalIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+    overflow: hidden;
   }
 
   @keyframes modalIn {
@@ -578,42 +614,43 @@
     100% { opacity: 1; transform: scale(1) translateY(0); }
   }
 
+  /* ★ Свечение победителя за модалкой результата */
+  .modal.winner-modal {
+    isolation: isolate;
+  }
+  .winner-glow {
+    position: absolute;
+    inset: -80px;
+    z-index: -1;
+    border-radius: 50%;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    filter: blur(60px);
+  }
+  .modal.winner-modal .winner-glow {
+    opacity: 0.55;
+  }
+
   .modal h2 {
     font-size: 20px;
     font-weight: 600;
     margin-bottom: 18px;
     color: #fff;
     letter-spacing: 0.5px;
-  }
-
-  /* ★ Обёртка результата с полосками по бокам */
-  .result-wrap {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 14px;
-    margin: 12px 0 24px;
-  }
-
-  .result-bar {
-    width: 6px;
-    height: 48px;
-    border-radius: 3px;
-    flex-shrink: 0;
-    transform-origin: center;
-    animation: barGrow 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-  @keyframes barGrow {
-    from { transform: scaleY(0); opacity: 0; }
-    to { transform: scaleY(1); opacity: 1; }
+    position: relative;
+    z-index: 1;
   }
 
   .modal .big-result {
     font-size: 44px;
     font-weight: 800;
+    margin: 12px 0 24px;
     word-break: break-word;
     line-height: 1.2;
     animation: resultPop 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+    z-index: 1;
   }
 
   @keyframes resultPop {
@@ -626,6 +663,8 @@
   .modal-actions {
     display: flex;
     gap: 8px;
+    position: relative;
+    z-index: 1;
   }
 
   .modal-actions .btn { flex: 1; padding: 12px; font-size: 13px; }
@@ -893,6 +932,7 @@
 
 <canvas class="bg-canvas" id="bgCanvas"></canvas>
 <div class="logo">Колесо</div>
+<div class="copyright">By MeduzaGref ©</div>
 
 <div class="app">
   <div class="wheel-area">
@@ -967,7 +1007,10 @@
     </div>
 
     <div class="list-header">
-      <span>Варианты</span>
+      <span class="list-title">
+        Варианты
+        <span class="counter" id="variantCounter">0/15</span>
+      </span>
       <span class="sum" id="sumIndicator">0%</span>
     </div>
 
@@ -1002,13 +1045,10 @@
 </div>
 
 <div class="overlay hidden" id="resultModal">
-  <div class="modal">
+  <div class="modal winner-modal">
+    <div class="winner-glow" id="winnerGlow"></div>
     <h2 id="resultLabel">Победитель</h2>
-    <div class="result-wrap">
-      <div class="result-bar" id="resultBarLeft"></div>
-      <div class="big-result" id="resultText"></div>
-      <div class="result-bar" id="resultBarRight"></div>
-    </div>
+    <div class="big-result" id="resultText"></div>
     <div class="modal-actions" id="resultActions">
       <button class="btn" id="modalCloseBtn">Закрыть</button>
     </div>
@@ -1135,6 +1175,7 @@
   'use strict';
 
   const MAX_NAME_LENGTH = 15;
+  const MAX_VARIANTS = 15;
 
   let state = {
     variants: [],
@@ -1146,20 +1187,19 @@
     gifUrl: ''
   };
 
-  // ★ Стартовые дефолты — с одной десятой (33.3 / 33.3 / 33.4)
+  // ★ Дефолтные варианты: Вариант 1/2/3 с равными шансами
   function defaultVariants() {
     return [
-      { name: 'тест1', percent: 33.3, color: randomColor() },
-      { name: 'тест2', percent: 33.3, color: randomColor() },
-      { name: 'тест3', percent: 33.4, color: randomColor() }
+      { name: 'Вариант 1', percent: 33.3, color: randomColor() },
+      { name: 'Вариант 2', percent: 33.3, color: randomColor() },
+      { name: 'Вариант 3', percent: 33.4, color: randomColor() }
     ];
   }
 
-  // ★ Случайный насыщенный цвет
   function randomColor() {
     const h = Math.floor(Math.random() * 360);
-    const s = 65 + Math.floor(Math.random() * 20);  // 65–85%
-    const l = 50 + Math.floor(Math.random() * 12);  // 50–62%
+    const s = 65 + Math.floor(Math.random() * 20);
+    const l = 50 + Math.floor(Math.random() * 12);
     return hslToHex(h, s, l);
   }
 
@@ -1182,7 +1222,6 @@
     return '#' + toHex(r) + toHex(g) + toHex(b);
   }
 
-  // ★ Формат процента: целое — без точки, дробное — с одной десятой
   function formatPercent(p) {
     const num = Number(p) || 0;
     if (Number.isInteger(num)) return String(num);
@@ -1191,7 +1230,7 @@
 
   function loadState() {
     try {
-      const raw = localStorage.getItem('fortuneWheelState_v8');
+      const raw = localStorage.getItem('fortuneWheelState_v9');
       if (raw) {
         const parsed = JSON.parse(raw);
         if (parsed && Array.isArray(parsed.variants) && parsed.variants.length > 0) {
@@ -1209,7 +1248,7 @@
   }
 
   function saveState() {
-    try { localStorage.setItem('fortuneWheelState_v8', JSON.stringify(state)); } catch (e) {}
+    try { localStorage.setItem('fortuneWheelState_v9', JSON.stringify(state)); } catch (e) {}
   }
 
   function sanitizePercents() {
@@ -1233,7 +1272,13 @@
     el.classList.toggle('warn', Math.abs(sum - 100) > 0.05);
   }
 
-  // ★ Определяет, является ли цвет очень светлым
+  // ★ Обновление счётчика вариантов
+  function updateVariantCounter() {
+    const el = document.getElementById('variantCounter');
+    if (!el) return;
+    el.textContent = state.variants.length + '/' + MAX_VARIANTS;
+  }
+
   function isLightColor(hex) {
     if (!hex) return false;
     const c = hex.replace('#', '');
@@ -1259,8 +1304,7 @@
   const resultModal = document.getElementById('resultModal');
   const resultLabel = document.getElementById('resultLabel');
   const resultText = document.getElementById('resultText');
-  const resultBarLeft = document.getElementById('resultBarLeft');
-  const resultBarRight = document.getElementById('resultBarRight');
+  const winnerGlow = document.getElementById('winnerGlow');
   const resultActions = document.getElementById('resultActions');
   const confirmModal = document.getElementById('confirmModal');
   const autoDistributeModal = document.getElementById('autoDistributeModal');
@@ -1406,7 +1450,7 @@
     });
   }
 
-  // ---------- ФОН (УЛУЧШЕННЫЙ) ----------
+  // ---------- ФОН ----------
   const bgCanvas = document.getElementById('bgCanvas');
   const bgCtx = bgCanvas.getContext('2d');
   let bgParticles = [];
@@ -1418,7 +1462,6 @@
     bgW = bgCanvas.width = window.innerWidth;
     bgH = bgCanvas.height = window.innerHeight;
 
-    // Частицы
     bgParticles = [];
     const count = Math.min(110, Math.floor((bgW * bgH) / 18000));
     for (let i = 0; i < count; i++) {
@@ -1434,7 +1477,6 @@
       });
     }
 
-    // Туманности
     bgNebulae = [];
     for (let i = 0; i < 5; i++) {
       bgNebulae.push({
@@ -1452,7 +1494,6 @@
   function drawBg() {
     bgTime += 0.005;
 
-    // Базовый градиент фона
     const grad = bgCtx.createRadialGradient(bgW/2, bgH/2, 0, bgW/2, bgH/2, Math.max(bgW, bgH) * 0.75);
     grad.addColorStop(0, '#141420');
     grad.addColorStop(0.5, '#0d0d14');
@@ -1460,7 +1501,6 @@
     bgCtx.fillStyle = grad;
     bgCtx.fillRect(0, 0, bgW, bgH);
 
-    // Туманности (мягкие цветные пятна)
     bgCtx.globalCompositeOperation = 'lighter';
     bgNebulae.forEach(n => {
       n.x += n.vx;
@@ -1481,7 +1521,6 @@
     });
     bgCtx.globalCompositeOperation = 'source-over';
 
-    // Частицы
     bgParticles.forEach(p => {
       p.x += p.vx;
       p.y += p.vy;
@@ -1497,7 +1536,6 @@
       bgCtx.fillStyle = `hsla(${p.hue}, 70%, 70%, ${pulseA})`;
       bgCtx.fill();
 
-      // Свечение вокруг крупных частиц
       if (p.r > 1.5) {
         const glowGrad = bgCtx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 6);
         glowGrad.addColorStop(0, `hsla(${p.hue}, 80%, 70%, ${pulseA * 0.3})`);
@@ -1509,7 +1547,6 @@
       }
     });
 
-    // Связи между частицами
     for (let i = 0; i < bgParticles.length; i++) {
       for (let j = i + 1; j < bgParticles.length; j++) {
         const dx = bgParticles[i].x - bgParticles[j].x;
@@ -1527,7 +1564,6 @@
       }
     }
 
-    // Плавающие светящиеся линии (энергия)
     bgCtx.globalCompositeOperation = 'lighter';
     for (let k = 0; k < 3; k++) {
       const t = bgTime + k * 2.1;
@@ -1602,12 +1638,16 @@
     const variants = state.variants;
     if (!variants.length) return;
 
-    let total = variants.reduce((a, v) => a + (Number(v.percent) || 0), 0);
+    // ★ Только варианты с > 0% рисуются на колесе
+    const visibleVariants = variants.filter(v => (Number(v.percent) || 0) > 0);
+    if (!visibleVariants.length) return;
+
+    let total = visibleVariants.reduce((a, v) => a + (Number(v.percent) || 0), 0);
     if (total <= 0) total = 100;
 
     let start = rotationAngle;
 
-    variants.forEach((v) => {
+    visibleVariants.forEach((v) => {
       const percent = Number(v.percent) || 0;
       const angle = (percent / total) * Math.PI * 2;
       const end = start + angle;
@@ -1636,18 +1676,23 @@
       const lightBg = isLightColor(v.color);
       ctx.fillStyle = lightBg ? '#000000' : '#ffffff';
 
-      const baseFont = 56 - variants.length * 1.6;
+      const baseFont = 56 - visibleVariants.length * 1.6;
       const fontSize = Math.max(22, Math.min(48, baseFont));
       ctx.font = `800 ${fontSize}px Inter, sans-serif`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.shadowColor = lightBg ? 'rgba(255,255,255,0.75)' : 'rgba(0,0,0,0.75)';
-      ctx.shadowBlur = 8;
 
+      // ★ Усиленная тень за буквами — чтобы текст чётко виднелся
+      ctx.shadowColor = lightBg ? 'rgba(255,255,255,0.95)' : 'rgba(0,0,0,0.95)';
+      ctx.shadowBlur = 10;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 0;
+      // Двойная отрисовка для более сильной тени
       let name = v.name || '';
       if (name.length > MAX_NAME_LENGTH) {
         name = name.slice(0, MAX_NAME_LENGTH - 1) + '…';
       }
+      ctx.fillText(name, 0, 0);
       ctx.fillText(name, 0, 0);
       ctx.restore();
 
@@ -1710,6 +1755,7 @@
         if (val > 100) val = 100;
         v.percent = Math.round(val * 10) / 10;
         updateSumIndicator();
+        drawWheel();
       });
       pct.addEventListener('change', () => {
         sanitizePercents();
@@ -1744,10 +1790,11 @@
     });
     attachSounds(variantListEl);
     updateSumIndicator();
+    updateVariantCounter();
   }
 
   function updateControlsState() {
-    addVariantBtn.disabled = isSpinning || state.variants.length >= 15;
+    addVariantBtn.disabled = isSpinning || state.variants.length >= MAX_VARIANTS;
     autoDistributeBtn.disabled = isSpinning;
     clearAllBtn.disabled = isSpinning;
     modeBtns.forEach(b => b.disabled = isSpinning);
@@ -1796,7 +1843,7 @@
   }
 
   function getSegmentUnderPointer(angle) {
-    const variants = state.variants;
+    const variants = state.variants.filter(v => (Number(v.percent) || 0) > 0);
     if (!variants.length) return -1;
     let total = variants.reduce((a, v) => a + (Number(v.percent) || 0), 0);
     if (total <= 0) total = 100;
@@ -1807,10 +1854,10 @@
     let cum = 0;
     for (let i = 0; i < variants.length; i++) {
       const segAngle = ((Number(variants[i].percent) || 0) / total) * Math.PI * 2;
-      if (rel < cum + segAngle) return i;
+      if (rel < cum + segAngle) return state.variants.indexOf(variants[i]);
       cum += segAngle;
     }
-    return variants.length - 1;
+    return state.variants.indexOf(variants[variants.length - 1]);
   }
 
   function getPatternPosition() {
@@ -1845,6 +1892,9 @@
   function spin() {
     if (isSpinning) return;
     if (state.variants.length === 0) return;
+    // Проверяем, что есть варианты с > 0%
+    const visible = state.variants.filter(v => (Number(v.percent) || 0) > 0);
+    if (!visible.length) return;
 
     initAudio();
     isSpinning = true;
@@ -1853,28 +1903,27 @@
     updateControlsState();
     renderVariantList();
 
-    const variants = state.variants;
-    const totalPct = variants.reduce((a, v) => a + (Number(v.percent) || 0), 0);
+    const totalPct = visible.reduce((a, v) => a + (Number(v.percent) || 0), 0);
 
     let effectiveTotal = totalPct;
-    if (effectiveTotal <= 0) effectiveTotal = variants.length;
+    if (effectiveTotal <= 0) effectiveTotal = visible.length;
 
     const rand = Math.random() * effectiveTotal;
     let cum = 0;
-    let plannedWinner = variants.length - 1;
-    for (let i = 0; i < variants.length; i++) {
-      const w = totalPct > 0 ? (Number(variants[i].percent) || 0) : 1;
+    let plannedWinner = visible.length - 1;
+    for (let i = 0; i < visible.length; i++) {
+      const w = totalPct > 0 ? (Number(visible[i].percent) || 0) : 1;
       cum += w;
       if (rand < cum) { plannedWinner = i; break; }
     }
 
-    const denom = totalPct > 0 ? totalPct : variants.length;
+    const denom = totalPct > 0 ? totalPct : visible.length;
     let segStart = 0;
     for (let i = 0; i < plannedWinner; i++) {
-      const w = totalPct > 0 ? (Number(variants[i].percent) || 0) : 1;
+      const w = totalPct > 0 ? (Number(visible[i].percent) || 0) : 1;
       segStart += (w / denom) * Math.PI * 2;
     }
-    const winnerWeight = totalPct > 0 ? (Number(variants[plannedWinner].percent) || 0) : 1;
+    const winnerWeight = totalPct > 0 ? (Number(visible[plannedWinner].percent) || 0) : 1;
     const segSize = (winnerWeight / denom) * Math.PI * 2;
 
     const inside = getPatternPosition();
@@ -1896,7 +1945,7 @@
       rotationAngle = endAngle;
       drawWheel();
       const realWinner = getSegmentUnderPointer(rotationAngle);
-      finishSpin(realWinner >= 0 ? realWinner : plannedWinner);
+      finishSpin(realWinner >= 0 ? realWinner : state.variants.indexOf(visible[plannedWinner]));
       return;
     }
 
@@ -1922,14 +1971,13 @@
         playClack();
         shakePointer();
         const realWinner = getSegmentUnderPointer(rotationAngle);
-        finishSpin(realWinner >= 0 ? realWinner : plannedWinner);
+        finishSpin(realWinner >= 0 ? realWinner : state.variants.indexOf(visible[plannedWinner]));
       }
     }
 
     spinAnimId = requestAnimationFrame(animate);
   }
 
-  // ★ Отмена прокрута с прикольной анимацией
   function cancelSpin() {
     if (!isSpinning) return;
     spinCancelled = true;
@@ -1938,22 +1986,18 @@
       spinAnimId = null;
     }
 
-    // Отключаем кнопку отмены сразу
     cancelSpinBtn.disabled = true;
     cancelSpinBtn.classList.remove('visible');
 
-    // Возвращаем колесо в исходное положение с пружинистой анимацией
     const startAngle = rotationAngle;
     const targetAngle = INITIAL_ROTATION;
 
-    // Находим ближайший эквивалентный угол, чтобы не было лишних оборотов
     const fullTurns = Math.round((startAngle - targetAngle) / (Math.PI * 2));
     const targetAngleNear = targetAngle + fullTurns * Math.PI * 2;
 
     const duration = 900;
     const startTime = performance.now();
 
-    // Пружинистая easing-функция
     function springEase(t) {
       if (t === 0) return 0;
       if (t === 1) return 1;
@@ -1985,7 +2029,6 @@
         playClack();
         shakePointer();
 
-        // Завершаем спин без показа результата
         isSpinning = false;
         spinBtn.disabled = false;
         updateControlsState();
@@ -2011,14 +2054,14 @@
     resultLabel.textContent = isEliminate ? 'Выбывает' : 'Победитель';
     resultText.textContent = winner.name;
     resultText.style.color = winner.color;
-    // ★ Убираем глоу за текстом, оставляем полоски
     resultText.style.textShadow = 'none';
 
-    // ★ Полоски слева и справа от победителя
-    resultBarLeft.style.background = `linear-gradient(180deg, ${winner.color}, ${winner.color}88)`;
-    resultBarLeft.style.boxShadow = `0 0 12px ${winner.color}, 0 0 24px ${winner.color}66`;
-    resultBarRight.style.background = `linear-gradient(180deg, ${winner.color}88, ${winner.color})`;
-    resultBarRight.style.boxShadow = `0 0 12px ${winner.color}, 0 0 24px ${winner.color}66`;
+    // ★ Свечение победителя на фоне рамки (за модалкой)
+    winnerGlow.style.background = `radial-gradient(circle at center, ${winner.color}, transparent 70%)`;
+    winnerGlow.style.opacity = '0';
+    // Форсируем reflow, чтобы transition сработал
+    void winnerGlow.offsetWidth;
+    winnerGlow.style.opacity = '0.55';
 
     resultText.style.animation = 'none';
     void resultText.offsetWidth;
@@ -2048,10 +2091,7 @@
           resultText.textContent = last.name;
           resultText.style.color = last.color;
           resultText.style.textShadow = 'none';
-          resultBarLeft.style.background = `linear-gradient(180deg, ${last.color}, ${last.color}88)`;
-          resultBarLeft.style.boxShadow = `0 0 12px ${last.color}, 0 0 24px ${last.color}66`;
-          resultBarRight.style.background = `linear-gradient(180deg, ${last.color}88, ${last.color})`;
-          resultBarRight.style.boxShadow = `0 0 12px ${last.color}, 0 0 24px ${last.color}66`;
+          winnerGlow.style.background = `radial-gradient(circle at center, ${last.color}, transparent 70%)`;
           resultText.style.animation = 'none';
           void resultText.offsetWidth;
           resultText.style.animation = '';
@@ -2090,7 +2130,7 @@
 
   addVariantBtn.addEventListener('click', () => {
     if (isSpinning) return;
-    if (state.variants.length >= 15) return;
+    if (state.variants.length >= MAX_VARIANTS) return;
     const used = state.variants.length;
     const sum = getSum();
     let newPercent = 0;
@@ -2261,6 +2301,7 @@
     modeBtns.forEach(b => b.classList.toggle('active', b.dataset.mode === state.mode));
     attachSounds(document);
     updateControlsState();
+    updateVariantCounter();
     initBg();
     drawBg();
   }
