@@ -6,6 +6,7 @@
 <title>Колесо</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23141414' stroke='%23333' stroke-width='2'/%3E%3Cpath d='M32 6 L32 32 L54 20 Z' fill='%23e74c3c'/%3E%3Cpath d='M32 32 L54 20 A26 26 0 0 1 54 44 Z' fill='%23f1c40f'/%3E%3Cpath d='M32 32 L54 44 A26 26 0 0 1 32 58 Z' fill='%233498db'/%3E%3Cpath d='M32 32 L32 58 A26 26 0 0 1 10 44 Z' fill='%232ecc71'/%3E%3Cpath d='M32 32 L10 44 A26 26 0 0 1 10 20 Z' fill='%239b59b6'/%3E%3Cpath d='M32 32 L10 20 A26 26 0 0 1 32 6 Z' fill='%23e67e22'/%3E%3Ccircle cx='32' cy='32' r='6' fill='%230a0a0a' stroke='%23333' stroke-width='2'/%3E%3C/svg%3E">
 <style>
+  /* === КЛАССИЧЕСКИЙ ДИЗАЙН, БЕЗ СИЛЬНЫХ ЗАКРУГЛЕНИЙ === */
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
@@ -17,7 +18,7 @@
     --text: #e8e8e8;
     --text-dim: #888;
     --text-dim-2: #666;
-    --anim-speed: 1;
+    --radius: 2px; /* Минимальные скругления */
   }
 
   html, body {
@@ -99,12 +100,6 @@
     align-items: stretch;
     position: relative;
     z-index: 1;
-    animation: appIn 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-  }
-
-  @keyframes appIn {
-    from { opacity: 0; transform: translateY(20px) scale(0.97); }
-    to { opacity: 1; transform: translateY(0) scale(1); }
   }
 
   .wheel-area {
@@ -154,13 +149,7 @@
     user-select: none;
     transition: filter 0.25s ease, transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
     margin-top: 20px;
-    animation: wheelEnter 0.8s cubic-bezier(0.22, 1, 0.36, 1);
     will-change: transform;
-  }
-
-  @keyframes wheelEnter {
-    from { opacity: 0; transform: scale(0.85) rotate(-15deg); }
-    to { opacity: 1; transform: scale(1) rotate(0); }
   }
 
   .wheel-outer:hover { filter: brightness(1.08); transform: scale(1.015); }
@@ -234,7 +223,7 @@
     padding: 16px 60px;
     background: #1c1c1c;
     border: 1px solid #333;
-    border-radius: 14px;
+    border-radius: var(--radius);
     color: #fff;
     font-size: 18px;
     font-weight: 700;
@@ -281,7 +270,7 @@
     padding: 12px 40px;
     background: #2a1515;
     border: 1px solid #4a2020;
-    border-radius: 12px;
+    border-radius: var(--radius);
     color: #ff8888;
     font-size: 14px;
     font-weight: 700;
@@ -317,18 +306,13 @@
     flex-shrink: 0;
     background: var(--panel);
     border: 1px solid var(--border);
-    border-radius: 16px;
+    border-radius: var(--radius);
     padding: 14px;
     display: flex;
     flex-direction: column;
     gap: 10px;
     overflow: hidden;
     transition: border-color 0.25s ease, box-shadow 0.25s ease;
-    animation: panelIn 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.15s both;
-  }
-  @keyframes panelIn {
-    from { opacity: 0; transform: translateX(30px); }
-    to { opacity: 1; transform: translateX(0); }
   }
   .side-panel:hover { border-color: #2e2e2e; box-shadow: 0 0 40px rgba(255,255,255,0.02); }
 
@@ -344,7 +328,7 @@
     padding: 6px 10px;
     background: transparent;
     border: 1px solid #2a2a2a;
-    border-radius: 7px;
+    border-radius: var(--radius);
     color: var(--text-dim);
     font-size: 11px;
     font-weight: 500;
@@ -368,7 +352,7 @@
     gap: 4px;
     background: var(--panel-2);
     padding: 3px;
-    border-radius: 9px;
+    border-radius: var(--radius);
     border: 1px solid var(--border);
   }
   .mode-btn {
@@ -376,7 +360,7 @@
     padding: 7px 6px;
     background: transparent;
     border: none;
-    border-radius: 6px;
+    border-radius: var(--radius);
     color: var(--text-dim);
     font-size: 12px;
     font-weight: 500;
@@ -418,7 +402,7 @@
     font-size: 10px;
     background: #1a1a1a;
     padding: 2px 7px;
-    border-radius: 6px;
+    border-radius: var(--radius);
     border: 1px solid #262626;
     transition: transform 0.25s ease;
   }
@@ -463,15 +447,9 @@
     gap: 6px;
     background: var(--panel-2);
     padding: 5px 6px;
-    border-radius: 10px;
+    border-radius: var(--radius);
     border: 1px solid var(--border);
     transition: border-color 0.2s ease, transform 0.2s ease;
-    animation: rowIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
-    will-change: transform;
-  }
-  @keyframes rowIn {
-    from { opacity: 0; transform: translateX(-12px); }
-    to { opacity: 1; transform: translateX(0); }
   }
 
   .variant-row:hover {
@@ -509,7 +487,7 @@
     border: 1px solid #2a2a2a;
     color: var(--text);
     padding: 6px 10px;
-    border-radius: 7px;
+    border-radius: var(--radius);
     font-size: 12px;
     font-family: inherit;
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
@@ -523,7 +501,7 @@
     border: 1px solid #2a2a2a;
     color: #d0d0d0;
     padding: 6px 4px;
-    border-radius: 7px;
+    border-radius: var(--radius);
     font-size: 12px;
     text-align: center;
     font-weight: 600;
@@ -536,7 +514,7 @@
   .v-remove {
     width: 26px;
     height: 26px;
-    border-radius: 6px;
+    border-radius: var(--radius);
     background: transparent;
     border: 1px solid #2a2a2a;
     color: #666;
@@ -569,7 +547,7 @@
     justify-content: center;
     gap: 8px;
     padding: 9px 12px;
-    border-radius: 9px;
+    border-radius: var(--radius);
     font-size: 12px;
     font-weight: 500;
     font-family: inherit;
@@ -620,6 +598,7 @@
     color: #aaffaa;
   }
 
+  /* === ОВЕРЛЕИ === */
   .overlay {
     position: fixed;
     inset: 0;
@@ -642,7 +621,7 @@
   .modal {
     background: #141414;
     border: 1px solid #2a2a2a;
-    border-radius: 18px;
+    border-radius: var(--radius);
     padding: 28px 32px;
     max-width: 460px;
     width: 100%;
@@ -650,11 +629,6 @@
     box-shadow: 0 30px 80px rgba(0,0,0,0.9);
     position: relative;
     overflow: hidden;
-    animation: modalIn 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-  }
-  @keyframes modalIn {
-    from { opacity: 0; transform: scale(0.9) translateY(20px); }
-    to { opacity: 1; transform: scale(1) translateY(0); }
   }
 
   .modal.winner-modal {
@@ -698,12 +672,6 @@
     position: relative;
     z-index: 1;
     text-shadow: 0 2px 12px rgba(0,0,0,0.95), 0 4px 24px rgba(0,0,0,0.8), 0 0 40px rgba(0,0,0,0.6);
-    animation: resultPop 0.5s cubic-bezier(0.22, 1, 0.36, 1);
-  }
-  @keyframes resultPop {
-    0% { transform: scale(0.5); opacity: 0; }
-    60% { transform: scale(1.1); opacity: 1; }
-    100% { transform: scale(1); opacity: 1; }
   }
 
   .modal-actions {
@@ -715,32 +683,73 @@
 
   .modal-actions .btn { flex: 1; padding: 12px; font-size: 13px; }
 
-  .settings-modal {
-    text-align: left;
-    max-width: 520px;
-    max-height: 90vh;
+  /* === НАСТРОЙКИ (ВЫЕЗЖАЮЩАЯ ПАНЕЛЬ СПРАВА) === */
+  .settings-panel {
+    position: fixed;
+    top: 0;
+    right: -460px;
+    width: 440px;
+    height: 100vh;
+    background: #141414;
+    border-left: 1px solid #2a2a2a;
+    z-index: 1100;
+    display: flex;
+    flex-direction: column;
+    transition: right 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    box-shadow: -20px 0 60px rgba(0,0,0,0.7);
+  }
+  .settings-panel.open {
+    right: 0;
+  }
+
+  .settings-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 20px;
+    border-bottom: 1px solid #222;
+    flex-shrink: 0;
+  }
+  .settings-header h2 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+    letter-spacing: 0.5px;
+  }
+  .settings-close {
+    width: 32px;
+    height: 32px;
+    background: transparent;
+    border: 1px solid #2a2a2a;
+    border-radius: var(--radius);
+    color: #888;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    line-height: 1;
+    padding: 0;
+  }
+  .settings-close:hover {
+    background: #2a1515;
+    border-color: #4a2020;
+    color: #ff6b6b;
+    transform: scale(1.1);
+  }
+
+  .settings-body {
+    flex: 1;
     overflow-y: auto;
+    padding: 16px 20px;
   }
-  .settings-modal::-webkit-scrollbar { width: 5px; }
-  .settings-modal::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
-  .settings-modal h2 {
-    text-align: center;
-    margin-bottom: 22px;
-  }
+  .settings-body::-webkit-scrollbar { width: 4px; }
+  .settings-body::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
 
   .setting {
     margin-bottom: 18px;
-    animation: settingIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
-  .setting:nth-child(1) { animation-delay: 0.03s; }
-  .setting:nth-child(2) { animation-delay: 0.06s; }
-  .setting:nth-child(3) { animation-delay: 0.09s; }
-  .setting:nth-child(4) { animation-delay: 0.12s; }
-  .setting:nth-child(5) { animation-delay: 0.15s; }
-  .setting:nth-child(6) { animation-delay: 0.18s; }
-  @keyframes settingIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
   }
 
   .setting > label {
@@ -759,7 +768,7 @@
     justify-content: space-between;
     background: var(--panel-2);
     border: 1px solid var(--border);
-    border-radius: 9px;
+    border-radius: var(--radius);
     padding: 10px 14px;
     cursor: pointer;
     transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
@@ -775,7 +784,7 @@
     height: 18px;
     background: #0d0d0d;
     border: 1.5px solid #3a3a3a;
-    border-radius: 4px;
+    border-radius: var(--radius);
     position: relative;
     cursor: pointer;
     transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
@@ -789,7 +798,6 @@
   .switch-row input[type="checkbox"]:checked {
     background: #3a6a3a;
     border-color: #5a8a5a;
-    transform: scale(1.1) rotate(360deg);
   }
 
   .switch-row input[type="checkbox"]:checked::after {
@@ -827,70 +835,64 @@
     border: 1px solid #2a2a2a;
     color: #fff;
     padding: 10px 14px;
-    border-radius: 9px;
+    border-radius: var(--radius);
     font-size: 13px;
     font-family: inherit;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
   }
   .setting select:focus,
   .setting input[type="text"]:focus {
     outline: none;
     border-color: #555;
     box-shadow: 0 0 0 3px rgba(255,255,255,0.05);
-    transform: scale(1.01);
   }
 
   .hint {
     font-size: 11px;
     color: #666;
     margin-top: 5px;
-    transition: color 0.3s ease;
   }
 
-  .emoji-picker-btn {
+  /* === ГИФКИ (ВЫБОР) === */
+  .gif-picker {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    max-height: 280px;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+  .gif-picker::-webkit-scrollbar { width: 4px; }
+  .gif-picker::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+
+  .gif-item {
+    aspect-ratio: 1 / 1;
+    background: #1a1a1a;
+    border: 1px solid #262626;
+    border-radius: var(--radius);
+    cursor: pointer;
+    overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
+    transition: border-color 0.2s ease, transform 0.2s ease;
+    position: relative;
+  }
+  .gif-item:hover {
+    border-color: #555;
+    transform: scale(1.05);
+    z-index: 2;
+  }
+  .gif-item video,
+  .gif-item img {
     width: 100%;
-    padding: 10px;
-    background: #0d0d0d;
-    border: 1px solid #2a2a2a;
-    border-radius: 9px;
-    color: #ccc;
-    font-size: 12px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-family: inherit;
-    margin-top: 6px;
-  }
-  .emoji-picker-btn:hover { background: #1a1a1a; border-color: #444; transform: translateY(-2px) scale(1.01); }
-  .emoji-picker-btn:active { transform: translateY(0) scale(0.98); }
-
-  .emoji-picker {
-    background: #141414;
-    border: 1px solid #2a2a2a;
-    border-radius: 14px;
-    padding: 14px;
-    max-width: 460px;
-    width: 100%;
-    max-height: 80vh;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    animation: modalIn 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    pointer-events: none;
   }
 
-  .emoji-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    color: #fff;
-    font-weight: 600;
-    font-size: 14px;
-  }
-
-  .emoji-upload {
+  .gif-upload {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -898,65 +900,69 @@
     padding: 12px;
     background: #0d0d0d;
     border: 1px dashed #3a3a3a;
-    border-radius: 10px;
+    border-radius: var(--radius);
     color: #8bc4ff;
     font-size: 13px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
     text-align: center;
+    margin-top: 8px;
   }
-  .emoji-upload:hover { background: #151515; border-color: #4a4a4a; transform: translateY(-2px); }
-  .emoji-upload input { display: none; }
+  .gif-upload:hover { background: #151515; border-color: #4a4a4a; }
+  .gif-upload input { display: none; }
 
-  .emoji-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 4px;
+  /* === МОДАЛКА СОХРАНЕНИЯ ИЗМЕНЕНИЙ === */
+  .save-changes-modal .modal {
+    text-align: left;
+    max-width: 520px;
+  }
+  .save-changes-modal .modal h2 {
+    text-align: center;
+  }
+  .changes-list {
+    background: #0d0d0d;
+    border: 1px solid #222;
+    border-radius: var(--radius);
+    padding: 12px;
+    margin: 16px 0;
+    max-height: 180px;
     overflow-y: auto;
-    padding-right: 4px;
-    max-height: 280px;
+    font-size: 12px;
+    color: #aaa;
+    line-height: 1.6;
   }
-  .emoji-grid::-webkit-scrollbar { width: 4px; }
-  .emoji-grid::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
-
-  .emoji-item {
-    aspect-ratio: 1 / 1;
+  .changes-list .change-item {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #1a1a1a;
-    border: 1px solid #262626;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 24px;
-    transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1);
-    overflow: hidden;
-    padding: 2px;
-    animation: emojiIn 0.3s ease both;
+    gap: 8px;
+    padding: 3px 0;
+    border-bottom: 1px solid #1a1a1a;
   }
-  @keyframes emojiIn {
-    from { opacity: 0; transform: scale(0.5); }
-    to { opacity: 1; transform: scale(1); }
+  .changes-list .change-item:last-child {
+    border-bottom: none;
   }
-  .emoji-item:hover {
-    background: #2a2a2a;
-    border-color: #444;
-    transform: scale(1.2) rotate(-8deg);
-    z-index: 2;
+  .changes-list .change-label {
+    color: #666;
+    flex-shrink: 0;
   }
-  .emoji-item:active { transform: scale(0.95); }
-
-  .emoji-footer {
-    font-size: 11px;
+  .changes-list .change-value {
+    color: #ddd;
+    word-break: break-word;
+  }
+  .changes-list .change-old {
+    color: #666;
+    text-decoration: line-through;
+    margin-right: 4px;
+  }
+  .changes-list .change-new {
+    color: #88ff88;
+  }
+  .changes-list .no-changes {
     color: #666;
     text-align: center;
-    padding-top: 6px;
-    border-top: 1px solid #222;
-    line-height: 1.5;
+    padding: 8px;
   }
 
-  /* === ПРЕСЕТЫ === */
   .preset-list {
     display: flex;
     flex-direction: column;
@@ -971,7 +977,7 @@
     padding: 10px 14px;
     background: #1a1a1a;
     border: 1px solid #2a2a2a;
-    border-radius: 9px;
+    border-radius: var(--radius);
     color: #e0e0e0;
     font-size: 13px;
     font-family: inherit;
@@ -979,11 +985,6 @@
     transition: all 0.2s ease;
     text-align: left;
     width: 100%;
-    animation: presetIn 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
-  @keyframes presetIn {
-    from { opacity: 0; transform: translateX(-15px); }
-    to { opacity: 1; transform: translateX(0); }
   }
   .preset-btn:hover {
     background: #222;
@@ -998,6 +999,12 @@
     margin-left: 8px;
   }
 
+  .preset-divider {
+    height: 1px;
+    background: #222;
+    margin: 12px 0;
+  }
+
   .preset-code-row {
     display: flex;
     gap: 6px;
@@ -1009,16 +1016,14 @@
     border: 1px solid #2a2a2a;
     color: #fff;
     padding: 10px 14px;
-    border-radius: 9px;
+    border-radius: var(--radius);
     font-size: 13px;
     font-family: 'Consolas', 'Courier New', monospace;
     letter-spacing: 0.5px;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
   }
   .preset-code-row input:focus {
     outline: none;
     border-color: #555;
-    box-shadow: 0 0 0 3px rgba(255,255,255,0.05);
   }
   .preset-code-row .btn {
     flex-shrink: 0;
@@ -1030,24 +1035,21 @@
   .custom-preset-form {
     background: #101010;
     border: 1px solid #222;
-    border-radius: 10px;
+    border-radius: var(--radius);
     padding: 12px;
     margin-top: 8px;
   }
-
   .custom-preset-form .form-row {
     display: flex;
     gap: 6px;
-    margin-bottom: 8px;
   }
-  .custom-preset-form .form-row:last-child { margin-bottom: 0; }
   .custom-preset-form input {
     flex: 1;
     background: #0d0d0d;
     border: 1px solid #2a2a2a;
     color: #fff;
     padding: 9px 12px;
-    border-radius: 8px;
+    border-radius: var(--radius);
     font-size: 12px;
     font-family: inherit;
   }
@@ -1074,15 +1076,9 @@
     gap: 6px;
     background: #151515;
     border: 1px solid #252525;
-    border-radius: 8px;
+    border-radius: var(--radius);
     padding: 7px 10px;
     font-size: 12px;
-    animation: presetIn 0.3s ease both;
-    transition: transform 0.2s ease, border-color 0.2s ease;
-  }
-  .custom-item:hover {
-    transform: translateX(4px);
-    border-color: #3a3a3a;
   }
   .custom-item .cname {
     flex: 1;
@@ -1101,7 +1097,7 @@
   .custom-item .cdel {
     flex-shrink: 0;
     padding: 5px 9px;
-    border-radius: 6px;
+    border-radius: var(--radius);
     font-size: 11px;
     cursor: pointer;
     border: 1px solid #2a2a2a;
@@ -1110,45 +1106,13 @@
     font-family: inherit;
     transition: all 0.18s ease;
   }
-  .custom-item .capply:hover { background: #1a2a1a; border-color: #2a5a2a; color: #88ff88; transform: scale(1.05); }
-  .custom-item .cdel:hover { background: #2a1515; border-color: #4a2020; color: #ff6b6b; transform: scale(1.05) rotate(90deg); }
-
-  .preset-divider {
-    height: 1px;
-    background: #222;
-    margin: 12px 0;
-  }
-
-  /* === СЛАБЫЕ УСТРОЙСТВА === */
-  body.perf-low * {
-    animation-duration: 0.01s !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.1s !important;
-  }
-  body.perf-low .logo { animation: none; }
-  body.perf-low .pointer { animation: none; }
-  body.perf-low .center-gif { animation: none; }
-  body.perf-low .spin-btn { animation: none; }
-  body.perf-low .winner-glow { animation: none; filter: blur(30px); }
-  body.perf-low .bg-canvas { opacity: 0.4; }
-  body.perf-low .modal,
-  body.perf-low .overlay,
-  body.perf-low .side-panel,
-  body.perf-low .variant-row,
-  body.perf-low .setting,
-  body.perf-low .emoji-item,
-  body.perf-low .preset-btn {
-    animation: none !important;
-  }
-
-  body.no-anim * {
-    animation: none !important;
-    transition: none !important;
-  }
-  body.no-anim .pointer { transform: translateX(-50%) !important; }
+  .custom-item .capply:hover { background: #1a2a1a; border-color: #2a5a2a; color: #88ff88; }
+  .custom-item .cdel:hover { background: #2a1515; border-color: #4a2020; color: #ff6b6b; }
 
   @media (max-width: 1100px) {
     .side-panel { width: 340px; }
+    .settings-panel { width: 380px; right: -400px; }
+    .settings-panel.open { right: 0; }
   }
 
   @media (max-width: 900px) {
@@ -1158,6 +1122,8 @@
     .wheel-outer { width: min(80vw, 500px); }
     .side-panel { width: 100%; }
     .logo { font-size: 20px; top: 14px; left: 14px; }
+    .settings-panel { width: 100%; right: -100%; }
+    .settings-panel.open { right: 0; }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -1285,6 +1251,7 @@
   </div>
 </div>
 
+<!-- === МОДАЛКА РЕЗУЛЬТАТА === -->
 <div class="overlay hidden" id="resultModal">
   <div class="modal winner-modal">
     <div class="winner-glow" id="winnerGlow"></div>
@@ -1296,6 +1263,7 @@
   </div>
 </div>
 
+<!-- === ПОДТВЕРЖДЕНИЕ ОЧИСТКИ === -->
 <div class="overlay hidden" id="confirmModal">
   <div class="modal">
     <h2>Очистить все варианты?</h2>
@@ -1309,6 +1277,7 @@
   </div>
 </div>
 
+<!-- === ПОДТВЕРЖДЕНИЕ АВТО-РАСПРЕДЕЛЕНИЯ === -->
 <div class="overlay hidden" id="autoDistributeModal">
   <div class="modal">
     <h2>Авто-распределение шанса?</h2>
@@ -1322,10 +1291,13 @@
   </div>
 </div>
 
-<div class="overlay hidden" id="settingsModal">
-  <div class="modal settings-modal">
+<!-- === НАСТРОЙКИ (ВЫЕЗЖАЮЩАЯ ПАНЕЛЬ) === -->
+<div class="settings-panel" id="settingsPanel">
+  <div class="settings-header">
     <h2>Настройки колеса</h2>
-
+    <button class="settings-close" id="closeSettingsBtn">✕</button>
+  </div>
+  <div class="settings-body">
     <div class="setting">
       <label>Звук</label>
       <label class="switch-row">
@@ -1405,46 +1377,39 @@
     </div>
     <!-- === /ПРЕСЕТЫ === -->
 
+    <!-- === ГИФКА ПО ЦЕНТРУ (НОВЫЙ ВЫБОР) === -->
     <div class="setting">
       <label>GIF / видео по центру (URL)</label>
       <input type="text" id="gifUrlInput" placeholder="https://...">
-      <button class="emoji-picker-btn" id="openEmojiBtn">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="10"></circle>
-          <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
-          <line x1="9" y1="9" x2="9.01" y2="9"></line>
-          <line x1="15" y1="9" x2="15.01" y2="9"></line>
-        </svg>
-        Выбрать смайлик / гифку
-      </button>
       <div class="hint">Вставьте ссылку или выберите из галереи. Оставьте пустым, чтобы убрать.</div>
+      
+      <div style="margin-top: 8px;">
+        <label style="font-size:11px; color:#888; text-transform:uppercase; letter-spacing:0.8px; margin-bottom:7px; display:block;">Галерея GIF</label>
+        <div class="gif-picker" id="gifPicker"></div>
+      </div>
+      
+      <label class="gif-upload">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="17 8 12 3 7 8"></polyline>
+          <line x1="12" y1="3" x2="12" y2="15"></line>
+        </svg>
+        Загрузить свое изображение
+        <input type="file" id="gifFileInput" accept="image/*,video/mp4,video/webm">
+      </label>
     </div>
-
-    <button class="btn" id="closeSettingsBtn" style="width:100%; padding:12px; margin-top:8px;">Сохранить</button>
+    <!-- === /ГИФКА ПО ЦЕНТРУ === -->
   </div>
 </div>
 
-<div class="overlay hidden" id="emojiModal">
-  <div class="emoji-picker">
-    <div class="emoji-header">
-      <span>Выбор изображения</span>
-      <button class="btn" id="closeEmojiBtn" style="padding:4px 10px; font-size:11px;">Закрыть</button>
-    </div>
-
-    <label class="emoji-upload">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-        <polyline points="17 8 12 3 7 8"></polyline>
-        <line x1="12" y1="3" x2="12" y2="15"></line>
-      </svg>
-      Загрузить свое изображение
-      <input type="file" id="emojiFileInput" accept="image/*,video/mp4,video/webm">
-    </label>
-
-    <div class="emoji-grid" id="emojiGrid"></div>
-
-    <div class="emoji-footer">
-      Подключите Twitch, чтобы выбрать больше изображений в колесо (7TV, BTTV, FFZ)
+<!-- === МОДАЛКА СОХРАНЕНИЯ ИЗМЕНЕНИЙ === -->
+<div class="overlay hidden" id="saveChangesModal">
+  <div class="modal save-changes-modal">
+    <h2>Сохранить изменения?</h2>
+    <div class="changes-list" id="changesList"></div>
+    <div class="modal-actions">
+      <button class="btn btn-accent" id="saveChangesOk">Сохранить</button>
+      <button class="btn" id="saveChangesCancel">Не сохранять</button>
     </div>
   </div>
 </div>
@@ -1460,7 +1425,6 @@
     const cores = navigator.hardwareConcurrency || 2;
     const mem = navigator.deviceMemory || 2;
     const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    // Слабое, если: мобилка, или <=2 ядра, или мало памяти, или пользователь просил reduced
     return reduced || isMobile || cores <= 2 || mem <= 2;
   }
 
@@ -1473,7 +1437,6 @@
   const PARTICLE_LINK_DIST = LOW_PERF ? 90 : 150;
   const PARTICLE_LINK_DIST_SQ = PARTICLE_LINK_DIST * PARTICLE_LINK_DIST;
   const CUSTOM_PRESETS_KEY = 'fortuneWheelCustomPresets_v1';
-  const UNLOCKED_PRESETS_KEY = 'fortuneWheelUnlockedPresets_v1';
   const ANIM_TOGGLE_KEY = 'fortuneWheelAnimEnabled_v1';
 
   let state = {
@@ -1487,7 +1450,17 @@
     animEnabled: true
   };
 
-  // Встроенные пресеты (видны в списке)
+  // === ГИФКИ ПО ССЫЛКАМ ===
+  const GIF_URLS = [
+    'https://images-ext-1.discordapp.net/external/4raXiXhYJJkhWn_XVO5DkWmydUNNlaYfYW3ynfuRsvg/https/static.klipy.com/ii/4493325008d34b7bf8cd6813cd5c1619/c3/45/SlWo9mE6a25T2LuITbj.mp4',
+    'https://images-ext-1.discordapp.net/external/Osg5yLGGQeWrYc5INJY53Vdz5knaeqMwtVRFdmEcBNI/https/static.klipy.com/ii/8ce8357c78ea940b9c2015daf05ce1a5/07/7b/iwWtPgd1ZFxs5FQ1k0.mp4',
+    'https://cdn.discordapp.com/attachments/1499840717235687527/1555289701416706109/doc_2026-10-01_22-45-30.mp4?backend=b2&ex=6abffbe8&is=6abeaa68&hm=3cf6e367568dc864374473368734f76b384ba9b835607461c4d51d0d4bed3d84&',
+    'https://media.discordapp.net/attachments/1499840717235687527/1554519652766326815/7e2b01b4a6d4d0e528e827d3e2b7d09ea413b9b6_full.jpg?ex=6abfd1be&is=6abe803e&hm=da1912aba59b4deae50d778a6270f15385afc2c5bd7f337ae9730682a192b073&=&format=webp',
+    'https://cdn.discordapp.com/attachments/1499840717235687527/1555289928164843550/k21705779939.mp4?backend=b2&ex=6abffc1e&is=6abeaa9e&hm=f3e6da999007763e347673dd5c2a20d8af708eeb82409c857e547d4ef25397ae&',
+    'https://cdn.discordapp.com/attachments/1499840717235687527/1555290358307618886/clytemnestra-chihuahua.mp4?backend=b2&ex=6abffc85&is=6abeab05&hm=b1a014450d7a9956422e88346b0c34c6f0434f941b1bba172c4ca0e9dc56f093&'
+  ];
+
+  // === ВСТРОЕННЫЕ ПРЕСЕТЫ ===
   const BUILTIN_PRESETS = [
     {
       id: 'builtin_12345',
@@ -1512,7 +1485,7 @@
     }
   ];
 
-  // СЕКРЕТНЫЕ коды — НЕ показываются в списке, применяются только по коду
+  // === СЕКРЕТНЫЕ ПРЕСЕТЫ ===
   const SECRET_PRESET_CODES = {
     'ZV-INCREASE-PRESET-01-2': {
       id: 'secret_zv_increase_01_2',
@@ -1544,8 +1517,6 @@
     lightColorCache.set(hex, result);
     return result;
   }
-
-  const emojiSvgCache = new Map();
 
   function defaultVariants() {
     return [
@@ -1603,7 +1574,6 @@
     } catch (e) {
       state.variants = defaultVariants();
     }
-    // Анимации
     const savedAnim = localStorage.getItem(ANIM_TOGGLE_KEY);
     if (savedAnim === '0') state.animEnabled = false;
     else if (savedAnim === '1') state.animEnabled = true;
@@ -1682,7 +1652,7 @@
   const resultActions = document.getElementById('resultActions');
   const confirmModal = document.getElementById('confirmModal');
   const autoDistributeModal = document.getElementById('autoDistributeModal');
-  const settingsModal = document.getElementById('settingsModal');
+  const settingsPanel = document.getElementById('settingsPanel');
   const openSettingsBtn = document.getElementById('openSettingsBtn');
   const closeSettingsBtn = document.getElementById('closeSettingsBtn');
   const soundToggle = document.getElementById('soundToggle');
@@ -1692,16 +1662,15 @@
   const easingSelect = document.getElementById('easingSelect');
   const patternSelect = document.getElementById('patternSelect');
   const gifUrlInput = document.getElementById('gifUrlInput');
-  const emojiModal = document.getElementById('emojiModal');
-  const openEmojiBtn = document.getElementById('openEmojiBtn');
-  const closeEmojiBtn = document.getElementById('closeEmojiBtn');
-  const emojiFileInput = document.getElementById('emojiFileInput');
+  const gifPicker = document.getElementById('gifPicker');
+  const gifFileInput = document.getElementById('gifFileInput');
+  const saveChangesModal = document.getElementById('saveChangesModal');
+  const changesList = document.getElementById('changesList');
   const pointerEl = document.getElementById('pointer');
 
   // ---------- АУДИО ----------
   let audioCtx = null;
   let isSpinning = false;
-  let soundThrottle = 0;
 
   function initAudio() {
     if (!audioCtx) {
@@ -1712,23 +1681,17 @@
 
   function playTick() {
     if (!state.soundEnabled || !audioCtx) return;
-    // Троттлинг тиков на слабых устройствах
-    if (LOW_PERF) {
-      const now = performance.now();
-      if (now - soundThrottle < 60) return;
-      soundThrottle = now;
-    }
     try {
       const osc = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
       osc.type = 'square';
-      osc.frequency.value = 1500;
-      gain.gain.setValueAtTime(0.02, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.025);
+      osc.frequency.value = 1200;
+      gain.gain.setValueAtTime(0.015, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.02);
       osc.connect(gain);
       gain.connect(audioCtx.destination);
       osc.start();
-      osc.stop(audioCtx.currentTime + 0.03);
+      osc.stop(audioCtx.currentTime + 0.025);
     } catch(e) {}
   }
 
@@ -1746,24 +1709,6 @@
       gain.connect(audioCtx.destination);
       osc.start();
       osc.stop(audioCtx.currentTime + 0.1);
-    } catch(e) {}
-  }
-
-  function playHover() {
-    if (!state.soundEnabled || !audioCtx) return;
-    if (LOW_PERF) return; // на слабых не играем hover
-    try {
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(1100, audioCtx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(1500, audioCtx.currentTime + 0.04);
-      gain.gain.setValueAtTime(0.014, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.06);
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-      osc.start();
-      osc.stop(audioCtx.currentTime + 0.07);
     } catch(e) {}
   }
 
@@ -1820,16 +1765,11 @@
   }
 
   function attachSounds(root) {
-    (root || document).querySelectorAll('button, .mode-btn, .btn, .btn-settings, .v-remove, .switch-row, .emoji-item, .emoji-upload, .emoji-picker-btn, .preset-btn, .custom-item button').forEach(el => {
+    (root || document).querySelectorAll('button, .mode-btn, .btn, .btn-settings, .v-remove, .switch-row, .gif-item, .gif-upload, .preset-btn, .custom-item button, .settings-close').forEach(el => {
       if (el.dataset.soundAttached) return;
       el.dataset.soundAttached = '1';
-      el.addEventListener('mouseenter', () => { initAudio(); playHover(); });
+      el.addEventListener('mouseenter', () => { initAudio(); });
       el.addEventListener('click', () => { initAudio(); playClick(); });
-      el.addEventListener('mousemove', (e) => {
-        const rect = el.getBoundingClientRect();
-        el.style.setProperty('--mx', ((e.clientX - rect.left) / rect.width * 100) + '%');
-        el.style.setProperty('--my', ((e.clientY - rect.top) / rect.height * 100) + '%');
-      });
     });
   }
 
@@ -1957,7 +1897,6 @@
       bgCtx.fill();
     }
 
-    // Связи — только если не reduced
     if (!bgReduced) {
       const linkableParticles = bgParticles;
       for (let i = 0; i < linkableParticles.length; i++) {
@@ -2006,7 +1945,7 @@
     bgPaused = document.hidden;
   });
 
-  // ---------- АНИМАЦИЯ ПОКАЧИВАНИЯ СТРЕЛКИ ----------
+  // ---------- АНИМАЦИЯ СТРЕЛКИ ----------
   let pointerAnimId = null;
 
   function shakePointer() {
@@ -2137,7 +2076,6 @@
     state.variants.forEach((v, i) => {
       const row = document.createElement('div');
       row.className = 'variant-row';
-      if (state.animEnabled && !LOW_PERF) row.style.animationDelay = (i * 0.03) + 's';
 
       const dot = document.createElement('input');
       dot.type = 'color';
@@ -2149,11 +2087,6 @@
         v.color = e.target.value;
         saveState();
         drawWheel();
-      });
-      dot.addEventListener('click', (e) => {
-        if (isSpinning) e.preventDefault();
-        initAudio();
-        playClick();
       });
 
       const name = document.createElement('input');
@@ -2487,12 +2420,6 @@
     void winnerGlow.offsetWidth;
     winnerGlow.style.opacity = '0.55';
 
-    if (state.animEnabled && !LOW_PERF) {
-      resultText.style.animation = 'none';
-      void resultText.offsetWidth;
-      resultText.style.animation = '';
-    }
-
     resultActions.innerHTML = '';
     if (isEliminate) {
       const btn = document.createElement('button');
@@ -2518,11 +2445,6 @@
           resultText.style.color = last.color;
           resultText.style.textShadow = '0 2px 12px rgba(0,0,0,0.95), 0 4px 24px rgba(0,0,0,0.8), 0 0 40px rgba(0,0,0,0.6)';
           winnerGlow.style.background = `radial-gradient(circle at center, ${last.color}, transparent 70%)`;
-          if (state.animEnabled && !LOW_PERF) {
-            resultText.style.animation = 'none';
-            void resultText.offsetWidth;
-            resultText.style.animation = '';
-          }
           resultActions.innerHTML = '';
           const closeBtn = document.createElement('button');
           closeBtn.className = 'btn';
@@ -2579,13 +2501,11 @@
     list.innerHTML = '';
     const all = getAllVisiblePresets();
 
-    all.forEach((p, idx) => {
+    all.forEach((p) => {
       const btn = document.createElement('button');
       btn.className = 'preset-btn';
-      if (state.animEnabled && !LOW_PERF) btn.style.animationDelay = (idx * 0.05) + 's';
       btn.innerHTML = `<span>${escapeHtml(p.name)}<span class="preset-desc">${escapeHtml(p.desc || '')}</span></span>`;
 
-      // Удаление для кастомных
       if (p.isCustom) {
         const del = document.createElement('span');
         del.textContent = '✕';
@@ -2719,7 +2639,6 @@
       return;
     }
 
-    // Ищем в секретных кодах (регистронезависимо)
     let found = null;
     for (const key in SECRET_PRESET_CODES) {
       if (key.toUpperCase() === code) {
@@ -2738,7 +2657,6 @@
       return;
     }
 
-    // Применяем (в список НЕ добавляем — код секретный)
     applyPreset(found);
 
     hint.textContent = '✓ Пресет «' + found.name + '» применён!';
@@ -2751,11 +2669,60 @@
     }, 2500);
   }
 
+  // ---------- ГИФКИ В ГАЛЕРЕЕ ----------
+  function renderGifPicker() {
+    gifPicker.innerHTML = '';
+    GIF_URLS.forEach((url, idx) => {
+      const item = document.createElement('div');
+      item.className = 'gif-item';
+      item.dataset.url = url;
+
+      const isVideo = /\.(mp4|webm|ogg)(\?.*)?$/i.test(url);
+      if (isVideo) {
+        const video = document.createElement('video');
+        video.src = url;
+        video.muted = true;
+        video.loop = true;
+        video.autoplay = true;
+        video.playsInline = true;
+        video.preload = 'metadata';
+        video.onerror = () => { item.innerHTML = '<div style="color:#555;font-size:11px;text-align:center;padding:8px;">Ошибка<br>загрузки</div>'; };
+        item.appendChild(video);
+      } else {
+        const img = document.createElement('img');
+        img.src = url;
+        img.alt = 'GIF ' + (idx + 1);
+        img.loading = 'lazy';
+        img.onerror = () => { item.innerHTML = '<div style="color:#555;font-size:11px;text-align:center;padding:8px;">Ошибка<br>загрузки</div>'; };
+        item.appendChild(img);
+      }
+
+      item.addEventListener('click', () => {
+        state.gifUrl = url;
+        gifUrlInput.value = url;
+        updateCenterGif();
+        // Подсветка выбранного
+        gifPicker.querySelectorAll('.gif-item').forEach(el => el.style.borderColor = '');
+        item.style.borderColor = '#88ff88';
+        item.style.boxShadow = '0 0 0 2px rgba(136,255,136,0.3)';
+        setTimeout(() => {
+          item.style.borderColor = '';
+          item.style.boxShadow = '';
+        }, 1200);
+      });
+
+      gifPicker.appendChild(item);
+    });
+
+    attachSounds(gifPicker);
+  }
+
   // ---------- ОБРАБОТЧИКИ ----------
   spinBtn.addEventListener('click', spin);
   cancelSpinBtn.addEventListener('click', cancelSpin);
   wheelOuter.addEventListener('click', () => {
     if (isSpinning) return;
+    if (settingsPanel.classList.contains('open')) return;
     initAudio();
     playClick();
     spin();
@@ -2835,6 +2802,73 @@
     btn.addEventListener('click', () => setMode(btn.dataset.mode));
   });
 
+  // === НАСТРОЙКИ (ВЫЕЗЖАЮЩАЯ ПАНЕЛЬ) ===
+  let settingsSnapshot = null;
+
+  function takeSettingsSnapshot() {
+    return {
+      soundEnabled: soundToggle.checked,
+      animEnabled: animToggle.checked,
+      spinDuration: Number(spinTimeRange.value),
+      easing: easingSelect.value,
+      pattern: patternSelect.value,
+      gifUrl: gifUrlInput.value.trim()
+    };
+  }
+
+  function getChanges(oldSnap, newSnap) {
+    const changes = [];
+    if (oldSnap.soundEnabled !== newSnap.soundEnabled) {
+      changes.push({
+        label: 'Звук',
+        old: oldSnap.soundEnabled ? 'Вкл' : 'Выкл',
+        new: newSnap.soundEnabled ? 'Вкл' : 'Выкл'
+      });
+    }
+    if (oldSnap.animEnabled !== newSnap.animEnabled) {
+      changes.push({
+        label: 'Анимации',
+        old: oldSnap.animEnabled ? 'Вкл' : 'Выкл',
+        new: newSnap.animEnabled ? 'Вкл' : 'Выкл'
+      });
+    }
+    if (oldSnap.spinDuration !== newSnap.spinDuration) {
+      changes.push({
+        label: 'Время вращения',
+        old: oldSnap.spinDuration + ' сек',
+        new: newSnap.spinDuration + ' сек'
+      });
+    }
+    if (oldSnap.easing !== newSnap.easing) {
+      const map = { 'easeInOut': 'Плавно туда-обратно', 'easeOut': 'Плавное торможение', 'easeIn': 'Плавный разгон' };
+      changes.push({
+        label: 'Анимация',
+        old: map[oldSnap.easing] || oldSnap.easing,
+        new: map[newSnap.easing] || newSnap.easing
+      });
+    }
+    if (oldSnap.pattern !== newSnap.pattern) {
+      const map = {
+        'random': 'Случайный', 'center': 'По центру', 'edge': 'У границы',
+        'nearStart': 'Ближе к началу', 'nearEnd': 'Ближе к концу',
+        'full': 'По всему сегменту', 'middleOut': 'От центра к краям'
+      };
+      changes.push({
+        label: 'Паттерн',
+        old: map[oldSnap.pattern] || oldSnap.pattern,
+        new: map[newSnap.pattern] || newSnap.pattern
+      });
+    }
+    if (oldSnap.gifUrl !== newSnap.gifUrl) {
+      changes.push({
+        label: 'GIF по центру',
+        old: oldSnap.gifUrl ? oldSnap.gifUrl.slice(0, 30) + (oldSnap.gifUrl.length > 30 ? '…' : '') : 'Нет',
+        new: newSnap.gifUrl ? newSnap.gifUrl.slice(0, 30) + (newSnap.gifUrl.length > 30 ? '…' : '') : 'Нет'
+      });
+    }
+    return changes;
+  }
+
   openSettingsBtn.addEventListener('click', () => {
     if (isSpinning) return;
     soundToggle.checked = state.soundEnabled;
@@ -2846,19 +2880,44 @@
     gifUrlInput.value = state.gifUrl || '';
     renderPresetList();
     renderCustomList();
+    renderGifPicker();
     document.getElementById('presetHint').textContent = 'Введите код и нажмите «Применить».';
     document.getElementById('presetHint').style.color = '';
-    settingsModal.classList.remove('hidden');
+    settingsSnapshot = takeSettingsSnapshot();
+    settingsPanel.classList.add('open');
   });
 
   closeSettingsBtn.addEventListener('click', () => {
+    const currentSnap = takeSettingsSnapshot();
+    const changes = getChanges(settingsSnapshot, currentSnap);
+
+    if (changes.length > 0) {
+      // Показываем модалку сохранения
+      changesList.innerHTML = '';
+      if (changes.length === 0) {
+        changesList.innerHTML = '<div class="no-changes">Нет изменений</div>';
+      } else {
+        changes.forEach(c => {
+          const item = document.createElement('div');
+          item.className = 'change-item';
+          item.innerHTML = `<span class="change-label">${escapeHtml(c.label)}:</span>
+            <span class="change-value"><span class="change-old">${escapeHtml(c.old)}</span> → <span class="change-new">${escapeHtml(c.new)}</span></span>`;
+          changesList.appendChild(item);
+        });
+      }
+      saveChangesModal.classList.remove('hidden');
+    } else {
+      settingsPanel.classList.remove('open');
+    }
+  });
+
+  document.getElementById('saveChangesOk').addEventListener('click', () => {
     state.soundEnabled = soundToggle.checked;
     state.spinDuration = Number(spinTimeRange.value);
     state.easing = easingSelect.value;
     state.pattern = patternSelect.value;
     state.gifUrl = gifUrlInput.value.trim();
 
-    // Анимации
     state.animEnabled = animToggle.checked;
     try { localStorage.setItem(ANIM_TOGGLE_KEY, state.animEnabled ? '1' : '0'); } catch (e) {}
     document.body.classList.toggle('no-anim', !state.animEnabled);
@@ -2867,7 +2926,25 @@
 
     saveState();
     updateCenterGif();
-    settingsModal.classList.add('hidden');
+    saveChangesModal.classList.add('hidden');
+    settingsPanel.classList.remove('open');
+    settingsSnapshot = takeSettingsSnapshot();
+  });
+
+  document.getElementById('saveChangesCancel').addEventListener('click', () => {
+    // Откатываем настройки к снапшоту
+    if (settingsSnapshot) {
+      soundToggle.checked = settingsSnapshot.soundEnabled;
+      animToggle.checked = settingsSnapshot.animEnabled;
+      spinTimeRange.value = settingsSnapshot.spinDuration;
+      spinTimeValue.textContent = settingsSnapshot.spinDuration + ' сек';
+      easingSelect.value = settingsSnapshot.easing;
+      patternSelect.value = settingsSnapshot.pattern;
+      gifUrlInput.value = settingsSnapshot.gifUrl;
+      document.body.classList.toggle('no-anim', !settingsSnapshot.animEnabled);
+    }
+    saveChangesModal.classList.add('hidden');
+    settingsPanel.classList.remove('open');
   });
 
   animToggle.addEventListener('change', () => {
@@ -2888,52 +2965,8 @@
     if (e.key === 'Enter') saveCustomPreset();
   });
 
-  // ---------- ЭМОДЗИ ----------
-  const EMOJI_DATA = ('😀😃😄😁😆😅😂🤣😊😇🙂🙃😉😌😍🥰😘😗😙😚😋😛😝😜🤪🤨🧐🤓😎🤩🥳😏😒😞😔😟😕🙁☹️😣😖😫😩🥺😢😭😤😠😡🤬🤯😳🥵🥶😱😨😰😥😓🤗🤔🤭🤫🤥😶😐😑😬🙄😯😦😧😮😲🥱😴🤤😪😵🤐🥴🤢🤮🤧😷🤒🤕🤑🤠😈👿👹👺🤡💩👻💀☠️👽👾🤖🎃😺😸😹😻😼😽🙀😿😾' +
-    '🐶🐱🐭🐹🐰🦊🐻🐼🐨🐯🦁🐮🐷🐸🐵🐔🐧🐦🐤🦆🦅🦉🦇🐺🐗🐴🦄🐝🐛🦋🐌🐞🐜🦗🕷🦂🐢🐍🦎🦖🦕🐙🦑🦐🦞🦀🐡🐠🐟🐬🐳🐋🦈🐊🐅🐆🦓🦍🦧🐘🦛🦏🐪🐫🦒🦘🐃🐂🐄🐎🐖🐏🐑🦙🐐🦌🐕🐩🦮🐈🐓🦃🦚🦜🦢🦩🕊🐇🦝🦨🦡🦦🦥🐁🐀🐿🦔' +
-    '🍏🍎🍐🍊🍋🍌🍉🍇🍓🫐🍈🍒🍑🥭🍍🥥🥝🍅🍆🥑🥦🥬🥒🌶🫑🌽🥕🫒🧄🧅🥔🍠🥐🥯🍞🥖🥨🧀🥚🍳🧈🥞🧇🥓🥩🍗🍖🦴🌭🍔🍟🍕🫓🥪🥙🧆🌮🌯🫔🥗🥘🫕🥫🍝🍜🍲🍛🍣🍱🥟🦪🍤🍙🍚🍘🍥🥠🥮🍢🍡🍧🍨🍦🥧🧁🍰🎂🍮🍭🍬🍫🍿🍩🍪🌰🥜🍯🥛🍼🫖☕🍵🧃🥤🧋🍶🍺🍻🥂🍷🥃🍸🍹🧉🍾🧊🥄🍴🍽🥣🥡🥢🧂').match(/./gu);
-
-  function renderEmojiGrid() {
-    const grid = document.getElementById('emojiGrid');
-    const frag = document.createDocumentFragment();
-    const maxItems = LOW_PERF ? 100 : EMOJI_DATA.length;
-
-    EMOJI_DATA.slice(0, maxItems).forEach((e, i) => {
-      const item = document.createElement('div');
-      item.className = 'emoji-item';
-      if (state.animEnabled && !LOW_PERF) {
-        item.style.animationDelay = Math.min(i * 0.005, 0.5) + 's';
-      }
-      item.textContent = e;
-      item.addEventListener('click', () => {
-        let svg = emojiSvgCache.get(e);
-        if (!svg) {
-          svg = 'data:image/svg+xml;utf8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="75" font-size="75" text-anchor="middle" x="50">${e}</text></svg>`);
-          emojiSvgCache.set(e, svg);
-        }
-        state.gifUrl = svg;
-        gifUrlInput.value = state.gifUrl;
-        updateCenterGif();
-        emojiModal.classList.add('hidden');
-      });
-      frag.appendChild(item);
-    });
-
-    grid.innerHTML = '';
-    grid.appendChild(frag);
-    attachSounds(grid);
-  }
-
-  openEmojiBtn.addEventListener('click', () => {
-    renderEmojiGrid();
-    emojiModal.classList.remove('hidden');
-  });
-
-  closeEmojiBtn.addEventListener('click', () => {
-    emojiModal.classList.add('hidden');
-  });
-
-  emojiFileInput.addEventListener('change', (e) => {
+  // === ЗАГРУЗКА СВОЕГО ИЗОБРАЖЕНИЯ ===
+  gifFileInput.addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (!file) return;
     const reader = new FileReader();
@@ -2941,12 +2974,11 @@
       state.gifUrl = ev.target.result;
       gifUrlInput.value = state.gifUrl;
       updateCenterGif();
-      emojiModal.classList.add('hidden');
     };
     reader.readAsDataURL(file);
   });
 
-  [resultModal, confirmModal, autoDistributeModal, settingsModal, emojiModal].forEach(m => {
+  [resultModal, confirmModal, autoDistributeModal, saveChangesModal].forEach(m => {
     m.addEventListener('click', (e) => {
       if (e.target === m) m.classList.add('hidden');
     });
@@ -2957,8 +2989,8 @@
       resultModal.classList.add('hidden');
       confirmModal.classList.add('hidden');
       autoDistributeModal.classList.add('hidden');
-      settingsModal.classList.add('hidden');
-      emojiModal.classList.add('hidden');
+      saveChangesModal.classList.add('hidden');
+      settingsPanel.classList.remove('open');
     }
   });
 
@@ -2973,11 +3005,6 @@
   }
 
   function init() {
-    // Применяем настройки анимаций
-    if (!state.animEnabled || LOW_PERF) {
-      document.body.classList.toggle('no-anim', !state.animEnabled);
-    }
-
     loadState();
     loadPresets();
 
@@ -3006,7 +3033,6 @@
 
   window.addEventListener('pagehide', () => {
     lightColorCache.clear();
-    emojiSvgCache.clear();
     nebGradCache.clear();
   });
 
