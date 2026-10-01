@@ -628,7 +628,6 @@
     line-height: 1.2;
     position: relative;
     z-index: 1;
-    /* ★ Тень за текстом для читаемости */
     text-shadow: 0 2px 12px rgba(0,0,0,0.95), 0 4px 24px rgba(0,0,0,0.8), 0 0 40px rgba(0,0,0,0.6);
   }
 
@@ -863,6 +862,158 @@
     line-height: 1.5;
   }
 
+  /* === НОВЫЕ СТИЛИ ДЛЯ ПРЕСЕТОВ === */
+  .preset-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 6px;
+  }
+
+  .preset-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-radius: 9px;
+    color: #e0e0e0;
+    font-size: 13px;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+    width: 100%;
+  }
+  .preset-btn:hover {
+    background: #222;
+    border-color: #444;
+    transform: translateX(3px);
+  }
+  .preset-btn:active { transform: translateX(3px) scale(0.98); }
+  .preset-btn .preset-desc {
+    font-size: 10px;
+    color: #666;
+    font-weight: 400;
+    margin-left: 8px;
+  }
+
+  .preset-code-row {
+    display: flex;
+    gap: 6px;
+    margin-top: 6px;
+  }
+  .preset-code-row input {
+    flex: 1;
+    background: #0d0d0d;
+    border: 1px solid #2a2a2a;
+    color: #fff;
+    padding: 10px 14px;
+    border-radius: 9px;
+    font-size: 13px;
+    font-family: 'Consolas', 'Courier New', monospace;
+    letter-spacing: 0.5px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .preset-code-row input:focus {
+    outline: none;
+    border-color: #555;
+    box-shadow: 0 0 0 3px rgba(255,255,255,0.05);
+  }
+  .preset-code-row .btn {
+    flex-shrink: 0;
+    padding: 10px 16px;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  .custom-preset-form {
+    background: #101010;
+    border: 1px solid #222;
+    border-radius: 10px;
+    padding: 12px;
+    margin-top: 8px;
+  }
+
+  .custom-preset-form .form-row {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 8px;
+  }
+  .custom-preset-form .form-row:last-child { margin-bottom: 0; }
+  .custom-preset-form input {
+    flex: 1;
+    background: #0d0d0d;
+    border: 1px solid #2a2a2a;
+    color: #fff;
+    padding: 9px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-family: inherit;
+  }
+  .custom-preset-form input:focus {
+    outline: none;
+    border-color: #555;
+  }
+  .custom-preset-form .btn {
+    flex-shrink: 0;
+    padding: 9px 14px;
+    font-size: 12px;
+  }
+
+  .custom-list {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-top: 8px;
+  }
+
+  .custom-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #151515;
+    border: 1px solid #252525;
+    border-radius: 8px;
+    padding: 7px 10px;
+    font-size: 12px;
+  }
+  .custom-item .cname {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: #ddd;
+  }
+  .custom-item .ccount {
+    font-size: 10px;
+    color: #666;
+    flex-shrink: 0;
+  }
+  .custom-item .capply,
+  .custom-item .cdel {
+    flex-shrink: 0;
+    padding: 5px 9px;
+    border-radius: 6px;
+    font-size: 11px;
+    cursor: pointer;
+    border: 1px solid #2a2a2a;
+    background: #1a1a1a;
+    color: #ccc;
+    font-family: inherit;
+    transition: all 0.18s ease;
+  }
+  .custom-item .capply:hover { background: #1a2a1a; border-color: #2a5a2a; color: #88ff88; }
+  .custom-item .cdel:hover { background: #2a1515; border-color: #4a2020; color: #ff6b6b; }
+
+  .preset-divider {
+    height: 1px;
+    background: #222;
+    margin: 12px 0;
+  }
+
   @media (max-width: 1100px) {
     .side-panel { width: 340px; }
   }
@@ -1075,6 +1226,35 @@
       <div class="hint">Куда встанет стрелка внутри выигравшего сегмента</div>
     </div>
 
+    <!-- === ПРЕСЕТЫ === -->
+    <div class="setting">
+      <label>Пресеты</label>
+      <div class="preset-list" id="presetList"></div>
+
+      <div class="preset-divider"></div>
+
+      <label style="font-size:11px; color:#888; text-transform:uppercase; letter-spacing:0.8px; margin-bottom:7px; display:block;">Свой пресет</label>
+      <div class="custom-preset-form">
+        <div class="form-row">
+          <input type="text" id="customPresetName" placeholder="Название пресета" maxlength="30">
+          <button class="btn btn-accent" id="saveCustomPresetBtn">Сохранить</button>
+        </div>
+        <div class="hint" style="margin-top:0;">Сохранит текущие варианты (название, шансы) под своим именем</div>
+      </div>
+
+      <div class="custom-list" id="customPresetList"></div>
+
+      <div class="preset-divider"></div>
+
+      <label style="font-size:11px; color:#888; text-transform:uppercase; letter-spacing:0.8px; margin-bottom:7px; display:block;">Код пресета</label>
+      <div class="preset-code-row">
+        <input type="text" id="presetCodeInput" placeholder="ZV-INCREASE-PRESET-01-2">
+        <button class="btn" id="applyPresetCodeBtn">Применить</button>
+      </div>
+      <div class="hint" id="presetHint">Введите код и нажмите «Применить». Пресет добавится в список.</div>
+    </div>
+    <!-- === /ПРЕСЕТЫ === -->
+
     <div class="setting">
       <label>GIF / видео по центру (URL)</label>
       <input type="text" id="gifUrlInput" placeholder="https://...">
@@ -1125,9 +1305,11 @@
 
   const MAX_NAME_LENGTH = 15;
   const MAX_VARIANTS = 15;
-  const BG_FRAME_INTERVAL = 1000 / 30; // ★ фон 30 fps вместо 60 — экономия CPU/GPU
-  const PARTICLE_LINK_DIST_SQ = 150 * 150; // ★ сравнение квадратов расстояний
+  const BG_FRAME_INTERVAL = 1000 / 30;
+  const PARTICLE_LINK_DIST_SQ = 150 * 150;
   const PARTICLE_LINK_DIST = 150;
+  const CUSTOM_PRESETS_KEY = 'fortuneWheelCustomPresets_v1';
+  const UNLOCKED_PRESETS_KEY = 'fortuneWheelUnlockedPresets_v1';
 
   let state = {
     variants: [],
@@ -1139,7 +1321,50 @@
     gifUrl: ''
   };
 
-  // ★ Кэш для определения светлых цветов — экономия повторных parse
+  // Встроенные пресеты
+  const BUILTIN_PRESETS = [
+    {
+      id: 'builtin_12345',
+      name: '1, 2, 3, 4, 5',
+      desc: '5 вариантов · равные шансы',
+      variants: [
+        { name: '1', percent: 20 },
+        { name: '2', percent: 20 },
+        { name: '3', percent: 20 },
+        { name: '4', percent: 20 },
+        { name: '5', percent: 20 }
+      ]
+    },
+    {
+      id: 'builtin_5050',
+      name: '50 на 50',
+      desc: '2 варианта · по 50%',
+      variants: [
+        { name: '1', percent: 50 },
+        { name: '2', percent: 50 }
+      ]
+    }
+  ];
+
+  // Известные коды пресетов
+  const PRESET_CODES = {
+    'ZV-INCREASE-PRESET-01-2': {
+      id: 'code_zv_increase_01_2',
+      name: 'ZV-INCREASE-PRESET-01-2',
+      desc: '5 участников · равные шансы',
+      variants: [
+        { name: 'Макс', percent: 20 },
+        { name: 'Медуза', percent: 20 },
+        { name: 'Фактовский', percent: 20 },
+        { name: 'Елгор', percent: 20 },
+        { name: 'Мактрахер', percent: 20 }
+      ]
+    }
+  };
+
+  let customPresets = [];
+  let unlockedPresets = [];
+
   const lightColorCache = new Map();
   function isLightColor(hex) {
     if (!hex) return false;
@@ -1155,7 +1380,6 @@
     return result;
   }
 
-  // ★ Кэш сгенерированных SVG-эмодзи — не пересоздаём строки каждый раз
   const emojiSvgCache = new Map();
 
   function defaultVariants() {
@@ -1217,9 +1441,31 @@
     sanitizePercents();
   }
 
+  function loadPresets() {
+    try {
+      const raw = localStorage.getItem(CUSTOM_PRESETS_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) customPresets = parsed;
+      }
+    } catch (e) { customPresets = []; }
+
+    try {
+      const raw = localStorage.getItem(UNLOCKED_PRESETS_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) unlockedPresets = parsed;
+      }
+    } catch (e) { unlockedPresets = []; }
+  }
+
+  function savePresets() {
+    try { localStorage.setItem(CUSTOM_PRESETS_KEY, JSON.stringify(customPresets)); } catch (e) {}
+    try { localStorage.setItem(UNLOCKED_PRESETS_KEY, JSON.stringify(unlockedPresets)); } catch (e) {}
+  }
+
   let saveTimer = null;
   function saveState() {
-    // ★ Дебаунс сохранения — не пишем в localStorage на каждый ввод символа
     if (saveTimer) clearTimeout(saveTimer);
     saveTimer = setTimeout(() => {
       try { localStorage.setItem('fortuneWheelState_v9', JSON.stringify(state)); } catch (e) {}
@@ -1400,7 +1646,7 @@
   }
 
   function attachSounds(root) {
-    (root || document).querySelectorAll('button, .mode-btn, .btn, .btn-settings, .v-remove, .switch-row, .emoji-item, .emoji-upload, .emoji-picker-btn').forEach(el => {
+    (root || document).querySelectorAll('button, .mode-btn, .btn, .btn-settings, .v-remove, .switch-row, .emoji-item, .emoji-upload, .emoji-picker-btn, .preset-btn, .custom-item button').forEach(el => {
       if (el.dataset.soundAttached) return;
       el.dataset.soundAttached = '1';
       el.addEventListener('mouseenter', () => { initAudio(); playHover(); });
@@ -1413,7 +1659,7 @@
     });
   }
 
-  // ---------- ФОН (оптимизированный) ----------
+  // ---------- ФОН ----------
   const bgCanvas = document.getElementById('bgCanvas');
   const bgCtx = bgCanvas.getContext('2d', { alpha: false });
   let bgParticles = [];
@@ -1428,7 +1674,6 @@
     bgW = bgCanvas.width = window.innerWidth;
     bgH = bgCanvas.height = window.innerHeight;
 
-    // ★ Меньше частиц для экономии
     bgParticles = [];
     const count = Math.min(60, Math.floor((bgW * bgH) / 30000));
     for (let i = 0; i < count; i++) {
@@ -1458,7 +1703,6 @@
     }
   }
 
-  // ★ Предвычисленный градиент фона — не пересоздаётся каждый кадр
   let bgBaseGradient = null;
   function rebuildBaseGradient() {
     bgBaseGradient = bgCtx.createRadialGradient(bgW/2, bgH/2, 0, bgW/2, bgH/2, Math.max(bgW, bgH) * 0.75);
@@ -1467,7 +1711,6 @@
     bgBaseGradient.addColorStop(1, '#050508');
   }
 
-  // ★ Кэш градиентов туманностей — пересоздаём раз в N кадров, а не каждый кадр
   const nebGradCache = new Map();
 
   function drawBg(now) {
@@ -1477,7 +1720,6 @@
       return;
     }
 
-    // ★ Ограничение до 30 FPS
     if (now - bgLastFrame < BG_FRAME_INTERVAL) {
       requestAnimationFrame(drawBg);
       return;
@@ -1491,7 +1733,6 @@
 
     bgCtx.globalCompositeOperation = 'lighter';
 
-    // ★ Туманности — рисуем как простые мягкие круги без пересоздания градиента каждый кадр
     for (let i = 0; i < bgNebulae.length; i++) {
       const n = bgNebulae[i];
       n.x += n.vx;
@@ -1503,7 +1744,6 @@
 
       const key = i + '_' + Math.round(n.hue);
       let grad = nebGradCache.get(key);
-      // Пересоздаём только если изменились координаты значительно
       const cx = Math.round(n.x / 20) * 20;
       const cy = Math.round(n.y / 20) * 20;
       const cacheKey = key + '_' + cx + '_' + cy;
@@ -1513,7 +1753,6 @@
         grad.addColorStop(0, `hsla(${n.hue}, 80%, 50%, ${n.a})`);
         grad.addColorStop(0.5, `hsla(${n.hue}, 70%, 40%, ${n.a * 0.4})`);
         grad.addColorStop(1, 'transparent');
-        // Ограничиваем кэш
         if (nebGradCache.size > 60) nebGradCache.clear();
         nebGradCache.set(cacheKey, grad);
       }
@@ -1525,7 +1764,6 @@
 
     bgCtx.globalCompositeOperation = 'source-over';
 
-    // ★ Частицы — рисуем без свечения (glow только для крупных)
     for (let i = 0; i < bgParticles.length; i++) {
       const p = bgParticles[i];
       p.x += p.vx;
@@ -1543,8 +1781,6 @@
       bgCtx.fill();
     }
 
-    // ★ Связи между частицами — только близкие, используем квадрат расстояния
-    // Проходим с шагом 1, но фильтруем только крупные частицы для связей
     const linkableParticles = bgParticles;
     for (let i = 0; i < linkableParticles.length; i++) {
       const pi = linkableParticles[i];
@@ -1566,7 +1802,6 @@
       }
     }
 
-    // ★ Плавающие линии — рисуем реже (каждые 2 кадра)
     if (Math.floor(bgTime * 50) % 2 === 0) {
       bgCtx.globalCompositeOperation = 'lighter';
       for (let k = 0; k < 2; k++) {
@@ -1588,7 +1823,6 @@
     requestAnimationFrame(drawBg);
   }
 
-  // ★ Пауза фона, когда страница не видна
   document.addEventListener('visibilitychange', () => {
     bgPaused = document.hidden;
   });
@@ -1688,7 +1922,6 @@
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
 
-      // ★ Тень за буквами
       ctx.shadowColor = lightBg ? 'rgba(255,255,255,0.95)' : 'rgba(0,0,0,0.95)';
       ctx.shadowBlur = 10;
       ctx.shadowOffsetX = 0;
@@ -1716,7 +1949,6 @@
   }
 
   function renderVariantList() {
-    // ★ DocumentFragment для одного reflow вместо N
     const frag = document.createDocumentFragment();
 
     state.variants.forEach((v, i) => {
@@ -2126,6 +2358,233 @@
     resultModal.classList.remove('hidden');
   }
 
+  // ---------- ПРЕСЕТЫ: ЛОГИКА ----------
+  function getAllPresets() {
+    const all = BUILTIN_PRESETS.slice();
+
+    // Разблокированные коды
+    unlockedPresets.forEach(code => {
+      const preset = PRESET_CODES[code];
+      if (preset && !all.find(p => p.id === preset.id)) {
+        all.push(preset);
+      }
+    });
+
+    // Пользовательские
+    customPresets.forEach(p => {
+      if (!all.find(x => x.id === p.id)) {
+        all.push(p);
+      }
+    });
+
+    return all;
+  }
+
+  function applyPreset(preset) {
+    if (!preset || !Array.isArray(preset.variants) || !preset.variants.length) return;
+
+    state.variants = preset.variants.slice(0, MAX_VARIANTS).map(v => ({
+      name: String(v.name || 'Вариант').slice(0, MAX_NAME_LENGTH),
+      percent: Math.max(0, Math.min(100, Number(v.percent) || 0)),
+      color: randomColor()
+    }));
+
+    sanitizePercents();
+    saveState();
+    renderVariantList();
+    drawWheel();
+    updateSumIndicator();
+    updateVariantCounter();
+  }
+
+  function renderPresetList() {
+    const list = document.getElementById('presetList');
+    if (!list) return;
+
+    list.innerHTML = '';
+    const all = getAllPresets();
+
+    all.forEach(p => {
+      const btn = document.createElement('button');
+      btn.className = 'preset-btn';
+      btn.innerHTML = `<span>${escapeHtml(p.name)}<span class="preset-desc">${escapeHtml(p.desc || '')}</span></span>`;
+
+      // Удаление для кастомных
+      if (p.isCustom) {
+        const del = document.createElement('span');
+        del.textContent = '✕';
+        del.style.cssText = 'color:#ff6b6b; font-size:14px; padding:2px 6px;';
+        del.addEventListener('click', (e) => {
+          e.stopPropagation();
+          customPresets = customPresets.filter(x => x.id !== p.id);
+          savePresets();
+          renderPresetList();
+          renderCustomList();
+        });
+        btn.appendChild(del);
+      }
+
+      btn.addEventListener('click', () => {
+        applyPreset(p);
+        // Визуальный фидбек
+        btn.style.background = '#1a2a1a';
+        btn.style.borderColor = '#2a5a2a';
+        setTimeout(() => {
+          btn.style.background = '';
+          btn.style.borderColor = '';
+        }, 350);
+      });
+
+      list.appendChild(btn);
+    });
+
+    attachSounds(list);
+  }
+
+  function renderCustomList() {
+    const list = document.getElementById('customPresetList');
+    if (!list) return;
+
+    list.innerHTML = '';
+
+    if (!customPresets.length) return;
+
+    customPresets.forEach(p => {
+      const item = document.createElement('div');
+      item.className = 'custom-item';
+
+      const nameEl = document.createElement('span');
+      nameEl.className = 'cname';
+      nameEl.textContent = p.name;
+
+      const countEl = document.createElement('span');
+      countEl.className = 'ccount';
+      countEl.textContent = p.variants.length + ' вар.';
+
+      const applyBtn = document.createElement('button');
+      applyBtn.className = 'capply';
+      applyBtn.textContent = 'Применить';
+      applyBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        applyPreset(p);
+        applyBtn.textContent = '✓';
+        setTimeout(() => { applyBtn.textContent = 'Применить'; }, 800);
+      });
+
+      const delBtn = document.createElement('button');
+      delBtn.className = 'cdel';
+      delBtn.textContent = '✕';
+      delBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        customPresets = customPresets.filter(x => x.id !== p.id);
+        savePresets();
+        renderPresetList();
+        renderCustomList();
+      });
+
+      item.appendChild(nameEl);
+      item.appendChild(countEl);
+      item.appendChild(applyBtn);
+      item.appendChild(delBtn);
+      list.appendChild(item);
+    });
+
+    attachSounds(list);
+  }
+
+  function escapeHtml(s) {
+    return String(s || '').replace(/[&<>"']/g, c => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[c]));
+  }
+
+  function saveCustomPreset() {
+    const nameInput = document.getElementById('customPresetName');
+    const name = (nameInput.value || '').trim();
+    if (!name) {
+      nameInput.focus();
+      nameInput.style.borderColor = '#ff6b6b';
+      setTimeout(() => { nameInput.style.borderColor = ''; }, 800);
+      return;
+    }
+    if (!state.variants.length) return;
+
+    const preset = {
+      id: 'custom_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
+      name: name,
+      desc: state.variants.length + ' вариантов (свой)',
+      isCustom: true,
+      variants: state.variants.map(v => ({
+        name: v.name,
+        percent: v.percent
+      }))
+    };
+
+    customPresets.push(preset);
+    savePresets();
+    nameInput.value = '';
+    renderPresetList();
+    renderCustomList();
+
+    nameInput.placeholder = 'Сохранено!';
+    setTimeout(() => { nameInput.placeholder = 'Название пресета'; }, 1200);
+  }
+
+  function applyPresetCode() {
+    const input = document.getElementById('presetCodeInput');
+    const hint = document.getElementById('presetHint');
+    const code = (input.value || '').trim().toUpperCase();
+
+    if (!code) {
+      hint.textContent = 'Введите код пресета';
+      hint.style.color = '#ff8888';
+      setTimeout(() => {
+        hint.textContent = 'Введите код и нажмите «Применить». Пресет добавится в список.';
+        hint.style.color = '';
+      }, 2000);
+      return;
+    }
+
+    // Ищем в известных кодах (регистронезависимо)
+    let found = null;
+    for (const key in PRESET_CODES) {
+      if (key.toUpperCase() === code) {
+        found = PRESET_CODES[key];
+        break;
+      }
+    }
+
+    if (!found) {
+      hint.textContent = 'Неизвестный код пресета';
+      hint.style.color = '#ff8888';
+      setTimeout(() => {
+        hint.textContent = 'Введите код и нажмите «Применить». Пресет добавится в список.';
+        hint.style.color = '';
+      }, 2500);
+      return;
+    }
+
+    // Добавляем в разблокированные, если ещё нет
+    const codeKey = Object.keys(PRESET_CODES).find(k => PRESET_CODES[k].id === found.id);
+    if (codeKey && !unlockedPresets.includes(codeKey)) {
+      unlockedPresets.push(codeKey);
+      savePresets();
+    }
+
+    // Применяем
+    applyPreset(found);
+
+    hint.textContent = 'Пресет «' + found.name + '» применён!';
+    hint.style.color = '#88ff88';
+    input.value = '';
+
+    renderPresetList();
+    setTimeout(() => {
+      hint.textContent = 'Введите код и нажмите «Применить». Пресет добавится в список.';
+      hint.style.color = '';
+    }, 2500);
+  }
+
   // ---------- ОБРАБОТЧИКИ ----------
   spinBtn.addEventListener('click', spin);
   cancelSpinBtn.addEventListener('click', cancelSpin);
@@ -2218,6 +2677,10 @@
     easingSelect.value = state.easing;
     patternSelect.value = state.pattern || 'random';
     gifUrlInput.value = state.gifUrl || '';
+    renderPresetList();
+    renderCustomList();
+    document.getElementById('presetHint').textContent = 'Введите код и нажмите «Применить». Пресет добавится в список.';
+    document.getElementById('presetHint').style.color = '';
     settingsModal.classList.remove('hidden');
   });
 
@@ -2236,8 +2699,17 @@
     spinTimeValue.textContent = e.target.value + ' сек';
   });
 
+  // Обработчики пресетов
+  document.getElementById('saveCustomPresetBtn').addEventListener('click', saveCustomPreset);
+  document.getElementById('applyPresetCodeBtn').addEventListener('click', applyPresetCode);
+  document.getElementById('presetCodeInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') applyPresetCode();
+  });
+  document.getElementById('customPresetName').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') saveCustomPreset();
+  });
+
   // ---------- ЭМОДЗИ ----------
-  // ★ Компактная строка вместо массива — экономия памяти при загрузке
   const EMOJI_DATA = ('😀😃😄😁😆😅😂🤣😊😇🙂🙃😉😌😍🥰😘😗😙😚😋😛😝😜🤪🤨🧐🤓😎🤩🥳😏😒😞😔😟😕🙁☹️😣😖😫😩🥺😢😭😤😠😡🤬🤯😳🥵🥶😱😨😰😥😓🤗🤔🤭🤫🤥😶😐😑😬🙄😯😦😧😮😲🥱😴🤤😪😵🤐🥴🤢🤮🤧😷🤒🤕🤑🤠😈👿👹👺🤡💩👻💀☠️👽👾🤖🎃😺😸😹😻😼😽🙀😿😾' +
     '🐶🐱🐭🐹🐰🦊🐻🐼🐨🐯🦁🐮🐷🐸🐵🐔🐧🐦🐤🦆🦅🦉🦇🐺🐗🐴🦄🐝🐛🦋🐌🐞🐜🦗🕷🦂🐢🐍🦎🦖🦕🐙🦑🦐🦞🦀🐡🐠🐟🐬🐳🐋🦈🐊🐅🐆🦓🦍🦧🐘🦛🦏🐪🐫🦒🦘🐃🐂🐄🐎🐖🐏🐑🦙🐐🦌🐕🐩🦮🐈🐓🦃🦚🦜🦢🦩🕊🐇🦝🦨🦡🦦🦥🐁🐀🐿🦔' +
     '🍏🍎🍐🍊🍋🍌🍉🍇🍓🫐🍈🍒🍑🥭🍍🥥🥝🍅🍆🥑🥦🥬🥒🌶🫑🌽🥕🫒🧄🧅🥔🍠🥐🥯🍞🥖🥨🧀🥚🍳🧈🥞🧇🥓🥩🍗🍖🦴🌭🍔🍟🍕🫓🥪🥙🧆🌮🌯🫔🥗🥘🫕🥫🍝🍜🍲🍛🍣🍱🥟🦪🍤🍙🍚🍘🍥🥠🥮🍢🍡🍧🍨🍦🥧🧁🍰🎂🍮🍭🍬🍫🍿🍩🍪🌰🥜🍯🥛🍼🫖☕🍵🧃🥤🧋🍶🍺🍻🥂🍷🥃🍸🍹🧉🍾🧊🥄🍴🍽🥣🥡🥢🧂').match(/./gu);
@@ -2246,7 +2718,7 @@
     const grid = document.getElementById('emojiGrid');
     const frag = document.createDocumentFragment();
 
-    EMOJI_DATA.forEach((e, idx) => {
+    EMOJI_DATA.forEach((e) => {
       const item = document.createElement('div');
       item.className = 'emoji-item';
       item.textContent = e;
@@ -2307,7 +2779,6 @@
     }
   });
 
-  // ★ Дебаунс resize
   let resizeTimer = null;
   function handleResize() {
     if (resizeTimer) clearTimeout(resizeTimer);
@@ -2320,6 +2791,7 @@
 
   function init() {
     loadState();
+    loadPresets();
     renderVariantList();
     drawWheel();
     updateCenterGif();
@@ -2341,7 +2813,6 @@
 
   window.addEventListener('resize', handleResize);
 
-  // ★ Освобождаем кэши при выгрузке
   window.addEventListener('pagehide', () => {
     lightColorCache.clear();
     emojiSvgCache.clear();
