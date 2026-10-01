@@ -5,33 +5,56 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Колесо</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23141414' stroke='%23333' stroke-width='2'/%3E%3Cpath d='M32 6 L32 32 L54 20 Z' fill='%23e74c3c'/%3E%3Cpath d='M32 32 L54 20 A26 26 0 0 1 54 44 Z' fill='%23f1c40f'/%3E%3Cpath d='M32 32 L54 44 A26 26 0 0 1 32 58 Z' fill='%233498db'/%3E%3Cpath d='M32 32 L32 58 A26 26 0 0 1 10 44 Z' fill='%232ecc71'/%3E%3Cpath d='M32 32 L10 44 A26 26 0 0 1 10 20 Z' fill='%239b59b6'/%3E%3Cpath d='M32 32 L10 20 A26 26 0 0 1 32 6 Z' fill='%23e67e22'/%3E%3Ccircle cx='32' cy='32' r='6' fill='%230a0a0a' stroke='%23333' stroke-width='2'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-  /* === КЛАССИЧЕСКИЙ ДИЗАЙН, ФОН КАК POINT AUC === */
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --bg: #0e0e0e;
-    --panel: #141414;
-    --panel-2: #1a1a1a;
-    --border: #262626;
-    --border-2: #333;
+    --bg: #0a0a0a;
+    --panel: #111111;
+    --panel-2: #171717;
+    --border: #1f1f1f;
+    --border-2: #2a2a2a;
     --text: #e8e8e8;
     --text-dim: #888;
-    --text-dim-2: #666;
-    --radius: 2px;
+    --text-dim-2: #5a5a5a;
+    --radius: 3px;
+    --accent: #8bc4ff;
   }
 
   html, body {
     height: 100%;
-    background: #0e0e0e;
+    background: #070707;
     color: var(--text);
     font-family: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
     font-size: 14px;
     overflow: hidden;
   }
 
-  .bg-canvas {
-    display: none;
+  /* === ФОН КАК POINT AUC === */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 0%, rgba(60, 60, 80, 0.18), transparent 60%),
+      radial-gradient(ellipse 60% 50% at 100% 100%, rgba(40, 40, 60, 0.14), transparent 60%),
+      radial-gradient(ellipse 60% 50% at 0% 100%, rgba(50, 40, 60, 0.10), transparent 60%),
+      linear-gradient(180deg, #0a0a0c 0%, #070708 100%);
+    z-index: -2;
+    pointer-events: none;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(circle at 50% 50%, transparent 40%, rgba(0,0,0,0.55) 100%);
+    z-index: -1;
+    pointer-events: none;
   }
 
   body {
@@ -42,34 +65,42 @@
     position: relative;
   }
 
+  /* === ЛОГОТИП РУКОПИСНЫЙ С БЛЕСКОМ === */
   .logo {
     position: fixed;
-    top: 20px;
-    left: 24px;
-    font-size: 26px;
-    font-weight: 800;
-    letter-spacing: 5px;
-    text-transform: uppercase;
+    top: 14px;
+    left: 26px;
+    font-family: 'Caveat', cursive;
+    font-size: 44px;
+    font-weight: 700;
+    letter-spacing: 2px;
     z-index: 100;
     pointer-events: none;
     user-select: none;
-    animation: rainbow 2s linear infinite, logoFloat 4s ease-in-out infinite;
-    text-shadow: 0 0 14px currentColor, 0 0 28px currentColor;
+    line-height: 1;
+    background: linear-gradient(
+      100deg,
+      #cfcfcf 0%,
+      #cfcfcf 35%,
+      #ffffff 45%,
+      #ffffff 50%,
+      #cfcfcf 60%,
+      #cfcfcf 100%
+    );
+    background-size: 250% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    animation: logoShine 4.5s ease-in-out infinite;
+    text-shadow: 0 0 24px rgba(255,255,255,0.06);
+    transform: rotate(-2deg);
   }
 
-  @keyframes rainbow {
-    0%   { color: #ff0000; }
-    14%  { color: #ff8800; }
-    28%  { color: #ffff00; }
-    42%  { color: #00ff00; }
-    57%  { color: #00ffff; }
-    71%  { color: #0088ff; }
-    85%  { color: #8800ff; }
-    100% { color: #ff0000; }
-  }
-  @keyframes logoFloat {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-4px); }
+  @keyframes logoShine {
+    0%   { background-position: 200% 0; }
+    60%  { background-position: -60% 0; }
+    100% { background-position: -60% 0; }
   }
 
   .copyright {
@@ -78,7 +109,7 @@
     left: 18px;
     font-size: 11px;
     color: #ffffff;
-    opacity: 0.45;
+    opacity: 0.35;
     z-index: 100;
     pointer-events: none;
     user-select: none;
@@ -108,27 +139,28 @@
     min-width: 0;
   }
 
+  /* === СТРЕЛКА НИЖЕ И ФИЗИЧНЕЕ === */
   .pointer {
     position: absolute;
-    top: -20px;
+    top: -34px;
     left: 50%;
     transform: translateX(-50%);
-    width: 56px;
-    height: 64px;
+    width: 62px;
+    height: 96px;
     transform-origin: 50% 0%;
     z-index: 30;
     pointer-events: none;
     filter:
-      drop-shadow(0 6px 12px rgba(0,0,0,0.95))
-      drop-shadow(0 0 10px rgba(255,255,255,0.7))
-      drop-shadow(0 0 24px rgba(255,255,255,0.35));
+      drop-shadow(0 8px 14px rgba(0,0,0,0.95))
+      drop-shadow(0 0 10px rgba(255,255,255,0.6))
+      drop-shadow(0 0 22px rgba(255,255,255,0.25));
     will-change: transform;
-    animation: pointerIdle 3s ease-in-out infinite;
+    animation: pointerIdle 3.5s ease-in-out infinite;
   }
 
   @keyframes pointerIdle {
-    0%, 100% { transform: translateX(-50%) rotate(-1.5deg); }
-    50% { transform: translateX(-50%) rotate(1.5deg); }
+    0%, 100% { transform: translateX(-50%) rotate(-1.2deg); }
+    50% { transform: translateX(-50%) rotate(1.2deg); }
   }
 
   .pointer svg {
@@ -143,31 +175,31 @@
     aspect-ratio: 1 / 1;
     cursor: pointer;
     user-select: none;
-    transition: filter 0.25s ease, transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    transition: filter 0.25s ease, transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
     margin-top: 20px;
     will-change: transform;
   }
 
-  .wheel-outer:hover { filter: brightness(1.08); transform: scale(1.015); }
-  .wheel-outer:active { filter: brightness(0.95); transform: scale(0.985); }
+  .wheel-outer:hover { filter: brightness(1.06); transform: scale(1.012); }
+  .wheel-outer:active { filter: brightness(0.96); transform: scale(0.988); }
 
+  /* === РАМКА ТОНЬШЕ === */
   canvas#wheelCanvas {
     width: 100%;
     height: 100%;
     display: block;
     border-radius: 50%;
-    /* Серая прозрачная рамка — намного тоньше */
     box-shadow:
-      0 0 0 1px rgba(255, 255, 255, 0.15),
-      0 25px 70px rgba(0,0,0,0.9);
+      0 0 0 1px rgba(255, 255, 255, 0.06),
+      0 30px 80px rgba(0,0,0,0.9);
     transition: box-shadow 0.3s ease;
   }
 
   .wheel-outer:hover canvas {
     box-shadow:
-      0 0 0 1px rgba(255, 255, 255, 0.25),
-      0 25px 80px rgba(0,0,0,1),
-      0 0 40px rgba(255,255,255,0.05);
+      0 0 0 1px rgba(255, 255, 255, 0.12),
+      0 30px 90px rgba(0,0,0,1),
+      0 0 50px rgba(255,255,255,0.03);
   }
 
   .center-gif {
@@ -179,8 +211,8 @@
     height: 18%;
     border-radius: 50%;
     background: #050505;
-    border: 4px solid #2a2a2a;
-    box-shadow: 0 0 0 3px #0a0a0a, 0 0 25px rgba(255,255,255,0.1);
+    border: 3px solid #1e1e1e;
+    box-shadow: 0 0 0 2px #0a0a0a, 0 0 25px rgba(255,255,255,0.08);
     overflow: hidden;
     display: flex;
     align-items: center;
@@ -191,8 +223,8 @@
   }
 
   .wheel-outer:hover .center-gif {
-    border-color: #3a3a3a;
-    box-shadow: 0 0 0 3px #0a0a0a, 0 0 30px rgba(255,255,255,0.18);
+    border-color: #2e2e2e;
+    box-shadow: 0 0 0 2px #0a0a0a, 0 0 30px rgba(255,255,255,0.14);
   }
 
   .center-gif img, .center-gif video {
@@ -203,15 +235,15 @@
 
   .center-gif .placeholder {
     font-size: 26px;
-    color: #444;
+    color: #333;
     user-select: none;
   }
 
   .spin-btn {
     margin-top: 28px;
     padding: 16px 60px;
-    background: #1c1c1c;
-    border: 1px solid #333;
+    background: #161616;
+    border: 1px solid #2a2a2a;
     border-radius: var(--radius);
     color: #fff;
     font-size: 18px;
@@ -233,15 +265,15 @@
     content: '';
     position: absolute;
     inset: 0;
-    background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgba(255,255,255,0.15), transparent 60%);
+    background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgba(255,255,255,0.12), transparent 60%);
     opacity: 0;
     transition: opacity 0.3s;
   }
   .spin-btn:hover:not(:disabled)::before { opacity: 1; }
   .spin-btn:hover:not(:disabled) {
-    background: #252525;
-    border-color: #444;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.5), 0 0 30px rgba(255,255,255,0.05);
+    background: #1e1e1e;
+    border-color: #3a3a3a;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5), 0 0 30px rgba(255,255,255,0.04);
   }
   .spin-btn:active:not(:disabled) { transform: scale(0.97); }
   .spin-btn:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -251,8 +283,8 @@
   .cancel-spin-btn {
     margin-top: 12px;
     padding: 12px 40px;
-    background: #2a1515;
-    border: 1px solid #4a2020;
+    background: #1f1111;
+    border: 1px solid #3a1a1a;
     border-radius: var(--radius);
     color: #ff8888;
     font-size: 14px;
@@ -270,8 +302,8 @@
   }
   .cancel-spin-btn.visible { display: flex; }
   .cancel-spin-btn:hover:not(:disabled) {
-    background: #3a1a1a;
-    border-color: #6a2a2a;
+    background: #2a1515;
+    border-color: #5a2020;
     color: #ffaaaa;
     transform: translateY(-2px);
     box-shadow: 0 8px 24px rgba(255,60,60,0.15);
@@ -280,51 +312,66 @@
   .cancel-spin-btn svg { width: 18px; height: 18px; }
   .cancel-spin-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
+  /* === ПРАВАЯ ПАНЕЛЬ С ВКЛАДКАМИ === */
   .side-panel {
     width: 400px;
     flex-shrink: 0;
     background: var(--panel);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    padding: 14px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
     overflow: hidden;
     transition: border-color 0.25s ease, box-shadow 0.25s ease;
   }
-  .side-panel:hover { border-color: #2e2e2e; box-shadow: 0 0 40px rgba(255,255,255,0.02); }
+  .side-panel:hover { border-color: #232323; box-shadow: 0 0 40px rgba(255,255,255,0.015); }
 
-  .settings-bar {
+  .tabs {
     display: flex;
-    justify-content: flex-end;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+    background: #0d0d0d;
   }
 
-  .btn-settings {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 10px;
+  .tab-btn {
+    flex: 1;
+    padding: 12px 10px;
     background: transparent;
-    border: 1px solid #2a2a2a;
-    border-radius: var(--radius);
+    border: none;
+    border-bottom: 2px solid transparent;
     color: var(--text-dim);
-    font-size: 11px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.18s ease;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
     font-family: inherit;
+    cursor: pointer;
+    transition: color 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+    position: relative;
   }
-  .btn-settings:hover {
-    color: var(--text);
-    border-color: #444;
-    background: #1a1a1a;
-    transform: translateY(-1px);
+  .tab-btn:hover { color: #bbb; background: #111; }
+  .tab-btn.active {
+    color: #fff;
+    border-bottom-color: var(--accent);
+    background: #131313;
   }
-  .btn-settings:active { transform: scale(0.96); }
-  .btn-settings:disabled { opacity: 0.4; cursor: not-allowed; }
-  .btn-settings svg { width: 12px; height: 12px; transition: transform 0.4s ease; }
-  .btn-settings:hover svg { transform: rotate(180deg); }
+
+  .tab-content {
+    flex: 1;
+    display: none;
+    flex-direction: column;
+    padding: 14px;
+    gap: 10px;
+    overflow: hidden;
+    min-height: 0;
+    animation: tabFade 0.3s ease;
+  }
+  .tab-content.active { display: flex; }
+
+  @keyframes tabFade {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 
   .modes {
     display: flex;
@@ -349,7 +396,7 @@
     position: relative;
   }
   .mode-btn.active {
-    background: #2a2a2a;
+    background: #232323;
     color: #fff;
     transform: scale(1.02);
     box-shadow: 0 2px 8px rgba(0,0,0,0.4);
@@ -379,10 +426,10 @@
     font-weight: 500;
     letter-spacing: 0.5px;
     font-size: 10px;
-    background: #1a1a1a;
+    background: #161616;
     padding: 2px 7px;
     border-radius: var(--radius);
-    border: 1px solid #262626;
+    border: 1px solid #232323;
     transition: transform 0.25s ease;
   }
   .list-header .counter.bump { animation: counterBump 0.35s ease; }
@@ -393,11 +440,11 @@
   }
   .list-header .sum {
     font-size: 11px;
-    color: #666;
+    color: #555;
     text-transform: none;
     letter-spacing: 0;
     font-weight: 500;
-    transition: color 0.3s ease, transform 0.3s ease;
+    transition: color 0.3s ease;
   }
   .list-header .sum.warn { color: #ff8888; }
 
@@ -413,8 +460,8 @@
 
   .variant-list::-webkit-scrollbar { width: 4px; }
   .variant-list::-webkit-scrollbar-track { background: transparent; }
-  .variant-list::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
-  .variant-list::-webkit-scrollbar-thumb:hover { background: #444; }
+  .variant-list::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 4px; }
+  .variant-list::-webkit-scrollbar-thumb:hover { background: #3a3a3a; }
 
   .variant-row {
     display: flex;
@@ -425,11 +472,16 @@
     border-radius: var(--radius);
     border: 1px solid var(--border);
     transition: border-color 0.2s ease, transform 0.2s ease;
+    animation: rowIn 0.3s ease backwards;
   }
-
   .variant-row:hover {
     border-color: var(--border-2);
     transform: translateX(2px);
+  }
+
+  @keyframes rowIn {
+    from { opacity: 0; transform: translateX(-8px); }
+    to { opacity: 1; transform: translateX(0); }
   }
 
   .color-dot {
@@ -437,7 +489,7 @@
     height: 22px;
     border-radius: 50%;
     flex-shrink: 0;
-    border: 2px solid #333;
+    border: 2px solid #2a2a2a;
     transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
     cursor: pointer;
     position: relative;
@@ -449,17 +501,17 @@
   .color-dot::-webkit-color-swatch { border: none; border-radius: 50%; }
   .color-dot::-moz-color-swatch { border: none; border-radius: 50%; }
   .variant-row:hover .color-dot {
-    transform: scale(1.18) rotate(15deg);
-    border-color: #555;
-    box-shadow: 0 0 0 3px rgba(255,255,255,0.06);
+    transform: scale(1.15) rotate(12deg);
+    border-color: #444;
+    box-shadow: 0 0 0 3px rgba(255,255,255,0.05);
   }
-  .color-dot:hover { border-color: #888; }
+  .color-dot:hover { border-color: #666; }
 
   .v-name {
     flex: 1;
     min-width: 0;
-    background: #0d0d0d;
-    border: 1px solid #2a2a2a;
+    background: #0a0a0a;
+    border: 1px solid #222;
     color: var(--text);
     padding: 6px 10px;
     border-radius: var(--radius);
@@ -467,13 +519,13 @@
     font-family: inherit;
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
   }
-  .v-name:focus { outline: none; border-color: #555; box-shadow: 0 0 0 2px rgba(255,255,255,0.05); }
+  .v-name:focus { outline: none; border-color: #444; box-shadow: 0 0 0 2px rgba(255,255,255,0.04); }
   .v-name:disabled { opacity: 0.5; cursor: not-allowed; }
 
   .v-percent {
     width: 62px;
-    background: #0d0d0d;
-    border: 1px solid #2a2a2a;
+    background: #0a0a0a;
+    border: 1px solid #222;
     color: #d0d0d0;
     padding: 6px 4px;
     border-radius: var(--radius);
@@ -483,7 +535,7 @@
     font-family: inherit;
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
   }
-  .v-percent:focus { outline: none; border-color: #555; box-shadow: 0 0 0 2px rgba(255,255,255,0.05); }
+  .v-percent:focus { outline: none; border-color: #444; box-shadow: 0 0 0 2px rgba(255,255,255,0.04); }
   .v-percent:disabled { opacity: 0.5; cursor: not-allowed; }
 
   .v-remove {
@@ -491,8 +543,8 @@
     height: 26px;
     border-radius: var(--radius);
     background: transparent;
-    border: 1px solid #2a2a2a;
-    color: #666;
+    border: 1px solid #222;
+    color: #555;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -502,9 +554,9 @@
     padding: 0;
   }
   .v-remove:hover:not(:disabled) {
-    background: #2a1515;
+    background: #1f1111;
     color: #ff6b6b;
-    border-color: #4a2020;
+    border-color: #3a1a1a;
     transform: rotate(90deg) scale(1.1);
   }
   .v-remove:disabled { opacity: 0.4; cursor: not-allowed; }
@@ -514,6 +566,7 @@
     display: flex;
     flex-direction: column;
     gap: 6px;
+    flex-shrink: 0;
   }
 
   .btn {
@@ -539,41 +592,378 @@
     content: '';
     position: absolute;
     inset: 0;
-    background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgba(255,255,255,0.15), transparent 60%);
+    background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgba(255,255,255,0.12), transparent 60%);
     opacity: 0;
     transition: opacity 0.3s;
     pointer-events: none;
   }
   .btn:hover:not(:disabled)::after { opacity: 1; }
-  .btn:hover:not(:disabled) { background: #222; border-color: #444; transform: translateY(-2px) scale(1.01); }
+  .btn:hover:not(:disabled) { background: #1e1e1e; border-color: #3a3a3a; transform: translateY(-2px) scale(1.01); }
   .btn:active:not(:disabled) { transform: translateY(0) scale(0.98); }
   .btn:disabled { opacity: 0.4; cursor: not-allowed; }
   .btn svg { width: 14px; height: 14px; flex-shrink: 0; transition: transform 0.25s ease; }
   .btn:hover:not(:disabled) svg { transform: scale(1.15) rotate(-5deg); }
 
   .btn-danger {
-    background: #1a0f0f;
-    border-color: #3a1a1a;
+    background: #170d0d;
+    border-color: #331717;
     color: #ff8888;
   }
   .btn-danger:hover:not(:disabled) {
-    background: #2a1414;
-    border-color: #5a2020;
+    background: #241111;
+    border-color: #4a1a1a;
     color: #ffaaaa;
   }
 
   .btn-accent {
-    background: #0f1a0f;
-    border-color: #1a3a1a;
+    background: #0d160d;
+    border-color: #173317;
     color: #88ff88;
   }
   .btn-accent:hover:not(:disabled) {
-    background: #142a14;
-    border-color: #205a20;
+    background: #122412;
+    border-color: #1e4a1e;
     color: #aaffaa;
   }
 
-  /* === ОВЕРЛЕИ (плавное появление) === */
+  /* === НАСТРОЙКИ ВНУТРИ ПАНЕЛИ === */
+  .settings-body {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding-right: 4px;
+    min-height: 0;
+  }
+  .settings-body::-webkit-scrollbar { width: 4px; }
+  .settings-body::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 4px; }
+
+  .setting {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    animation: tabFade 0.35s ease backwards;
+  }
+
+  .setting > label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #777;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
+
+  .switch-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px 14px;
+    cursor: pointer;
+    transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+    user-select: none;
+  }
+  .switch-row:hover { border-color: #333; background: #1a1a1a; transform: translateX(3px); }
+  .switch-row span { font-size: 13px; }
+
+  .switch-row input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    background: #0a0a0a;
+    border: 1.5px solid #333;
+    border-radius: var(--radius);
+    position: relative;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+    flex-shrink: 0;
+    outline: none;
+    margin: 0;
+  }
+  .switch-row input[type="checkbox"]:hover { border-color: #4a4a4a; }
+  .switch-row input[type="checkbox"]:checked {
+    background: #2e5a2e;
+    border-color: #4a7a4a;
+  }
+  .switch-row input[type="checkbox"]:checked::after {
+    content: '';
+    position: absolute;
+    left: 4.5px;
+    top: 1px;
+    width: 5px;
+    height: 9px;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+
+  .setting input[type="range"] {
+    width: 100%;
+    accent-color: #888;
+    height: 4px;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .time-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: #555;
+    margin-top: 4px;
+  }
+
+  .setting select,
+  .setting input[type="text"] {
+    width: 100%;
+    background: #0a0a0a;
+    border: 1px solid #222;
+    color: #fff;
+    padding: 10px 14px;
+    border-radius: var(--radius);
+    font-size: 13px;
+    font-family: inherit;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .setting select:focus,
+  .setting input[type="text"]:focus {
+    outline: none;
+    border-color: #444;
+    box-shadow: 0 0 0 3px rgba(255,255,255,0.04);
+  }
+
+  .hint {
+    font-size: 11px;
+    color: #555;
+    margin-top: 2px;
+  }
+
+  /* === ГИФКИ === */
+  .gif-picker {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    max-height: 240px;
+    overflow-y: auto;
+    padding-right: 4px;
+    margin-top: 6px;
+  }
+  .gif-picker::-webkit-scrollbar { width: 4px; }
+  .gif-picker::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 4px; }
+
+  .gif-item {
+    aspect-ratio: 1 / 1;
+    background: #161616;
+    border: 1px solid #1f1f1f;
+    border-radius: var(--radius);
+    cursor: pointer;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.2s ease, transform 0.2s ease;
+    position: relative;
+  }
+  .gif-item:hover {
+    border-color: #444;
+    transform: scale(1.05);
+    z-index: 2;
+  }
+  .gif-item video,
+  .gif-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    pointer-events: none;
+  }
+
+  .gif-upload {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px;
+    background: #0a0a0a;
+    border: 1px dashed #333;
+    border-radius: var(--radius);
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+    margin-top: 4px;
+  }
+  .gif-upload:hover { background: #121212; border-color: #444; }
+  .gif-upload input { display: none; }
+
+  /* === ПРЕСЕТЫ === */
+  .preset-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 6px;
+  }
+
+  .preset-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: #161616;
+    border: 1px solid #222;
+    border-radius: var(--radius);
+    color: #e0e0e0;
+    font-size: 13px;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+    width: 100%;
+  }
+  .preset-btn:hover {
+    background: #1e1e1e;
+    border-color: #3a3a3a;
+    transform: translateX(4px);
+  }
+  .preset-btn:active { transform: translateX(4px) scale(0.98); }
+  .preset-btn .preset-desc {
+    font-size: 10px;
+    color: #555;
+    font-weight: 400;
+    margin-left: 8px;
+  }
+
+  .preset-divider {
+    height: 1px;
+    background: #1a1a1a;
+    margin: 10px 0;
+  }
+
+  .preset-code-row {
+    display: flex;
+    gap: 6px;
+    margin-top: 6px;
+  }
+  .preset-code-row input {
+    flex: 1;
+    background: #0a0a0a;
+    border: 1px solid #222;
+    color: #fff;
+    padding: 10px 14px;
+    border-radius: var(--radius);
+    font-size: 13px;
+    font-family: 'Consolas', 'Courier New', monospace;
+    letter-spacing: 0.5px;
+  }
+  .preset-code-row input:focus {
+    outline: none;
+    border-color: #444;
+  }
+  .preset-code-row .btn {
+    flex-shrink: 0;
+    padding: 10px 16px;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  .custom-preset-form {
+    background: #0c0c0c;
+    border: 1px solid #1a1a1a;
+    border-radius: var(--radius);
+    padding: 10px;
+    margin-top: 6px;
+  }
+  .custom-preset-form .form-row {
+    display: flex;
+    gap: 6px;
+  }
+  .custom-preset-form input {
+    flex: 1;
+    background: #0a0a0a;
+    border: 1px solid #222;
+    color: #fff;
+    padding: 9px 12px;
+    border-radius: var(--radius);
+    font-size: 12px;
+    font-family: inherit;
+  }
+  .custom-preset-form input:focus {
+    outline: none;
+    border-color: #444;
+  }
+  .custom-preset-form .btn {
+    flex-shrink: 0;
+    padding: 9px 14px;
+    font-size: 12px;
+  }
+
+  .custom-list {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-top: 6px;
+  }
+
+  .custom-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #131313;
+    border: 1px solid #1e1e1e;
+    border-radius: var(--radius);
+    padding: 7px 10px;
+    font-size: 12px;
+  }
+  .custom-item .cname {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: #ddd;
+  }
+  .custom-item .ccount {
+    font-size: 10px;
+    color: #555;
+    flex-shrink: 0;
+  }
+  .custom-item .capply,
+  .custom-item .cdel {
+    flex-shrink: 0;
+    padding: 5px 9px;
+    border-radius: var(--radius);
+    font-size: 11px;
+    cursor: pointer;
+    border: 1px solid #222;
+    background: #161616;
+    color: #ccc;
+    font-family: inherit;
+    transition: all 0.18s ease;
+  }
+  .custom-item .capply:hover { background: #142414; border-color: #1e4a1e; color: #88ff88; }
+  .custom-item .cdel:hover { background: #1f1111; border-color: #3a1a1a; color: #ff6b6b; }
+
+  /* === КНОПКА СОХРАНИТЬ В НАСТРОЙКАХ === */
+  .settings-save-bar {
+    flex-shrink: 0;
+    padding-top: 10px;
+    border-top: 1px solid #1a1a1a;
+    display: flex;
+    gap: 6px;
+  }
+  .settings-save-bar .btn {
+    flex: 1;
+    padding: 11px;
+    font-size: 13px;
+  }
+
+  /* === ОВЕРЛЕИ === */
   .overlay {
     position: fixed;
     inset: 0;
@@ -596,8 +986,8 @@
   .overlay.hidden { display: none; }
 
   .modal {
-    background: #141414;
-    border: 1px solid #2a2a2a;
+    background: #111;
+    border: 1px solid #222;
     border-radius: var(--radius);
     padding: 28px 32px;
     max-width: 460px;
@@ -613,9 +1003,7 @@
     transform: scale(1) translateY(0);
   }
 
-  .modal.winner-modal {
-    isolation: isolate;
-  }
+  .modal.winner-modal { isolation: isolate; }
   .winner-glow {
     position: absolute;
     inset: -80px;
@@ -631,9 +1019,7 @@
     from { transform: rotate(0deg) scale(1); }
     to { transform: rotate(360deg) scale(1.2); }
   }
-  .modal.winner-modal .winner-glow {
-    opacity: 0.55;
-  }
+  .modal.winner-modal .winner-glow { opacity: 0.55; }
 
   .modal h2 {
     font-size: 20px;
@@ -662,249 +1048,13 @@
     position: relative;
     z-index: 1;
   }
-
   .modal-actions .btn { flex: 1; padding: 12px; font-size: 13px; }
 
-  /* === НАСТРОЙКИ (ВЫЕЗЖАЮЩАЯ ПАНЕЛЬ ВНУТРИ МЕНЮ СПРАВА) === */
-  .settings-panel {
-    position: fixed;
-    top: 0;
-    right: -460px;
-    width: 440px;
-    height: 100vh;
-    background: #141414;
-    border-left: 1px solid #2a2a2a;
-    z-index: 1100;
-    display: flex;
-    flex-direction: column;
-    transition: right 0.35s cubic-bezier(0.22, 1, 0.36, 1);
-    box-shadow: -20px 0 60px rgba(0,0,0,0.7);
-  }
-  .settings-panel.open {
-    right: 0;
-  }
-
-  .settings-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 18px 20px;
-    border-bottom: 1px solid #222;
-    flex-shrink: 0;
-  }
-  .settings-header h2 {
-    font-size: 16px;
-    font-weight: 600;
-    color: #fff;
-    letter-spacing: 0.5px;
-  }
-  .settings-close {
-    width: 32px;
-    height: 32px;
-    background: transparent;
-    border: 1px solid #2a2a2a;
-    border-radius: var(--radius);
-    color: #888;
-    font-size: 18px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s ease;
-    font-family: inherit;
-    line-height: 1;
-    padding: 0;
-  }
-  .settings-close:hover {
-    background: #2a1515;
-    border-color: #4a2020;
-    color: #ff6b6b;
-    transform: scale(1.1);
-  }
-
-  .settings-body {
-    flex: 1;
-    overflow-y: auto;
-    padding: 16px 20px;
-  }
-  .settings-body::-webkit-scrollbar { width: 4px; }
-  .settings-body::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
-
-  .setting {
-    margin-bottom: 18px;
-  }
-
-  .setting > label {
-    display: block;
-    font-size: 11px;
-    font-weight: 600;
-    color: #888;
-    margin-bottom: 7px;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-  }
-
-  .switch-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: var(--panel-2);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 10px 14px;
-    cursor: pointer;
-    transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
-    user-select: none;
-  }
-  .switch-row:hover { border-color: #3a3a3a; background: #1e1e1e; transform: translateX(3px); }
-  .switch-row span { font-size: 13px; }
-
-  .switch-row input[type="checkbox"] {
-    appearance: none;
-    -webkit-appearance: none;
-    width: 18px;
-    height: 18px;
-    background: #0d0d0d;
-    border: 1.5px solid #3a3a3a;
-    border-radius: var(--radius);
-    position: relative;
-    cursor: pointer;
-    transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
-    flex-shrink: 0;
-    outline: none;
-    margin: 0;
-  }
-
-  .switch-row input[type="checkbox"]:hover { border-color: #555; }
-
-  .switch-row input[type="checkbox"]:checked {
-    background: #3a6a3a;
-    border-color: #5a8a5a;
-  }
-
-  .switch-row input[type="checkbox"]:checked::after {
-    content: '';
-    position: absolute;
-    left: 4.5px;
-    top: 1px;
-    width: 5px;
-    height: 9px;
-    border: solid #fff;
-    border-width: 0 2px 2px 0;
-    transform: rotate(45deg);
-  }
-
-  .setting input[type="range"] {
-    width: 100%;
-    accent-color: #888;
-    height: 4px;
-    background: transparent;
-    cursor: pointer;
-  }
-
-  .time-row {
-    display: flex;
-    justify-content: space-between;
-    font-size: 11px;
-    color: #666;
-    margin-top: 4px;
-  }
-
-  .setting select,
-  .setting input[type="text"] {
-    width: 100%;
-    background: #0d0d0d;
-    border: 1px solid #2a2a2a;
-    color: #fff;
-    padding: 10px 14px;
-    border-radius: var(--radius);
-    font-size: 13px;
-    font-family: inherit;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-  }
-  .setting select:focus,
-  .setting input[type="text"]:focus {
-    outline: none;
-    border-color: #555;
-    box-shadow: 0 0 0 3px rgba(255,255,255,0.05);
-  }
-
-  .hint {
-    font-size: 11px;
-    color: #666;
-    margin-top: 5px;
-  }
-
-  /* === ГИФКИ (ВЫБОР) === */
-  .gif-picker {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 6px;
-    max-height: 280px;
-    overflow-y: auto;
-    padding-right: 4px;
-  }
-  .gif-picker::-webkit-scrollbar { width: 4px; }
-  .gif-picker::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
-
-  .gif-item {
-    aspect-ratio: 1 / 1;
-    background: #1a1a1a;
-    border: 1px solid #262626;
-    border-radius: var(--radius);
-    cursor: pointer;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: border-color 0.2s ease, transform 0.2s ease;
-    position: relative;
-  }
-  .gif-item:hover {
-    border-color: #555;
-    transform: scale(1.05);
-    z-index: 2;
-  }
-  .gif-item video,
-  .gif-item img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-    pointer-events: none;
-  }
-
-  .gif-upload {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 12px;
-    background: #0d0d0d;
-    border: 1px dashed #3a3a3a;
-    border-radius: var(--radius);
-    color: #8bc4ff;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    text-align: center;
-    margin-top: 8px;
-  }
-  .gif-upload:hover { background: #151515; border-color: #4a4a4a; }
-  .gif-upload input { display: none; }
-
-  /* === МОДАЛКА СОХРАНЕНИЯ ИЗМЕНЕНИЙ === */
-  .save-changes-modal .modal {
-    text-align: left;
-    max-width: 520px;
-  }
-  .save-changes-modal .modal h2 {
-    text-align: center;
-  }
+  .save-changes-modal .modal { text-align: left; max-width: 520px; }
+  .save-changes-modal .modal h2 { text-align: center; }
   .changes-list {
-    background: #0d0d0d;
-    border: 1px solid #222;
+    background: #0a0a0a;
+    border: 1px solid #1e1e1e;
     border-radius: var(--radius);
     padding: 12px;
     margin: 16px 0;
@@ -918,183 +1068,17 @@
     display: flex;
     gap: 8px;
     padding: 3px 0;
-    border-bottom: 1px solid #1a1a1a;
+    border-bottom: 1px solid #161616;
   }
-  .changes-list .change-item:last-child {
-    border-bottom: none;
-  }
-  .changes-list .change-label {
-    color: #666;
-    flex-shrink: 0;
-  }
-  .changes-list .change-value {
-    color: #ddd;
-    word-break: break-word;
-  }
-  .changes-list .change-old {
-    color: #666;
-    text-decoration: line-through;
-    margin-right: 4px;
-  }
-  .changes-list .change-new {
-    color: #88ff88;
-  }
-  .changes-list .no-changes {
-    color: #666;
-    text-align: center;
-    padding: 8px;
-  }
-
-  .preset-list {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    margin-bottom: 6px;
-  }
-
-  .preset-btn {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 14px;
-    background: #1a1a1a;
-    border: 1px solid #2a2a2a;
-    border-radius: var(--radius);
-    color: #e0e0e0;
-    font-size: 13px;
-    font-family: inherit;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    text-align: left;
-    width: 100%;
-  }
-  .preset-btn:hover {
-    background: #222;
-    border-color: #444;
-    transform: translateX(4px);
-  }
-  .preset-btn:active { transform: translateX(4px) scale(0.98); }
-  .preset-btn .preset-desc {
-    font-size: 10px;
-    color: #666;
-    font-weight: 400;
-    margin-left: 8px;
-  }
-
-  .preset-divider {
-    height: 1px;
-    background: #222;
-    margin: 12px 0;
-  }
-
-  .preset-code-row {
-    display: flex;
-    gap: 6px;
-    margin-top: 6px;
-  }
-  .preset-code-row input {
-    flex: 1;
-    background: #0d0d0d;
-    border: 1px solid #2a2a2a;
-    color: #fff;
-    padding: 10px 14px;
-    border-radius: var(--radius);
-    font-size: 13px;
-    font-family: 'Consolas', 'Courier New', monospace;
-    letter-spacing: 0.5px;
-  }
-  .preset-code-row input:focus {
-    outline: none;
-    border-color: #555;
-  }
-  .preset-code-row .btn {
-    flex-shrink: 0;
-    padding: 10px 16px;
-    font-size: 12px;
-    white-space: nowrap;
-  }
-
-  .custom-preset-form {
-    background: #101010;
-    border: 1px solid #222;
-    border-radius: var(--radius);
-    padding: 12px;
-    margin-top: 8px;
-  }
-  .custom-preset-form .form-row {
-    display: flex;
-    gap: 6px;
-  }
-  .custom-preset-form input {
-    flex: 1;
-    background: #0d0d0d;
-    border: 1px solid #2a2a2a;
-    color: #fff;
-    padding: 9px 12px;
-    border-radius: var(--radius);
-    font-size: 12px;
-    font-family: inherit;
-  }
-  .custom-preset-form input:focus {
-    outline: none;
-    border-color: #555;
-  }
-  .custom-preset-form .btn {
-    flex-shrink: 0;
-    padding: 9px 14px;
-    font-size: 12px;
-  }
-
-  .custom-list {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    margin-top: 8px;
-  }
-
-  .custom-item {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    background: #151515;
-    border: 1px solid #252525;
-    border-radius: var(--radius);
-    padding: 7px 10px;
-    font-size: 12px;
-  }
-  .custom-item .cname {
-    flex: 1;
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    color: #ddd;
-  }
-  .custom-item .ccount {
-    font-size: 10px;
-    color: #666;
-    flex-shrink: 0;
-  }
-  .custom-item .capply,
-  .custom-item .cdel {
-    flex-shrink: 0;
-    padding: 5px 9px;
-    border-radius: var(--radius);
-    font-size: 11px;
-    cursor: pointer;
-    border: 1px solid #2a2a2a;
-    background: #1a1a1a;
-    color: #ccc;
-    font-family: inherit;
-    transition: all 0.18s ease;
-  }
-  .custom-item .capply:hover { background: #1a2a1a; border-color: #2a5a2a; color: #88ff88; }
-  .custom-item .cdel:hover { background: #2a1515; border-color: #4a2020; color: #ff6b6b; }
+  .changes-list .change-item:last-child { border-bottom: none; }
+  .changes-list .change-label { color: #555; flex-shrink: 0; }
+  .changes-list .change-value { color: #ddd; word-break: break-word; }
+  .changes-list .change-old { color: #555; text-decoration: line-through; margin-right: 4px; }
+  .changes-list .change-new { color: #88ff88; }
+  .changes-list .no-changes { color: #555; text-align: center; padding: 8px; }
 
   @media (max-width: 1100px) {
-    .side-panel { width: 340px; }
-    .settings-panel { width: 380px; right: -400px; }
-    .settings-panel.open { right: 0; }
+    .side-panel { width: 360px; }
   }
 
   @media (max-width: 900px) {
@@ -1102,10 +1086,8 @@
     html, body { height: auto; }
     .app { flex-direction: column; height: auto; }
     .wheel-outer { width: min(80vw, 500px); }
-    .side-panel { width: 100%; }
-    .logo { font-size: 20px; top: 14px; left: 14px; }
-    .settings-panel { width: 100%; right: -100%; }
-    .settings-panel.open { right: 0; }
+    .side-panel { width: 100%; max-height: 80vh; }
+    .logo { font-size: 34px; top: 10px; left: 16px; }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -1126,12 +1108,12 @@
   <div class="wheel-area">
     <div class="wheel-outer" id="wheelOuter">
       <div class="pointer" id="pointer">
-        <svg viewBox="0 0 56 64" xmlns="http://www.w3.org/2000/svg">
+        <svg viewBox="0 0 62 96" xmlns="http://www.w3.org/2000/svg">
           <defs>
             <linearGradient id="ptrGrad" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stop-color="#ffffff"/>
               <stop offset="55%" stop-color="#f0f0f0"/>
-              <stop offset="100%" stop-color="#b8b8b8"/>
+              <stop offset="100%" stop-color="#b0b0b0"/>
             </linearGradient>
             <linearGradient id="ptrShine" x1="0" y1="0" x2="1" y2="0">
               <stop offset="0%" stop-color="rgba(255,255,255,0)"/>
@@ -1139,22 +1121,28 @@
               <stop offset="55%" stop-color="rgba(255,255,255,0.85)"/>
               <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
             </linearGradient>
+            <radialGradient id="ptrBase" cx="50%" cy="0%" r="60%">
+              <stop offset="0%" stop-color="#ffffff"/>
+              <stop offset="100%" stop-color="#c8c8c8"/>
+            </radialGradient>
           </defs>
-          <path d="M 4 2
-                   Q 6 -2 12 -2
-                   L 44 -2
-                   Q 50 -2 52 2
-                   Q 54 10 50 20
-                   Q 42 40 32 60
-                   Q 30 64 28 60
-                   Q 18 40 6 20
-                   Q 2 10 4 2 Z"
+          <!-- Удлинённая физичная стрелка -->
+          <path d="M 6 2
+                   Q 8 -2 14 -2
+                   L 48 -2
+                   Q 54 -2 56 2
+                   Q 58 12 54 28
+                   Q 46 56 34 88
+                   Q 31 96 28 88
+                   Q 16 56 8 28
+                   Q 4 12 6 2 Z"
                 fill="url(#ptrGrad)"
-                stroke="rgba(0,0,0,0.3)"
-                stroke-width="0.5"/>
-          <path d="M 22 0 Q 28 30 28 58 Q 28 30 34 0 Z"
+                stroke="rgba(0,0,0,0.35)"
+                stroke-width="0.6"/>
+          <path d="M 24 0 Q 31 40 31 84 Q 31 40 38 0 Z"
                 fill="url(#ptrShine)"
-                opacity="0.6"/>
+                opacity="0.55"/>
+          <ellipse cx="31" cy="6" rx="10" ry="4" fill="url(#ptrBase)" opacity="0.6"/>
         </svg>
       </div>
       <canvas id="wheelCanvas" width="1400" height="1400"></canvas>
@@ -1179,55 +1167,164 @@
   </div>
 
   <div class="side-panel">
-    <div class="settings-bar">
-      <button class="btn-settings" id="openSettingsBtn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="3"></circle>
-          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-        </svg>
-        Настройки
-      </button>
+    <!-- ВКЛАДКИ -->
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="variants">Варианты</button>
+      <button class="tab-btn" data-tab="settings">Настройки</button>
     </div>
 
-    <div class="modes">
-      <button class="mode-btn active" data-mode="drop">На выпадение</button>
-      <button class="mode-btn" data-mode="eliminate">На выбывание</button>
+    <!-- ВКЛАДКА ВАРИАНТЫ -->
+    <div class="tab-content active" id="tab-variants">
+      <div class="modes">
+        <button class="mode-btn active" data-mode="drop">На выпадение</button>
+        <button class="mode-btn" data-mode="eliminate">На выбывание</button>
+      </div>
+
+      <div class="list-header">
+        <span class="list-title">
+          Варианты
+          <span class="counter" id="variantCounter">0/15</span>
+        </span>
+        <span class="sum" id="sumIndicator">0%</span>
+      </div>
+
+      <div class="variant-list" id="variantList"></div>
+
+      <div class="actions">
+        <button class="btn" id="addVariantBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          Добавить вариант
+        </button>
+        <button class="btn btn-accent" id="autoDistributeBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+          </svg>
+          Авто-распределение шанса
+        </button>
+        <button class="btn btn-danger" id="clearAllBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+            <path d="M10 11v6"></path>
+            <path d="M14 11v6"></path>
+            <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path>
+          </svg>
+          Очистить все варианты
+        </button>
+      </div>
     </div>
 
-    <div class="list-header">
-      <span class="list-title">
-        Варианты
-        <span class="counter" id="variantCounter">0/15</span>
-      </span>
-      <span class="sum" id="sumIndicator">0%</span>
-    </div>
+    <!-- ВКЛАДКА НАСТРОЙКИ -->
+    <div class="tab-content" id="tab-settings">
+      <div class="settings-body">
+        <div class="setting">
+          <label>Звук</label>
+          <label class="switch-row">
+            <span>Звук вращения</span>
+            <input type="checkbox" id="soundToggle">
+          </label>
+        </div>
 
-    <div class="variant-list" id="variantList"></div>
+        <div class="setting">
+          <label>Анимации</label>
+          <label class="switch-row">
+            <span>Плавные анимации интерфейса</span>
+            <input type="checkbox" id="animToggle" checked>
+          </label>
+          <div class="hint">Отключите, если сайт лагает на слабом устройстве.</div>
+        </div>
 
-    <div class="actions">
-      <button class="btn" id="addVariantBtn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="12" y1="5" x2="12" y2="19"></line>
-          <line x1="5" y1="12" x2="19" y2="12"></line>
-        </svg>
-        Добавить вариант
-      </button>
-      <button class="btn btn-accent" id="autoDistributeBtn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
-        </svg>
-        Авто-распределение шанса
-      </button>
-      <button class="btn btn-danger" id="clearAllBtn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="3 6 5 6 21 6"></polyline>
-          <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
-          <path d="M10 11v6"></path>
-          <path d="M14 11v6"></path>
-          <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path>
-        </svg>
-        Очистить все варианты
-      </button>
+        <div class="setting">
+          <label>Время вращения</label>
+          <input type="range" id="spinTimeRange" min="0" max="300" value="5" step="1">
+          <div class="time-row">
+            <span>0 сек</span>
+            <span id="spinTimeValue" style="color:#ccc; font-weight:600;">5 сек</span>
+            <span>300 сек</span>
+          </div>
+        </div>
+
+        <div class="setting">
+          <label>Анимация вращения</label>
+          <select id="easingSelect">
+            <option value="easeInOut">Плавно туда-обратно</option>
+            <option value="easeOut">Плавное торможение</option>
+            <option value="easeIn">Плавный разгон</option>
+          </select>
+        </div>
+
+        <div class="setting">
+          <label>Паттерн выпадения</label>
+          <select id="patternSelect">
+            <option value="random">Случайный (микс всех)</option>
+            <option value="center">По центру сегмента</option>
+            <option value="edge">У границы (на стыке)</option>
+            <option value="nearStart">Ближе к началу</option>
+            <option value="nearEnd">Ближе к концу</option>
+            <option value="full">По всему сегменту</option>
+            <option value="middleOut">От центра к краям</option>
+          </select>
+          <div class="hint">Куда встанет стрелка внутри выигравшего сегмента</div>
+        </div>
+
+        <!-- ПРЕСЕТЫ -->
+        <div class="setting">
+          <label>Пресеты</label>
+          <div class="preset-list" id="presetList"></div>
+
+          <div class="preset-divider"></div>
+
+          <label style="font-size:11px; color:#777; text-transform:uppercase; letter-spacing:0.8px; display:block;">Свой пресет</label>
+          <div class="custom-preset-form">
+            <div class="form-row">
+              <input type="text" id="customPresetName" placeholder="Название пресета" maxlength="30">
+              <button class="btn btn-accent" id="saveCustomPresetBtn">Сохранить</button>
+            </div>
+            <div class="hint" style="margin-top:4px;">Сохранит текущие варианты под своим именем</div>
+          </div>
+
+          <div class="custom-list" id="customPresetList"></div>
+
+          <div class="preset-divider"></div>
+
+          <label style="font-size:11px; color:#777; text-transform:uppercase; letter-spacing:0.8px; display:block;">Код пресета</label>
+          <div class="preset-code-row">
+            <input type="text" id="presetCodeInput" placeholder="Введите код">
+            <button class="btn" id="applyPresetCodeBtn">Применить</button>
+          </div>
+          <div class="hint" id="presetHint">Введите код и нажмите «Применить».</div>
+        </div>
+
+        <!-- ГИФКА -->
+        <div class="setting">
+          <label>GIF / видео по центру (URL)</label>
+          <input type="text" id="gifUrlInput" placeholder="https://...">
+          <div class="hint">Вставьте ссылку или выберите из галереи.</div>
+
+          <div style="margin-top: 8px;">
+            <label style="font-size:11px; color:#777; text-transform:uppercase; letter-spacing:0.8px; display:block;">Галерея GIF</label>
+            <div class="gif-picker" id="gifPicker"></div>
+          </div>
+
+          <label class="gif-upload">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            Загрузить свое изображение
+            <input type="file" id="gifFileInput" accept="image/*,video/mp4,video/webm">
+          </label>
+        </div>
+      </div>
+
+      <!-- КНОПКА СОХРАНИТЬ -->
+      <div class="settings-save-bar">
+        <button class="btn btn-accent" id="saveSettingsBtn">Сохранить настройки</button>
+      </div>
     </div>
   </div>
 </div>
@@ -1272,117 +1369,6 @@
   </div>
 </div>
 
-<!-- === НАСТРОЙКИ (ВЫЕЗЖАЮЩАЯ ПАНЕЛЬ) === -->
-<div class="settings-panel" id="settingsPanel">
-  <div class="settings-header">
-    <h2>Настройки колеса</h2>
-    <button class="settings-close" id="closeSettingsBtn">✕</button>
-  </div>
-  <div class="settings-body">
-    <div class="setting">
-      <label>Звук</label>
-      <label class="switch-row">
-        <span>Звук вращения</span>
-        <input type="checkbox" id="soundToggle">
-      </label>
-    </div>
-
-    <div class="setting">
-      <label>Анимации</label>
-      <label class="switch-row">
-        <span>Плавные анимации интерфейса</span>
-        <input type="checkbox" id="animToggle" checked>
-      </label>
-      <div class="hint">Отключите, если сайт лагает на слабом устройстве.</div>
-    </div>
-
-    <div class="setting">
-      <label>Время вращения</label>
-      <input type="range" id="spinTimeRange" min="0" max="300" value="5" step="1">
-      <div class="time-row">
-        <span>0 сек</span>
-        <span id="spinTimeValue" style="color:#ccc; font-weight:600;">5 сек</span>
-        <span>300 сек</span>
-      </div>
-    </div>
-
-    <div class="setting">
-      <label>Анимация вращения</label>
-      <select id="easingSelect">
-        <option value="easeInOut">Плавно туда-обратно</option>
-        <option value="easeOut">Плавное торможение</option>
-        <option value="easeIn">Плавный разгон</option>
-      </select>
-    </div>
-
-    <div class="setting">
-      <label>Паттерн выпадения</label>
-      <select id="patternSelect">
-        <option value="random">Случайный (микс всех)</option>
-        <option value="center">По центру сегмента</option>
-        <option value="edge">У границы (на стыке)</option>
-        <option value="nearStart">Ближе к началу</option>
-        <option value="nearEnd">Ближе к концу</option>
-        <option value="full">По всему сегменту</option>
-        <option value="middleOut">От центра к краям</option>
-      </select>
-      <div class="hint">Куда встанет стрелка внутри выигравшего сегмента</div>
-    </div>
-
-    <!-- === ПРЕСЕТЫ === -->
-    <div class="setting">
-      <label>Пресеты</label>
-      <div class="preset-list" id="presetList"></div>
-
-      <div class="preset-divider"></div>
-
-      <label style="font-size:11px; color:#888; text-transform:uppercase; letter-spacing:0.8px; margin-bottom:7px; display:block;">Свой пресет</label>
-      <div class="custom-preset-form">
-        <div class="form-row">
-          <input type="text" id="customPresetName" placeholder="Название пресета" maxlength="30">
-          <button class="btn btn-accent" id="saveCustomPresetBtn">Сохранить</button>
-        </div>
-        <div class="hint" style="margin-top:0;">Сохранит текущие варианты (название, шансы) под своим именем</div>
-      </div>
-
-      <div class="custom-list" id="customPresetList"></div>
-
-      <div class="preset-divider"></div>
-
-      <label style="font-size:11px; color:#888; text-transform:uppercase; letter-spacing:0.8px; margin-bottom:7px; display:block;">Код пресета</label>
-      <div class="preset-code-row">
-        <input type="text" id="presetCodeInput" placeholder="Введите код">
-        <button class="btn" id="applyPresetCodeBtn">Применить</button>
-      </div>
-      <div class="hint" id="presetHint">Введите код и нажмите «Применить».</div>
-    </div>
-    <!-- === /ПРЕСЕТЫ === -->
-
-    <!-- === ГИФКА ПО ЦЕНТРУ (НОВЫЙ ВЫБОР) === -->
-    <div class="setting">
-      <label>GIF / видео по центру (URL)</label>
-      <input type="text" id="gifUrlInput" placeholder="https://...">
-      <div class="hint">Вставьте ссылку или выберите из галереи. Оставьте пустым, чтобы убрать.</div>
-      
-      <div style="margin-top: 8px;">
-        <label style="font-size:11px; color:#888; text-transform:uppercase; letter-spacing:0.8px; margin-bottom:7px; display:block;">Галерея GIF</label>
-        <div class="gif-picker" id="gifPicker"></div>
-      </div>
-      
-      <label class="gif-upload">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-          <polyline points="17 8 12 3 7 8"></polyline>
-          <line x1="12" y1="3" x2="12" y2="15"></line>
-        </svg>
-        Загрузить свое изображение
-        <input type="file" id="gifFileInput" accept="image/*,video/mp4,video/webm">
-      </label>
-    </div>
-    <!-- === /ГИФКА ПО ЦЕНТРУ === -->
-  </div>
-</div>
-
 <!-- === МОДАЛКА СОХРАНЕНИЯ ИЗМЕНЕНИЙ === -->
 <div class="overlay hidden" id="saveChangesModal">
   <div class="modal save-changes-modal">
@@ -1399,7 +1385,6 @@
 (function(){
   'use strict';
 
-  // ============ АВТО-ДЕТЕКТ СЛАБОГО УСТРОЙСТВА ============
   function detectLowPerf() {
     const ua = navigator.userAgent || '';
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua);
@@ -1410,7 +1395,6 @@
   }
 
   const LOW_PERF = detectLowPerf();
-  if (LOW_PERF) document.body.classList.add('perf-low');
 
   const MAX_NAME_LENGTH = 15;
   const MAX_VARIANTS = 15;
@@ -1428,7 +1412,6 @@
     animEnabled: true
   };
 
-  // === ГИФКИ ПО ССЫЛКАМ ===
   const GIF_URLS = [
     'https://images-ext-1.discordapp.net/external/4raXiXhYJJkhWn_XVO5DkWmydUNNlaYfYW3ynfuRsvg/https/static.klipy.com/ii/4493325008d34b7bf8cd6813cd5c1619/c3/45/SlWo9mE6a25T2LuITbj.mp4',
     'https://images-ext-1.discordapp.net/external/Osg5yLGGQeWrYc5INJY53Vdz5knaeqMwtVRFdmEcBNI/https/static.klipy.com/ii/8ce8357c78ea940b9c2015daf05ce1a5/07/7b/iwWtPgd1ZFxs5FQ1k0.mp4',
@@ -1444,7 +1427,6 @@
     'https://cdn.discordapp.com/attachments/1499840717235687527/1555292287653908592/crazy-dance-fast.mp4?backend=b2&ex=6abffe51&is=6abeacd1&hm=9b9c1841f60edc8f594f68f08a369547bb22b20b63bf579be6cfc963c819c099&'
   ];
 
-  // === ВСТРОЕННЫЕ ПРЕСЕТЫ ===
   const BUILTIN_PRESETS = [
     {
       id: 'builtin_12345',
@@ -1469,7 +1451,6 @@
     }
   ];
 
-  // === СЕКРЕТНЫЕ ПРЕСЕТЫ ===
   const SECRET_PRESET_CODES = {
     'ZV-INCREASE-PRESET-01-2': {
       id: 'secret_zv_increase_01_2',
@@ -1636,9 +1617,6 @@
   const resultActions = document.getElementById('resultActions');
   const confirmModal = document.getElementById('confirmModal');
   const autoDistributeModal = document.getElementById('autoDistributeModal');
-  const settingsPanel = document.getElementById('settingsPanel');
-  const openSettingsBtn = document.getElementById('openSettingsBtn');
-  const closeSettingsBtn = document.getElementById('closeSettingsBtn');
   const soundToggle = document.getElementById('soundToggle');
   const animToggle = document.getElementById('animToggle');
   const spinTimeRange = document.getElementById('spinTimeRange');
@@ -1651,8 +1629,11 @@
   const saveChangesModal = document.getElementById('saveChangesModal');
   const changesList = document.getElementById('changesList');
   const pointerEl = document.getElementById('pointer');
+  const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+  const tabBtns = document.querySelectorAll('.tab-btn');
+  const tabVariants = document.getElementById('tab-variants');
+  const tabSettings = document.getElementById('tab-settings');
 
-  // ---------- АУДИО ----------
   let audioCtx = null;
   let isSpinning = false;
 
@@ -1726,30 +1707,11 @@
     } catch(e) {}
   }
 
-  function playWinSound() {
-    if (!state.soundEnabled) return;
-    initAudio();
-    if (!audioCtx) return;
-    try {
-      const now = audioCtx.currentTime;
-      [523.25, 659.25, 783.99, 1046.5].forEach((freq, i) => {
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = 'sine';
-        osc.frequency.value = freq;
-        gain.gain.setValueAtTime(0.0001, now + i*0.09);
-        gain.gain.exponentialRampToValueAtTime(0.13, now + i*0.09 + 0.02);
-        gain.gain.exponentialRampToValueAtTime(0.0001, now + i*0.09 + 0.7);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start(now + i*0.09);
-        osc.stop(now + i*0.09 + 0.75);
-      });
-    } catch(e) {}
-  }
+  // Звук победы убран — функция оставлена пустой для совместимости
+  function playWinSound() {}
 
   function attachSounds(root) {
-    (root || document).querySelectorAll('button, .mode-btn, .btn, .btn-settings, .v-remove, .switch-row, .gif-item, .gif-upload, .preset-btn, .custom-item button, .settings-close').forEach(el => {
+    (root || document).querySelectorAll('button, .mode-btn, .btn, .v-remove, .switch-row, .gif-item, .gif-upload, .preset-btn, .custom-item button, .settings-close, .tab-btn').forEach(el => {
       if (el.dataset.soundAttached) return;
       el.dataset.soundAttached = '1';
       el.addEventListener('mouseenter', () => { initAudio(); });
@@ -1757,7 +1719,6 @@
     });
   }
 
-  // ---------- АНИМАЦИЯ СТРЕЛКИ ----------
   let pointerAnimId = null;
 
   function shakePointer() {
@@ -1768,10 +1729,10 @@
     }
 
     const startTime = performance.now();
-    const DURATION = 1200;
-    const FREQ = 14;
-    const AMP_START = 6;
-    const DAMPING = 4.5;
+    const DURATION = 1600;
+    const FREQ = 11;
+    const AMP_START = 9;
+    const DAMPING = 3.8;
 
     function frame(now) {
       const t = (now - startTime) / 1000;
@@ -1791,7 +1752,6 @@
     pointerAnimId = requestAnimationFrame(frame);
   }
 
-  // ---------- КОЛЕСО ----------
   let rotationAngle = -Math.PI / 2;
   const INITIAL_ROTATION = -Math.PI / 2;
 
@@ -1877,7 +1837,7 @@
     ctx.fillStyle = '#050505';
     ctx.shadowBlur = 0;
     ctx.fill();
-    ctx.strokeStyle = '#2a2a2a';
+    ctx.strokeStyle = '#1e1e1e';
     ctx.lineWidth = 5;
     ctx.stroke();
   }
@@ -1888,6 +1848,7 @@
     state.variants.forEach((v, i) => {
       const row = document.createElement('div');
       row.className = 'variant-row';
+      row.style.animationDelay = (i * 0.03) + 's';
 
       const dot = document.createElement('input');
       dot.type = 'color';
@@ -1970,7 +1931,6 @@
     autoDistributeBtn.disabled = isSpinning;
     clearAllBtn.disabled = isSpinning;
     modeBtns.forEach(b => b.disabled = isSpinning);
-    openSettingsBtn.disabled = isSpinning;
     cancelSpinBtn.disabled = !isSpinning;
     cancelSpinBtn.classList.toggle('visible', isSpinning);
   }
@@ -2057,7 +2017,6 @@
     }
   }
 
-  // ---------- ВРАЩЕНИЕ ----------
   let spinAnimId = null;
   let spinCancelled = false;
 
@@ -2217,7 +2176,6 @@
     renderVariantList();
     const winner = state.variants[winnerIdx];
     if (!winner) return;
-    playWinSound();
     showResult(winner, state.mode === 'eliminate');
   }
 
@@ -2280,7 +2238,6 @@
     resultModal.classList.remove('hidden');
   }
 
-  // ---------- ПРЕСЕТЫ ----------
   function getAllVisiblePresets() {
     const all = BUILTIN_PRESETS.slice();
     customPresets.forEach(p => {
@@ -2334,8 +2291,8 @@
 
       btn.addEventListener('click', () => {
         applyPreset(p);
-        btn.style.background = '#1a2a1a';
-        btn.style.borderColor = '#2a5a2a';
+        btn.style.background = '#142414';
+        btn.style.borderColor = '#1e4a1e';
         setTimeout(() => {
           btn.style.background = '';
           btn.style.borderColor = '';
@@ -2481,7 +2438,6 @@
     }, 2500);
   }
 
-  // ---------- ГИФКИ В ГАЛЕРЕЕ ----------
   function renderGifPicker() {
     gifPicker.innerHTML = '';
     GIF_URLS.forEach((url, idx) => {
@@ -2498,14 +2454,14 @@
         video.autoplay = true;
         video.playsInline = true;
         video.preload = 'metadata';
-        video.onerror = () => { item.innerHTML = '<div style="color:#555;font-size:11px;text-align:center;padding:8px;">Ошибка<br>загрузки</div>'; };
+        video.onerror = () => { item.innerHTML = '<div style="color:#444;font-size:11px;text-align:center;padding:8px;">Ошибка<br>загрузки</div>'; };
         item.appendChild(video);
       } else {
         const img = document.createElement('img');
         img.src = url;
         img.alt = 'GIF ' + (idx + 1);
         img.loading = 'lazy';
-        img.onerror = () => { item.innerHTML = '<div style="color:#555;font-size:11px;text-align:center;padding:8px;">Ошибка<br>загрузки</div>'; };
+        img.onerror = () => { item.innerHTML = '<div style="color:#444;font-size:11px;text-align:center;padding:8px;">Ошибка<br>загрузки</div>'; };
         item.appendChild(img);
       }
 
@@ -2528,12 +2484,36 @@
     attachSounds(gifPicker);
   }
 
-  // ---------- ОБРАБОТЧИКИ ----------
+  // === ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК ===
+  tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const tab = btn.dataset.tab;
+      tabBtns.forEach(b => b.classList.toggle('active', b === btn));
+      tabVariants.classList.toggle('active', tab === 'variants');
+      tabSettings.classList.toggle('active', tab === 'settings');
+      if (tab === 'settings') {
+        // синхронизация настроек при открытии
+        soundToggle.checked = state.soundEnabled;
+        animToggle.checked = state.animEnabled;
+        spinTimeRange.value = state.spinDuration;
+        spinTimeValue.textContent = state.spinDuration + ' сек';
+        easingSelect.value = state.easing;
+        patternSelect.value = state.pattern || 'random';
+        gifUrlInput.value = state.gifUrl || '';
+        renderPresetList();
+        renderCustomList();
+        renderGifPicker();
+        document.getElementById('presetHint').textContent = 'Введите код и нажмите «Применить».';
+        document.getElementById('presetHint').style.color = '';
+      }
+    });
+  });
+
+  // === ОСНОВНЫЕ ОБРАБОТЧИКИ ===
   spinBtn.addEventListener('click', spin);
   cancelSpinBtn.addEventListener('click', cancelSpin);
   wheelOuter.addEventListener('click', () => {
     if (isSpinning) return;
-    if (settingsPanel.classList.contains('open')) return;
     initAudio();
     playClick();
     spin();
@@ -2613,9 +2593,7 @@
     btn.addEventListener('click', () => setMode(btn.dataset.mode));
   });
 
-  // === НАСТРОЙКИ (ВЫЕЗЖАЮЩАЯ ПАНЕЛЬ) ===
-  let settingsSnapshot = null;
-
+  // === СОХРАНЕНИЕ НАСТРОЕК ===
   function takeSettingsSnapshot() {
     return {
       soundEnabled: soundToggle.checked,
@@ -2626,6 +2604,8 @@
       gifUrl: gifUrlInput.value.trim()
     };
   }
+
+  let settingsSnapshot = takeSettingsSnapshot();
 
   function getChanges(oldSnap, newSnap) {
     const changes = [];
@@ -2680,48 +2660,27 @@
     return changes;
   }
 
-  openSettingsBtn.addEventListener('click', () => {
-    if (isSpinning) return;
-    soundToggle.checked = state.soundEnabled;
-    animToggle.checked = state.animEnabled;
-    spinTimeRange.value = state.spinDuration;
-    spinTimeValue.textContent = state.spinDuration + ' сек';
-    easingSelect.value = state.easing;
-    patternSelect.value = state.pattern || 'random';
-    gifUrlInput.value = state.gifUrl || '';
-    renderPresetList();
-    renderCustomList();
-    renderGifPicker();
-    document.getElementById('presetHint').textContent = 'Введите код и нажмите «Применить».';
-    document.getElementById('presetHint').style.color = '';
-    settingsSnapshot = takeSettingsSnapshot();
-    settingsPanel.classList.add('open');
-  });
-
-  closeSettingsBtn.addEventListener('click', () => {
+  saveSettingsBtn.addEventListener('click', () => {
     const currentSnap = takeSettingsSnapshot();
     const changes = getChanges(settingsSnapshot, currentSnap);
 
     if (changes.length > 0) {
       changesList.innerHTML = '';
-      if (changes.length === 0) {
-        changesList.innerHTML = '<div class="no-changes">Нет изменений</div>';
-      } else {
-        changes.forEach(c => {
-          const item = document.createElement('div');
-          item.className = 'change-item';
-          item.innerHTML = `<span class="change-label">${escapeHtml(c.label)}:</span>
-            <span class="change-value"><span class="change-old">${escapeHtml(c.old)}</span> → <span class="change-new">${escapeHtml(c.new)}</span></span>`;
-          changesList.appendChild(item);
-        });
-      }
+      changes.forEach(c => {
+        const item = document.createElement('div');
+        item.className = 'change-item';
+        item.innerHTML = `<span class="change-label">${escapeHtml(c.label)}:</span>
+          <span class="change-value"><span class="change-old">${escapeHtml(c.old)}</span> → <span class="change-new">${escapeHtml(c.new)}</span></span>`;
+        changesList.appendChild(item);
+      });
       saveChangesModal.classList.remove('hidden');
     } else {
-      settingsPanel.classList.remove('open');
+      // нет изменений — просто сохраняем
+      saveSettingsToState();
     }
   });
 
-  document.getElementById('saveChangesOk').addEventListener('click', () => {
+  function saveSettingsToState() {
     state.soundEnabled = soundToggle.checked;
     state.spinDuration = Number(spinTimeRange.value);
     state.easing = easingSelect.value;
@@ -2730,13 +2689,15 @@
 
     state.animEnabled = animToggle.checked;
     try { localStorage.setItem(ANIM_TOGGLE_KEY, state.animEnabled ? '1' : '0'); } catch (e) {}
-    document.body.classList.toggle('no-anim', !state.animEnabled);
 
     saveState();
     updateCenterGif();
-    saveChangesModal.classList.add('hidden');
-    settingsPanel.classList.remove('open');
     settingsSnapshot = takeSettingsSnapshot();
+  }
+
+  document.getElementById('saveChangesOk').addEventListener('click', () => {
+    saveSettingsToState();
+    saveChangesModal.classList.add('hidden');
   });
 
   document.getElementById('saveChangesCancel').addEventListener('click', () => {
@@ -2748,10 +2709,8 @@
       easingSelect.value = settingsSnapshot.easing;
       patternSelect.value = settingsSnapshot.pattern;
       gifUrlInput.value = settingsSnapshot.gifUrl;
-      document.body.classList.toggle('no-anim', !settingsSnapshot.animEnabled);
     }
     saveChangesModal.classList.add('hidden');
-    settingsPanel.classList.remove('open');
   });
 
   animToggle.addEventListener('change', () => {
@@ -2762,7 +2721,6 @@
     spinTimeValue.textContent = e.target.value + ' сек';
   });
 
-  // Обработчики пресетов
   document.getElementById('saveCustomPresetBtn').addEventListener('click', saveCustomPreset);
   document.getElementById('applyPresetCodeBtn').addEventListener('click', applyPresetCode);
   document.getElementById('presetCodeInput').addEventListener('keydown', (e) => {
@@ -2772,7 +2730,6 @@
     if (e.key === 'Enter') saveCustomPreset();
   });
 
-  // === ЗАГРУЗКА СВОЕГО ИЗОБРАЖЕНИЯ ===
   gifFileInput.addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -2797,7 +2754,6 @@
       confirmModal.classList.add('hidden');
       autoDistributeModal.classList.add('hidden');
       saveChangesModal.classList.add('hidden');
-      settingsPanel.classList.remove('open');
     }
   });
 
