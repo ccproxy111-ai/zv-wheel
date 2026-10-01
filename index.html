@@ -97,15 +97,45 @@
     background-clip: text;
     -webkit-text-fill-color: transparent;
     color: transparent;
-    animation: logoShine 4.5s ease-in-out infinite;
+    animation: logoShine 3.2s cubic-bezier(0.22, 1, 0.36, 1) infinite, logoPulse 2.8s ease-in-out infinite;
     transform: rotate(-2deg);
-    filter: drop-shadow(0 0 18px rgba(255,255,255,0.10));
+    filter:
+      drop-shadow(0 0 6px rgba(255,255,255,0.24))
+      drop-shadow(0 0 20px rgba(255,255,255,0.16))
+      drop-shadow(0 0 34px rgba(139,196,255,0.10));
+  }
+
+  .logo span {
+    display: inline-block;
+    transform-origin: 50% 80%;
+    animation: logoLetterWave 2.7s ease-in-out infinite;
+    will-change: transform;
+  }
+
+  .logo span:nth-child(1) { animation-delay: 0s; }
+  .logo span:nth-child(2) { animation-delay: 0.09s; }
+  .logo span:nth-child(3) { animation-delay: 0.18s; }
+  .logo span:nth-child(4) { animation-delay: 0.27s; }
+  .logo span:nth-child(5) { animation-delay: 0.36s; }
+  .logo span:nth-child(6) { animation-delay: 0.45s; }
+
+  @keyframes logoLetterWave {
+    0%, 72%, 100% { transform: translateY(0) rotate(0deg); }
+    78% { transform: translateY(-4px) rotate(-2deg); }
+    84% { transform: translateY(1px) rotate(1.5deg); }
+    90% { transform: translateY(-2px) rotate(-1deg); }
+    95% { transform: translateY(0) rotate(0deg); }
   }
 
   @keyframes logoShine {
-    0%   { background-position: 200% 0; }
-    60%  { background-position: -60% 0; }
-    100% { background-position: -60% 0; }
+    0%   { background-position: 220% 0; }
+    48%  { background-position: -70% 0; }
+    100% { background-position: -70% 0; }
+  }
+
+  @keyframes logoPulse {
+    0%, 100% { filter: drop-shadow(0 0 6px rgba(255,255,255,0.20)) drop-shadow(0 0 20px rgba(255,255,255,0.13)); }
+    50% { filter: drop-shadow(0 0 10px rgba(255,255,255,0.34)) drop-shadow(0 0 30px rgba(139,196,255,0.18)); }
   }
 
   @keyframes logoLevitate {
@@ -195,6 +225,29 @@
 
   .wheel-outer:hover { filter: brightness(1.06); transform: scale(1.012); }
   .wheel-outer:active { filter: brightness(0.96); transform: scale(0.988); }
+
+  /* Когда открыты настройки, колесо становится визуально недоступным. */
+  body.settings-open .wheel-outer {
+    cursor: not-allowed;
+    filter: brightness(0.38) saturate(0.55) opacity(0.48);
+    transform: scale(0.985);
+    pointer-events: none;
+  }
+  body.settings-open .wheel-outer::after {
+    content: 'Настройки открыты';
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,0,0,0.08), rgba(0,0,0,0.34));
+    color: rgba(255,255,255,0.32);
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    pointer-events: none;
+  }
 
   canvas#wheelCanvas {
     width: 100%;
@@ -289,6 +342,14 @@
   }
   .spin-btn:active:not(:disabled) { transform: scale(0.97); }
   .spin-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  body.settings-open .spin-btn {
+    opacity: 0.32;
+    filter: saturate(0.45) brightness(0.65);
+    cursor: not-allowed;
+    pointer-events: none;
+    transform: none;
+  }
+  body.settings-open .spin-btn::before { opacity: 0; }
   .spin-btn svg { width: 22px; height: 22px; transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1); }
   .spin-btn:hover:not(:disabled) svg { transform: rotate(360deg); }
 
@@ -639,6 +700,54 @@
   }
 
   /* === НАСТРОЙКИ ВНУТРИ ПАНЕЛИ === */
+  .gif-upload {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    width: 100%;
+    padding: 12px 14px;
+    margin-top: 2px;
+    border: 1px dashed #303945;
+    border-radius: var(--radius);
+    background: linear-gradient(135deg, rgba(139,196,255,0.07), rgba(255,255,255,0.025));
+    color: #a9cfff;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    cursor: pointer;
+    overflow: hidden;
+    transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .gif-upload::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgba(139,196,255,0.16), transparent 62%);
+    opacity: 0;
+    transition: opacity 0.25s ease;
+    pointer-events: none;
+  }
+  .gif-upload:hover {
+    border-color: #46627d;
+    background: linear-gradient(135deg, rgba(139,196,255,0.12), rgba(255,255,255,0.045));
+    color: #d7eaff;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 22px rgba(0,0,0,0.38), 0 0 24px rgba(139,196,255,0.06);
+  }
+  .gif-upload:hover::before { opacity: 1; }
+  .gif-upload:active { transform: translateY(0) scale(0.985); }
+  .gif-upload svg { width: 17px; height: 17px; flex-shrink: 0; }
+  .gif-upload input[type="file"] {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+  }
+
   .settings-body {
     flex: 1;
     overflow-y: auto;
@@ -1344,7 +1453,7 @@
 <body>
 
 <div class="logo-wrap">
-  <div class="logo">Колесо</div>
+  <div class="logo" aria-label="Колесо"><span>К</span><span>о</span><span>л</span><span>е</span><span>с</span><span>о</span></div>
 </div>
 <div class="copyright">By MeduzaGref ©</div>
 
@@ -1694,7 +1803,14 @@
     'https://images-ext-1.discordapp.net/external/Fpxl-IeQNSRjJ2Yqyf5pwC0WjW0K0rfFxPFmqGCgcUM/%3Fsize%3D48%26quality%3Dlossless%26name%3DNM_Abortion/https/cdn.discordapp.com/emojis/722044395624595538.gif',
     'https://images-ext-1.discordapp.net/external/VT6te5Moy48shIKq8nsocDXIFCfvg_fhUwuta40kyJE/https/media.tenor.com/jA6_1Cz13OkAAAPo/%25D0%25BC%25D0%25B5%25D0%25BB%25D0%25BB%25D1%2581%25D1%2582%25D1%2580%25D0%25BE%25D0%25B9-mellstroy.mp4',
     'https://cdn.discordapp.com/attachments/1499840717235687527/1555292263398113460/-.mp4?backend=b2&ex=6abffe4b&is=6abeaccb&hm=4a81bfb849cb5ab85d579434b83dd83b8a787523f442ef89ddd49295547e46f4&',
-    'https://cdn.discordapp.com/attachments/1499840717235687527/1555292287653908592/crazy-dance-fast.mp4?backend=b2&ex=6abffe51&is=6abeacd1&hm=9b9c1841f60edc8f594f68f08a369547bb22b20b63bf579be6cfc963c819c099&'
+    'https://cdn.discordapp.com/attachments/1499840717235687527/1555292287653908592/crazy-dance-fast.mp4?backend=b2&ex=6abffe51&is=6abeacd1&hm=9b9c1841f60edc8f594f68f08a369547bb22b20b63bf579be6cfc963c819c099&',
+    'https://media.discordapp.net/attachments/1416153572265168987/1445772764811231374/vrbie-vrbs.gif?ex=6abfb550&is=6abe63d0&hm=5eba41c0daa8bac21211cdf32b8e45229f18caddab5e380c45144283393c3bf1&=',
+    'https://images-ext-1.discordapp.net/external/PmNLSR3BSRBtyqAOqRJn6FXykAjP1zY5g43Bxv7yMFE/https/static.klipy.com/ii/35ccce3d852f7995dd2da910f2abd795/2e/6b/IwDyGX5D.mp4',
+    'https://images-ext-1.discordapp.net/external/7Tg_kXJ_Y2EK8UOapMdsAhlmqd564x1_qZEVuICG3jc/https/media.tenor.com/eRi7jJSUUrUAAAPo/cat-kung-fu.mp4',
+    'https://images-ext-1.discordapp.net/external/BAOPnZhJWuRQZ7khwwqBODSzuoADXje2fPwwTL6XtOo/https/media.tenor.com/9MAZbcB0ygIAAAPo/good-content-hello-neighbor.mp4',
+    'https://media.discordapp.net/attachments/1499840717235687527/1555299139653341244/rigby-cat-tongue-cat-tongue.gif?ex=6ac004b2&is=6abeb332&hm=50b88ed003e7bbf48d9b71c408f5d0c1bc02869a16e852352487eb6e26b832a6&=',
+    'https://media.discordapp.net/attachments/1499840717235687527/1555299330523660298/cat-67.gif?ex=6ac004e0&is=6abeb360&hm=6bc9489cc2e30739ae24c13849ad0ca4b8994841a6cd2fd204c5eba3275726f3&=',
+    'https://media.discordapp.net/attachments/1499840717235687527/1555299465345110056/cat-showercap-slyonicz.gif?backend=b2&ex=6ac00500&is=6abeb380&hm=f0ccf2860dcdafd3966d535a4ee98cad4e4c562034bbe07808129c17a2be5d65&=',
   ];
 
   const BUILTIN_PRESETS = [
@@ -2843,34 +2959,78 @@
   });
 
   // === ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК ===
+  let pendingTab = null;
+
+  function activateTab(tab) {
+    tabBtns.forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+    tabVariants.classList.toggle('active', tab === 'variants');
+    tabSettings.classList.toggle('active', tab === 'settings');
+    document.body.classList.toggle('settings-open', tab === 'settings');
+    if (tab === 'settings') {
+      spinBtn.disabled = true;
+    } else if (!isSpinning) {
+      spinBtn.disabled = false;
+    }
+
+    if (tab === 'settings') {
+      soundToggle.checked = state.soundEnabled;
+      animToggle.checked = state.animEnabled;
+      spinTimeRange.value = state.spinDuration;
+      spinTimeValue.textContent = state.spinDuration + ' сек';
+      easingSelect.value = state.easing;
+      patternSelect.value = state.pattern || 'random';
+      gifUrlInput.value = state.gifUrl || '';
+      settingsSnapshot = takeSettingsSnapshot();
+      renderPresetList();
+      renderCustomList();
+      updateGifCurrentPreview();
+      document.getElementById('presetHint').textContent = 'Введите код и нажмите «Применить».';
+      document.getElementById('presetHint').style.color = '';
+    }
+  }
+
+  function showSaveChangesModal(nextTab) {
+    const currentSnap = takeSettingsSnapshot();
+    const changes = getChanges(settingsSnapshot, currentSnap);
+    if (!changes.length) {
+      activateTab(nextTab);
+      return;
+    }
+
+    pendingTab = nextTab;
+    changesList.innerHTML = '';
+    changes.forEach(c => {
+      const item = document.createElement('div');
+      item.className = 'change-item';
+      item.innerHTML = `<span class="change-label">${escapeHtml(c.label)}:</span>
+        <span class="change-value"><span class="change-old">${escapeHtml(c.old)}</span> → <span class="change-new">${escapeHtml(c.new)}</span></span>`;
+      changesList.appendChild(item);
+    });
+    saveChangesModal.classList.remove('hidden');
+  }
+
   tabBtns.forEach(btn => {
     btn.addEventListener('click', () => {
       const tab = btn.dataset.tab;
-      tabBtns.forEach(b => b.classList.toggle('active', b === btn));
-      tabVariants.classList.toggle('active', tab === 'variants');
-      tabSettings.classList.toggle('active', tab === 'settings');
-      if (tab === 'settings') {
-        soundToggle.checked = state.soundEnabled;
-        animToggle.checked = state.animEnabled;
-        spinTimeRange.value = state.spinDuration;
-        spinTimeValue.textContent = state.spinDuration + ' сек';
-        easingSelect.value = state.easing;
-        patternSelect.value = state.pattern || 'random';
-        gifUrlInput.value = state.gifUrl || '';
-        renderPresetList();
-        renderCustomList();
-        updateGifCurrentPreview();
-        document.getElementById('presetHint').textContent = 'Введите код и нажмите «Применить».';
-        document.getElementById('presetHint').style.color = '';
+      const currentTab = document.querySelector('.tab-btn.active')?.dataset.tab || 'variants';
+      if (tab === currentTab) return;
+
+      if (currentTab === 'settings' && tab !== 'settings') {
+        showSaveChangesModal(tab);
+      } else {
+        activateTab(tab);
       }
     });
   });
 
   // === ОСНОВНЫЕ ОБРАБОТЧИКИ ===
-  spinBtn.addEventListener('click', spin);
+  spinBtn.addEventListener('click', () => {
+    if (document.body.classList.contains('settings-open')) return;
+    spin();
+  });
   cancelSpinBtn.addEventListener('click', cancelSpin);
   wheelOuter.addEventListener('click', () => {
-    if (isSpinning) return;
+    if (isSpinning || document.body.classList.contains('settings-open')) return;
     initAudio();
     playClick();
     spin();
@@ -3017,22 +3177,8 @@
   }
 
   saveSettingsBtn.addEventListener('click', () => {
-    const currentSnap = takeSettingsSnapshot();
-    const changes = getChanges(settingsSnapshot, currentSnap);
-
-    if (changes.length > 0) {
-      changesList.innerHTML = '';
-      changes.forEach(c => {
-        const item = document.createElement('div');
-        item.className = 'change-item';
-        item.innerHTML = `<span class="change-label">${escapeHtml(c.label)}:</span>
-          <span class="change-value"><span class="change-old">${escapeHtml(c.old)}</span> → <span class="change-new">${escapeHtml(c.new)}</span></span>`;
-        changesList.appendChild(item);
-      });
-      saveChangesModal.classList.remove('hidden');
-    } else {
-      saveSettingsToState();
-    }
+    pendingTab = null;
+    showSaveChangesModal(null);
   });
 
   function saveSettingsToState() {
@@ -3051,22 +3197,43 @@
     settingsSnapshot = takeSettingsSnapshot();
   }
 
+  function restoreSettingsSnapshot() {
+    if (!settingsSnapshot) return;
+
+    soundToggle.checked = settingsSnapshot.soundEnabled;
+    animToggle.checked = settingsSnapshot.animEnabled;
+    spinTimeRange.value = settingsSnapshot.spinDuration;
+    spinTimeValue.textContent = settingsSnapshot.spinDuration + ' сек';
+    easingSelect.value = settingsSnapshot.easing;
+    patternSelect.value = settingsSnapshot.pattern;
+    gifUrlInput.value = settingsSnapshot.gifUrl;
+
+    state.soundEnabled = settingsSnapshot.soundEnabled;
+    state.animEnabled = settingsSnapshot.animEnabled;
+    state.spinDuration = settingsSnapshot.spinDuration;
+    state.easing = settingsSnapshot.easing;
+    state.pattern = settingsSnapshot.pattern;
+    state.gifUrl = settingsSnapshot.gifUrl;
+
+    document.body.classList.toggle('no-anim', !state.animEnabled);
+    updateCenterGif();
+    updateGifCurrentPreview();
+  }
+
   document.getElementById('saveChangesOk').addEventListener('click', () => {
+    const nextTab = pendingTab;
+    pendingTab = null;
     saveSettingsToState();
     saveChangesModal.classList.add('hidden');
+    if (nextTab) activateTab(nextTab);
   });
 
   document.getElementById('saveChangesCancel').addEventListener('click', () => {
-    if (settingsSnapshot) {
-      soundToggle.checked = settingsSnapshot.soundEnabled;
-      animToggle.checked = settingsSnapshot.animEnabled;
-      spinTimeRange.value = settingsSnapshot.spinDuration;
-      spinTimeValue.textContent = settingsSnapshot.spinDuration + ' сек';
-      easingSelect.value = settingsSnapshot.easing;
-      patternSelect.value = settingsSnapshot.pattern;
-      gifUrlInput.value = settingsSnapshot.gifUrl;
-    }
+    const nextTab = pendingTab;
+    pendingTab = null;
+    restoreSettingsSnapshot();
     saveChangesModal.classList.add('hidden');
+    if (nextTab) activateTab(nextTab);
   });
 
   animToggle.addEventListener('change', () => {
@@ -3107,7 +3274,10 @@
 
   [resultModal, confirmModal, autoDistributeModal, saveChangesModal].forEach(m => {
     m.addEventListener('click', (e) => {
-      if (e.target === m) m.classList.add('hidden');
+      if (e.target === m) {
+        m.classList.add('hidden');
+        if (m === saveChangesModal) pendingTab = null;
+      }
     });
   });
 
@@ -3121,6 +3291,7 @@
       confirmModal.classList.add('hidden');
       autoDistributeModal.classList.add('hidden');
       saveChangesModal.classList.add('hidden');
+      pendingTab = null;
     }
   });
 
@@ -3146,6 +3317,7 @@
     attachSounds(document);
     updateControlsState();
     updateVariantCounter();
+    document.body.classList.remove('settings-open');
   }
 
   init();
