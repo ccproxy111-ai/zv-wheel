@@ -65,18 +65,23 @@
     position: relative;
   }
 
-  /* === ЛОГОТИП РУКОПИСНЫЙ С БЛЕСКОМ === */
-  .logo {
+  /* === ЛОГОТИП РУКОПИСНЫЙ С БЛЕСКОМ + ЛЕВИТАЦИЯ === */
+  .logo-wrap {
     position: fixed;
     top: 14px;
     left: 26px;
+    z-index: 100;
+    pointer-events: none;
+    user-select: none;
+    animation: logoLevitate 6s ease-in-out infinite;
+    will-change: transform;
+  }
+
+  .logo {
     font-family: 'Caveat', cursive;
     font-size: 44px;
     font-weight: 700;
     letter-spacing: 2px;
-    z-index: 100;
-    pointer-events: none;
-    user-select: none;
     line-height: 1;
     background: linear-gradient(
       100deg,
@@ -93,14 +98,22 @@
     -webkit-text-fill-color: transparent;
     color: transparent;
     animation: logoShine 4.5s ease-in-out infinite;
-    text-shadow: 0 0 24px rgba(255,255,255,0.06);
     transform: rotate(-2deg);
+    filter: drop-shadow(0 0 18px rgba(255,255,255,0.10));
   }
 
   @keyframes logoShine {
     0%   { background-position: 200% 0; }
     60%  { background-position: -60% 0; }
     100% { background-position: -60% 0; }
+  }
+
+  @keyframes logoLevitate {
+    0%   { transform: translateY(0)    rotate(-2deg); }
+    25%  { transform: translateY(-6px) rotate(-1.2deg); }
+    50%  { transform: translateY(-10px) rotate(0deg); }
+    75%  { transform: translateY(-5px) rotate(-1.2deg); }
+    100% { transform: translateY(0)    rotate(-2deg); }
   }
 
   .copyright {
@@ -183,7 +196,6 @@
   .wheel-outer:hover { filter: brightness(1.06); transform: scale(1.012); }
   .wheel-outer:active { filter: brightness(0.96); transform: scale(0.988); }
 
-  /* === РАМКА ТОНЬШЕ === */
   canvas#wheelCanvas {
     width: 100%;
     height: 100%;
@@ -742,65 +754,293 @@
     margin-top: 2px;
   }
 
-  /* === ГИФКИ === */
-  .gif-picker {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 6px;
-    max-height: 240px;
-    overflow-y: auto;
-    padding-right: 4px;
-    margin-top: 6px;
-  }
-  .gif-picker::-webkit-scrollbar { width: 4px; }
-  .gif-picker::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 4px; }
-
-  .gif-item {
-    aspect-ratio: 1 / 1;
-    background: #161616;
-    border: 1px solid #1f1f1f;
-    border-radius: var(--radius);
-    cursor: pointer;
-    overflow: hidden;
+  /* === КНОПКА ГАЛЕРЕИ GIF === */
+  .gif-open-btn {
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: border-color 0.2s ease, transform 0.2s ease;
+    gap: 10px;
+    padding: 14px;
+    background: linear-gradient(135deg, #151a24, #131313);
+    border: 1px solid #23303f;
+    border-radius: var(--radius);
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
     position: relative;
+    overflow: hidden;
+    width: 100%;
+    margin-top: 4px;
   }
-  .gif-item:hover {
-    border-color: #444;
-    transform: scale(1.05);
+  .gif-open-btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgba(139,196,255,0.15), transparent 60%);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .gif-open-btn:hover::after { opacity: 1; }
+  .gif-open-btn:hover {
+    border-color: #35506a;
+    background: linear-gradient(135deg, #1a2230, #171717);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4), 0 0 30px rgba(139,196,255,0.06);
+  }
+  .gif-open-btn:active { transform: scale(0.98); }
+  .gif-open-btn svg { width: 18px; height: 18px; }
+
+  .gif-current-preview {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    background: #0c0c0c;
+    border: 1px solid #1a1a1a;
+    border-radius: var(--radius);
+    font-size: 12px;
+    color: #777;
+  }
+  .gif-current-preview .thumb {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #050505;
+    border: 2px solid #1e1e1e;
+    overflow: hidden;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .gif-current-preview .thumb img,
+  .gif-current-preview .thumb video {
+    width: 100%; height: 100%; object-fit: cover;
+  }
+  .gif-current-preview .thumb .ph { color: #333; font-size: 16px; }
+  .gif-current-preview .txt { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .gif-current-preview .clear {
+    flex-shrink: 0;
+    width: 24px; height: 24px;
+    border-radius: var(--radius);
+    background: transparent;
+    border: 1px solid #222;
+    color: #666;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s ease;
+    padding: 0;
+  }
+  .gif-current-preview .clear:hover { background: #1f1111; border-color: #3a1a1a; color: #ff6b6b; transform: rotate(90deg); }
+
+  /* === ПОЛНОЭКРАННАЯ ГАЛЕРЕЯ GIF === */
+  .gif-gallery-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(5, 5, 8, 0.92);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    padding: 24px 28px 28px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  .gif-gallery-overlay.open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .gif-gallery-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    flex-shrink: 0;
+    transform: translateY(-10px);
+    opacity: 0;
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.35s ease;
+  }
+  .gif-gallery-overlay.open .gif-gallery-header {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  .gif-gallery-title {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .gif-gallery-title .badge {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-transform: none;
+    color: #666;
+    background: #141414;
+    padding: 3px 9px;
+    border-radius: 20px;
+    border: 1px solid #222;
+  }
+
+  .gif-gallery-close {
+    width: 40px;
+    height: 40px;
+    background: #141414;
+    border: 1px solid #2a2a2a;
+    border-radius: 50%;
+    color: #aaa;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+    font-family: inherit;
+    line-height: 1;
+    padding: 0;
+  }
+  .gif-gallery-close:hover {
+    background: #2a1515;
+    border-color: #4a2020;
+    color: #ff6b6b;
+    transform: rotate(90deg) scale(1.08);
+  }
+
+  .gif-gallery-body {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 6px;
+    min-height: 0;
+  }
+  .gif-gallery-body::-webkit-scrollbar { width: 6px; }
+  .gif-gallery-body::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 6px; }
+  .gif-gallery-body::-webkit-scrollbar-thumb:hover { background: #3a3a3a; }
+
+  .gif-gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: 14px;
+    padding-bottom: 10px;
+  }
+
+  .gif-card {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    background: #101010;
+    border: 1px solid #1e1e1e;
+    border-radius: 6px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    opacity: 0;
+    transform: scale(0.92) translateY(10px);
+    animation: gifCardIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+  @keyframes gifCardIn {
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  .gif-card:hover {
+    border-color: #3a4a5a;
+    transform: scale(1.04) translateY(-4px);
+    box-shadow: 0 16px 40px rgba(0,0,0,0.7), 0 0 40px rgba(139,196,255,0.08);
     z-index: 2;
   }
-  .gif-item video,
-  .gif-item img {
+
+  .gif-card video,
+  .gif-card img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
     pointer-events: none;
+    transition: transform 0.4s ease;
+  }
+  .gif-card:hover video,
+  .gif-card:hover img {
+    transform: scale(1.08);
   }
 
-  .gif-upload {
+  /* Оверлей с иконкой "плюс" при наведении */
+  .gif-card .pick-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.55) 100%);
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    padding: 12px;
-    background: #0a0a0a;
-    border: 1px dashed #333;
-    border-radius: var(--radius);
-    color: var(--accent);
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    text-align: center;
-    margin-top: 4px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
   }
-  .gif-upload:hover { background: #121212; border-color: #444; }
-  .gif-upload input { display: none; }
+  .gif-card:hover .pick-overlay { opacity: 1; }
+
+  .gif-card .pick-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: rgba(139, 196, 255, 0.15);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 2px solid rgba(139, 196, 255, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    transform: scale(0.6);
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    box-shadow: 0 0 30px rgba(139,196,255,0.4);
+  }
+  .gif-card:hover .pick-icon { transform: scale(1); }
+  .gif-card .pick-icon svg { width: 26px; height: 26px; }
+
+  .gif-card .card-label {
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: #fff;
+    background: rgba(0,0,0,0.6);
+    padding: 3px 8px;
+    border-radius: 20px;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    opacity: 0;
+    transform: translateY(6px);
+    transition: all 0.3s ease;
+  }
+  .gif-card:hover .card-label { opacity: 1; transform: translateY(0); }
+
+  .gif-card.selected {
+    border-color: #88ff88;
+    box-shadow: 0 0 0 2px rgba(136,255,136,0.4), 0 0 40px rgba(136,255,136,0.25);
+  }
+  .gif-card.selected .pick-icon {
+    background: rgba(136, 255, 136, 0.25);
+    border-color: #88ff88;
+    box-shadow: 0 0 30px rgba(136,255,136,0.6);
+  }
+  .gif-card.selected .pick-icon svg { display: none; }
+  .gif-card.selected .pick-icon::after {
+    content: '✓';
+    font-size: 28px;
+    color: #fff;
+    font-weight: 700;
+  }
 
   /* === ПРЕСЕТЫ === */
   .preset-list {
@@ -949,7 +1189,6 @@
   .custom-item .capply:hover { background: #142414; border-color: #1e4a1e; color: #88ff88; }
   .custom-item .cdel:hover { background: #1f1111; border-color: #3a1a1a; color: #ff6b6b; }
 
-  /* === КНОПКА СОХРАНИТЬ В НАСТРОЙКАХ === */
   .settings-save-bar {
     flex-shrink: 0;
     padding-top: 10px;
@@ -1087,7 +1326,10 @@
     .app { flex-direction: column; height: auto; }
     .wheel-outer { width: min(80vw, 500px); }
     .side-panel { width: 100%; max-height: 80vh; }
-    .logo { font-size: 34px; top: 10px; left: 16px; }
+    .logo { font-size: 34px; }
+    .logo-wrap { top: 10px; left: 16px; }
+    .gif-gallery-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
+    .gif-gallery-overlay { padding: 16px; }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -1101,7 +1343,9 @@
 </head>
 <body>
 
-<div class="logo">Колесо</div>
+<div class="logo-wrap">
+  <div class="logo">Колесо</div>
+</div>
 <div class="copyright">By MeduzaGref ©</div>
 
 <div class="app">
@@ -1126,7 +1370,6 @@
               <stop offset="100%" stop-color="#c8c8c8"/>
             </radialGradient>
           </defs>
-          <!-- Удлинённая физичная стрелка -->
           <path d="M 6 2
                    Q 8 -2 14 -2
                    L 48 -2
@@ -1167,13 +1410,11 @@
   </div>
 
   <div class="side-panel">
-    <!-- ВКЛАДКИ -->
     <div class="tabs">
       <button class="tab-btn active" data-tab="variants">Варианты</button>
       <button class="tab-btn" data-tab="settings">Настройки</button>
     </div>
 
-    <!-- ВКЛАДКА ВАРИАНТЫ -->
     <div class="tab-content active" id="tab-variants">
       <div class="modes">
         <button class="mode-btn active" data-mode="drop">На выпадение</button>
@@ -1217,7 +1458,6 @@
       </div>
     </div>
 
-    <!-- ВКЛАДКА НАСТРОЙКИ -->
     <div class="tab-content" id="tab-settings">
       <div class="settings-body">
         <div class="setting">
@@ -1270,7 +1510,6 @@
           <div class="hint">Куда встанет стрелка внутри выигравшего сегмента</div>
         </div>
 
-        <!-- ПРЕСЕТЫ -->
         <div class="setting">
           <label>Пресеты</label>
           <div class="preset-list" id="presetList"></div>
@@ -1298,16 +1537,34 @@
           <div class="hint" id="presetHint">Введите код и нажмите «Применить».</div>
         </div>
 
-        <!-- ГИФКА -->
+        <!-- ГИФКА: теперь кнопка + превью текущей -->
         <div class="setting">
-          <label>GIF / видео по центру (URL)</label>
-          <input type="text" id="gifUrlInput" placeholder="https://...">
-          <div class="hint">Вставьте ссылку или выберите из галереи.</div>
+          <label>GIF / видео по центру</label>
 
-          <div style="margin-top: 8px;">
-            <label style="font-size:11px; color:#777; text-transform:uppercase; letter-spacing:0.8px; display:block;">Галерея GIF</label>
-            <div class="gif-picker" id="gifPicker"></div>
+          <div class="gif-current-preview" id="gifCurrentPreview">
+            <div class="thumb" id="gifCurrentThumb"><span class="ph">◆</span></div>
+            <span class="txt" id="gifCurrentText">Не выбрано</span>
+            <button class="clear" id="gifClearBtn" title="Убрать">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px;">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
           </div>
+
+          <button class="gif-open-btn" id="openGifGalleryBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="7" height="7" rx="1"></rect>
+              <rect x="14" y="3" width="7" height="7" rx="1"></rect>
+              <rect x="3" y="14" width="7" height="7" rx="1"></rect>
+              <rect x="14" y="14" width="7" height="7" rx="1"></rect>
+            </svg>
+            Открыть галерею GIF
+          </button>
+
+          <div class="hint">Выберите анимацию из галереи или вставьте ссылку вручную.</div>
+
+          <input type="text" id="gifUrlInput" placeholder="https://..." style="margin-top:6px;">
 
           <label class="gif-upload">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1321,11 +1578,24 @@
         </div>
       </div>
 
-      <!-- КНОПКА СОХРАНИТЬ -->
       <div class="settings-save-bar">
         <button class="btn btn-accent" id="saveSettingsBtn">Сохранить настройки</button>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- === ПОЛНОЭКРАННАЯ ГАЛЕРЕЯ GIF === -->
+<div class="gif-gallery-overlay" id="gifGalleryOverlay">
+  <div class="gif-gallery-header">
+    <div class="gif-gallery-title">
+      Галерея GIF
+      <span class="badge" id="gifGalleryCount">0</span>
+    </div>
+    <button class="gif-gallery-close" id="gifGalleryClose" title="Закрыть">✕</button>
+  </div>
+  <div class="gif-gallery-body">
+    <div class="gif-gallery-grid" id="gifGalleryGrid"></div>
   </div>
 </div>
 
@@ -1624,7 +1894,6 @@
   const easingSelect = document.getElementById('easingSelect');
   const patternSelect = document.getElementById('patternSelect');
   const gifUrlInput = document.getElementById('gifUrlInput');
-  const gifPicker = document.getElementById('gifPicker');
   const gifFileInput = document.getElementById('gifFileInput');
   const saveChangesModal = document.getElementById('saveChangesModal');
   const changesList = document.getElementById('changesList');
@@ -1633,6 +1902,17 @@
   const tabBtns = document.querySelectorAll('.tab-btn');
   const tabVariants = document.getElementById('tab-variants');
   const tabSettings = document.getElementById('tab-settings');
+
+  // Галерея GIF
+  const gifGalleryOverlay = document.getElementById('gifGalleryOverlay');
+  const gifGalleryGrid = document.getElementById('gifGalleryGrid');
+  const gifGalleryClose = document.getElementById('gifGalleryClose');
+  const gifGalleryCount = document.getElementById('gifGalleryCount');
+  const openGifGalleryBtn = document.getElementById('openGifGalleryBtn');
+  const gifCurrentPreview = document.getElementById('gifCurrentPreview');
+  const gifCurrentThumb = document.getElementById('gifCurrentThumb');
+  const gifCurrentText = document.getElementById('gifCurrentText');
+  const gifClearBtn = document.getElementById('gifClearBtn');
 
   let audioCtx = null;
   let isSpinning = false;
@@ -1707,11 +1987,10 @@
     } catch(e) {}
   }
 
-  // Звук победы убран — функция оставлена пустой для совместимости
   function playWinSound() {}
 
   function attachSounds(root) {
-    (root || document).querySelectorAll('button, .mode-btn, .btn, .v-remove, .switch-row, .gif-item, .gif-upload, .preset-btn, .custom-item button, .settings-close, .tab-btn').forEach(el => {
+    (root || document).querySelectorAll('button, .mode-btn, .btn, .v-remove, .switch-row, .gif-card, .gif-upload, .preset-btn, .custom-item button, .tab-btn, .gif-open-btn, .gif-gallery-close').forEach(el => {
       if (el.dataset.soundAttached) return;
       el.dataset.soundAttached = '1';
       el.addEventListener('mouseenter', () => { initAudio(); });
@@ -1957,6 +2236,34 @@
     } else {
       centerGifContainer.innerHTML = '<div class="placeholder">◆</div>';
     }
+    updateGifCurrentPreview();
+  }
+
+  function updateGifCurrentPreview() {
+    if (!gifCurrentThumb || !gifCurrentText) return;
+    const url = (state.gifUrl || '').trim();
+    gifCurrentThumb.innerHTML = '';
+    if (!url) {
+      gifCurrentThumb.innerHTML = '<span class="ph">◆</span>';
+      gifCurrentText.textContent = 'Не выбрано';
+      return;
+    }
+    const isVideo = /\.(mp4|webm|ogg)(\?.*)?$/i.test(url) || url.startsWith('data:video');
+    if (isVideo) {
+      const v = document.createElement('video');
+      v.src = url;
+      v.muted = true;
+      v.autoplay = true;
+      v.loop = true;
+      v.playsInline = true;
+      gifCurrentThumb.appendChild(v);
+    } else {
+      const im = document.createElement('img');
+      im.src = url;
+      im.onerror = () => { gifCurrentThumb.innerHTML = '<span class="ph">◆</span>'; };
+      gifCurrentThumb.appendChild(im);
+    }
+    gifCurrentText.textContent = url.length > 42 ? url.slice(0, 42) + '…' : url;
   }
 
   function setMode(mode) {
@@ -2438,12 +2745,16 @@
     }, 2500);
   }
 
-  function renderGifPicker() {
-    gifPicker.innerHTML = '';
+  // === ПОЛНОЭКРАННАЯ ГАЛЕРЕЯ GIF ===
+  function renderGifGallery() {
+    gifGalleryGrid.innerHTML = '';
+    gifGalleryCount.textContent = GIF_URLS.length;
+
     GIF_URLS.forEach((url, idx) => {
-      const item = document.createElement('div');
-      item.className = 'gif-item';
-      item.dataset.url = url;
+      const card = document.createElement('div');
+      card.className = 'gif-card';
+      card.dataset.url = url;
+      card.style.animationDelay = (idx * 0.035) + 's';
 
       const isVideo = /\.(mp4|webm|ogg)(\?.*)?$/i.test(url);
       if (isVideo) {
@@ -2454,35 +2765,82 @@
         video.autoplay = true;
         video.playsInline = true;
         video.preload = 'metadata';
-        video.onerror = () => { item.innerHTML = '<div style="color:#444;font-size:11px;text-align:center;padding:8px;">Ошибка<br>загрузки</div>'; };
-        item.appendChild(video);
+        video.onerror = () => {
+          card.innerHTML = '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#444;font-size:12px;text-align:center;padding:10px;">Ошибка загрузки</div>';
+        };
+        card.appendChild(video);
       } else {
         const img = document.createElement('img');
         img.src = url;
         img.alt = 'GIF ' + (idx + 1);
         img.loading = 'lazy';
-        img.onerror = () => { item.innerHTML = '<div style="color:#444;font-size:11px;text-align:center;padding:8px;">Ошибка<br>загрузки</div>'; };
-        item.appendChild(img);
+        img.onerror = () => {
+          card.innerHTML = '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#444;font-size:12px;text-align:center;padding:10px;">Ошибка загрузки</div>';
+        };
+        card.appendChild(img);
       }
 
-      item.addEventListener('click', () => {
+      // Иконка "плюс" на оверлее
+      const overlay = document.createElement('div');
+      overlay.className = 'pick-overlay';
+      overlay.innerHTML = `
+        <div class="pick-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+        </div>
+      `;
+      card.appendChild(overlay);
+
+      // Метка с номером
+      const label = document.createElement('div');
+      label.className = 'card-label';
+      label.textContent = 'GIF #' + (idx + 1);
+      card.appendChild(label);
+
+      if (state.gifUrl === url) card.classList.add('selected');
+
+      card.addEventListener('click', () => {
+        // Применяем и закрываем галерею
         state.gifUrl = url;
         gifUrlInput.value = url;
         updateCenterGif();
-        gifPicker.querySelectorAll('.gif-item').forEach(el => el.style.borderColor = '');
-        item.style.borderColor = '#88ff88';
-        item.style.boxShadow = '0 0 0 2px rgba(136,255,136,0.3)';
-        setTimeout(() => {
-          item.style.borderColor = '';
-          item.style.boxShadow = '';
-        }, 1200);
+        updateGifCurrentPreview();
+        gifGalleryGrid.querySelectorAll('.gif-card').forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+        setTimeout(() => closeGifGallery(), 220);
       });
 
-      gifPicker.appendChild(item);
+      gifGalleryGrid.appendChild(card);
     });
 
-    attachSounds(gifPicker);
+    attachSounds(gifGalleryGrid);
   }
+
+  function openGifGallery() {
+    renderGifGallery();
+    gifGalleryOverlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeGifGallery() {
+    gifGalleryOverlay.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  openGifGalleryBtn.addEventListener('click', openGifGallery);
+  gifGalleryClose.addEventListener('click', closeGifGallery);
+  gifGalleryOverlay.addEventListener('click', (e) => {
+    if (e.target === gifGalleryOverlay) closeGifGallery();
+  });
+
+  gifClearBtn.addEventListener('click', () => {
+    state.gifUrl = '';
+    gifUrlInput.value = '';
+    updateCenterGif();
+    updateGifCurrentPreview();
+  });
 
   // === ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК ===
   tabBtns.forEach(btn => {
@@ -2492,7 +2850,6 @@
       tabVariants.classList.toggle('active', tab === 'variants');
       tabSettings.classList.toggle('active', tab === 'settings');
       if (tab === 'settings') {
-        // синхронизация настроек при открытии
         soundToggle.checked = state.soundEnabled;
         animToggle.checked = state.animEnabled;
         spinTimeRange.value = state.spinDuration;
@@ -2502,7 +2859,7 @@
         gifUrlInput.value = state.gifUrl || '';
         renderPresetList();
         renderCustomList();
-        renderGifPicker();
+        updateGifCurrentPreview();
         document.getElementById('presetHint').textContent = 'Введите код и нажмите «Применить».';
         document.getElementById('presetHint').style.color = '';
       }
@@ -2593,7 +2950,6 @@
     btn.addEventListener('click', () => setMode(btn.dataset.mode));
   });
 
-  // === СОХРАНЕНИЕ НАСТРОЕК ===
   function takeSettingsSnapshot() {
     return {
       soundEnabled: soundToggle.checked,
@@ -2675,7 +3031,6 @@
       });
       saveChangesModal.classList.remove('hidden');
     } else {
-      // нет изменений — просто сохраняем
       saveSettingsToState();
     }
   });
@@ -2692,6 +3047,7 @@
 
     saveState();
     updateCenterGif();
+    updateGifCurrentPreview();
     settingsSnapshot = takeSettingsSnapshot();
   }
 
@@ -2730,6 +3086,12 @@
     if (e.key === 'Enter') saveCustomPreset();
   });
 
+  gifUrlInput.addEventListener('change', (e) => {
+    state.gifUrl = e.target.value.trim();
+    updateCenterGif();
+    updateGifCurrentPreview();
+  });
+
   gifFileInput.addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -2738,6 +3100,7 @@
       state.gifUrl = ev.target.result;
       gifUrlInput.value = state.gifUrl;
       updateCenterGif();
+      updateGifCurrentPreview();
     };
     reader.readAsDataURL(file);
   });
@@ -2750,6 +3113,10 @@
 
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
+      if (gifGalleryOverlay.classList.contains('open')) {
+        closeGifGallery();
+        return;
+      }
       resultModal.classList.add('hidden');
       confirmModal.classList.add('hidden');
       autoDistributeModal.classList.add('hidden');
@@ -2774,6 +3141,7 @@
     renderVariantList();
     drawWheel();
     updateCenterGif();
+    updateGifCurrentPreview();
     modeBtns.forEach(b => b.classList.toggle('active', b.dataset.mode === state.mode));
     attachSounds(document);
     updateControlsState();
