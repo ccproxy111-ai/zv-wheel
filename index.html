@@ -17,6 +17,7 @@
     --text: #e8e8e8;
     --text-dim: #888;
     --text-dim-2: #666;
+    --anim-speed: 1;
   }
 
   html, body {
@@ -55,7 +56,7 @@
     z-index: 100;
     pointer-events: none;
     user-select: none;
-    animation: rainbow 2s linear infinite;
+    animation: rainbow 2s linear infinite, logoFloat 4s ease-in-out infinite;
     text-shadow: 0 0 14px currentColor, 0 0 28px currentColor;
   }
 
@@ -68,6 +69,10 @@
     71%  { color: #0088ff; }
     85%  { color: #8800ff; }
     100% { color: #ff0000; }
+  }
+  @keyframes logoFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
   }
 
   .copyright {
@@ -127,6 +132,12 @@
       drop-shadow(0 0 10px rgba(255,255,255,0.7))
       drop-shadow(0 0 24px rgba(255,255,255,0.35));
     will-change: transform;
+    animation: pointerIdle 3s ease-in-out infinite;
+  }
+
+  @keyframes pointerIdle {
+    0%, 100% { transform: translateX(-50%) rotate(-1.5deg); }
+    50% { transform: translateX(-50%) rotate(1.5deg); }
   }
 
   .pointer svg {
@@ -144,6 +155,7 @@
     transition: filter 0.25s ease, transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
     margin-top: 20px;
     animation: wheelEnter 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform;
   }
 
   @keyframes wheelEnter {
@@ -192,6 +204,12 @@
     pointer-events: none;
     z-index: 10;
     transition: border-color 0.25s ease, box-shadow 0.25s ease;
+    animation: centerPulse 2.5s ease-in-out infinite;
+  }
+
+  @keyframes centerPulse {
+    0%, 100% { box-shadow: 0 0 0 3px #0a0a0a, 0 0 25px rgba(255,255,255,0.1); }
+    50% { box-shadow: 0 0 0 3px #0a0a0a, 0 0 35px rgba(255,255,255,0.25); }
   }
 
   .wheel-outer:hover .center-gif {
@@ -230,7 +248,15 @@
     gap: 12px;
     position: relative;
     overflow: hidden;
+    will-change: transform;
+    animation: btnGlow 3s ease-in-out infinite;
   }
+
+  @keyframes btnGlow {
+    0%, 100% { box-shadow: 0 0 0 rgba(255,255,255,0); }
+    50% { box-shadow: 0 0 24px rgba(255,255,255,0.08); }
+  }
+
   .spin-btn::before {
     content: '';
     position: absolute;
@@ -246,7 +272,7 @@
     box-shadow: 0 8px 24px rgba(0,0,0,0.5), 0 0 30px rgba(255,255,255,0.05);
   }
   .spin-btn:active:not(:disabled) { transform: scale(0.97); }
-  .spin-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .spin-btn:disabled { opacity: 0.5; cursor: not-allowed; animation: none; }
   .spin-btn svg { width: 22px; height: 22px; transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1); }
   .spin-btn:hover:not(:disabled) svg { transform: rotate(360deg); }
 
@@ -270,7 +296,11 @@
     position: relative;
     overflow: hidden;
   }
-  .cancel-spin-btn.visible { display: flex; }
+  .cancel-spin-btn.visible { display: flex; animation: cancelPulse 1.5s ease-in-out infinite; }
+  @keyframes cancelPulse {
+    0%, 100% { box-shadow: 0 0 0 rgba(255,60,60,0); }
+    50% { box-shadow: 0 0 20px rgba(255,60,60,0.25); }
+  }
   .cancel-spin-btn:hover:not(:disabled) {
     background: #3a1a1a;
     border-color: #6a2a2a;
@@ -294,6 +324,11 @@
     gap: 10px;
     overflow: hidden;
     transition: border-color 0.25s ease, box-shadow 0.25s ease;
+    animation: panelIn 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.15s both;
+  }
+  @keyframes panelIn {
+    from { opacity: 0; transform: translateX(30px); }
+    to { opacity: 1; transform: translateX(0); }
   }
   .side-panel:hover { border-color: #2e2e2e; box-shadow: 0 0 40px rgba(255,255,255,0.02); }
 
@@ -385,6 +420,13 @@
     padding: 2px 7px;
     border-radius: 6px;
     border: 1px solid #262626;
+    transition: transform 0.25s ease;
+  }
+  .list-header .counter.bump { animation: counterBump 0.35s ease; }
+  @keyframes counterBump {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.25); color: #fff; }
+    100% { transform: scale(1); }
   }
   .list-header .sum {
     font-size: 11px;
@@ -392,8 +434,13 @@
     text-transform: none;
     letter-spacing: 0;
     font-weight: 500;
+    transition: color 0.3s ease, transform 0.3s ease;
   }
-  .list-header .sum.warn { color: #ff8888; }
+  .list-header .sum.warn { color: #ff8888; animation: sumWarn 0.6s ease infinite; }
+  @keyframes sumWarn {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+  }
 
   .variant-list {
     display: flex;
@@ -419,6 +466,12 @@
     border-radius: 10px;
     border: 1px solid var(--border);
     transition: border-color 0.2s ease, transform 0.2s ease;
+    animation: rowIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+    will-change: transform;
+  }
+  @keyframes rowIn {
+    from { opacity: 0; transform: translateX(-12px); }
+    to { opacity: 1; transform: translateX(0); }
   }
 
   .variant-row:hover {
@@ -443,7 +496,7 @@
   .color-dot::-webkit-color-swatch { border: none; border-radius: 50%; }
   .color-dot::-moz-color-swatch { border: none; border-radius: 50%; }
   .variant-row:hover .color-dot {
-    transform: scale(1.18);
+    transform: scale(1.18) rotate(15deg);
     border-color: #555;
     box-shadow: 0 0 0 3px rgba(255,255,255,0.06);
   }
@@ -499,7 +552,7 @@
     background: #2a1515;
     color: #ff6b6b;
     border-color: #4a2020;
-    transform: rotate(90deg);
+    transform: rotate(90deg) scale(1.1);
   }
   .v-remove:disabled { opacity: 0.4; cursor: not-allowed; }
   .v-remove svg { width: 12px; height: 12px; }
@@ -527,6 +580,7 @@
     color: var(--text);
     position: relative;
     overflow: hidden;
+    will-change: transform;
   }
   .btn::after {
     content: '';
@@ -538,11 +592,11 @@
     pointer-events: none;
   }
   .btn:hover:not(:disabled)::after { opacity: 1; }
-  .btn:hover:not(:disabled) { background: #222; border-color: #444; transform: translateY(-1px); }
+  .btn:hover:not(:disabled) { background: #222; border-color: #444; transform: translateY(-2px) scale(1.01); }
   .btn:active:not(:disabled) { transform: translateY(0) scale(0.98); }
   .btn:disabled { opacity: 0.4; cursor: not-allowed; }
   .btn svg { width: 14px; height: 14px; flex-shrink: 0; transition: transform 0.25s ease; }
-  .btn:hover:not(:disabled) svg { transform: scale(1.15); }
+  .btn:hover:not(:disabled) svg { transform: scale(1.15) rotate(-5deg); }
 
   .btn-danger {
     background: #1a0f0f;
@@ -577,6 +631,11 @@
     justify-content: center;
     z-index: 1000;
     padding: 20px;
+    animation: overlayIn 0.25s ease;
+  }
+  @keyframes overlayIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
   }
   .overlay.hidden { display: none; }
 
@@ -591,6 +650,11 @@
     box-shadow: 0 30px 80px rgba(0,0,0,0.9);
     position: relative;
     overflow: hidden;
+    animation: modalIn 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  @keyframes modalIn {
+    from { opacity: 0; transform: scale(0.9) translateY(20px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
   }
 
   .modal.winner-modal {
@@ -605,6 +669,11 @@
     opacity: 0;
     transition: opacity 0.5s ease;
     filter: blur(60px);
+    animation: glowSpin 8s linear infinite;
+  }
+  @keyframes glowSpin {
+    from { transform: rotate(0deg) scale(1); }
+    to { transform: rotate(360deg) scale(1.2); }
   }
   .modal.winner-modal .winner-glow {
     opacity: 0.55;
@@ -629,6 +698,12 @@
     position: relative;
     z-index: 1;
     text-shadow: 0 2px 12px rgba(0,0,0,0.95), 0 4px 24px rgba(0,0,0,0.8), 0 0 40px rgba(0,0,0,0.6);
+    animation: resultPop 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  @keyframes resultPop {
+    0% { transform: scale(0.5); opacity: 0; }
+    60% { transform: scale(1.1); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
   }
 
   .modal-actions {
@@ -655,6 +730,17 @@
 
   .setting {
     margin-bottom: 18px;
+    animation: settingIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .setting:nth-child(1) { animation-delay: 0.03s; }
+  .setting:nth-child(2) { animation-delay: 0.06s; }
+  .setting:nth-child(3) { animation-delay: 0.09s; }
+  .setting:nth-child(4) { animation-delay: 0.12s; }
+  .setting:nth-child(5) { animation-delay: 0.15s; }
+  .setting:nth-child(6) { animation-delay: 0.18s; }
+  @keyframes settingIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 
   .setting > label {
@@ -676,10 +762,10 @@
     border-radius: 9px;
     padding: 10px 14px;
     cursor: pointer;
-    transition: border-color 0.2s ease, background 0.2s ease;
+    transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
     user-select: none;
   }
-  .switch-row:hover { border-color: #3a3a3a; background: #1e1e1e; }
+  .switch-row:hover { border-color: #3a3a3a; background: #1e1e1e; transform: translateX(3px); }
   .switch-row span { font-size: 13px; }
 
   .switch-row input[type="checkbox"] {
@@ -703,7 +789,7 @@
   .switch-row input[type="checkbox"]:checked {
     background: #3a6a3a;
     border-color: #5a8a5a;
-    transform: scale(1.1);
+    transform: scale(1.1) rotate(360deg);
   }
 
   .switch-row input[type="checkbox"]:checked::after {
@@ -744,19 +830,21 @@
     border-radius: 9px;
     font-size: 13px;
     font-family: inherit;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
   }
   .setting select:focus,
   .setting input[type="text"]:focus {
     outline: none;
     border-color: #555;
     box-shadow: 0 0 0 3px rgba(255,255,255,0.05);
+    transform: scale(1.01);
   }
 
   .hint {
     font-size: 11px;
     color: #666;
     margin-top: 5px;
+    transition: color 0.3s ease;
   }
 
   .emoji-picker-btn {
@@ -776,7 +864,7 @@
     font-family: inherit;
     margin-top: 6px;
   }
-  .emoji-picker-btn:hover { background: #1a1a1a; border-color: #444; transform: translateY(-1px); }
+  .emoji-picker-btn:hover { background: #1a1a1a; border-color: #444; transform: translateY(-2px) scale(1.01); }
   .emoji-picker-btn:active { transform: translateY(0) scale(0.98); }
 
   .emoji-picker {
@@ -790,6 +878,7 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
+    animation: modalIn 0.4s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .emoji-header {
@@ -817,7 +906,7 @@
     transition: all 0.2s ease;
     text-align: center;
   }
-  .emoji-upload:hover { background: #151515; border-color: #4a4a4a; transform: translateY(-1px); }
+  .emoji-upload:hover { background: #151515; border-color: #4a4a4a; transform: translateY(-2px); }
   .emoji-upload input { display: none; }
 
   .emoji-grid {
@@ -844,11 +933,16 @@
     transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1);
     overflow: hidden;
     padding: 2px;
+    animation: emojiIn 0.3s ease both;
+  }
+  @keyframes emojiIn {
+    from { opacity: 0; transform: scale(0.5); }
+    to { opacity: 1; transform: scale(1); }
   }
   .emoji-item:hover {
     background: #2a2a2a;
     border-color: #444;
-    transform: scale(1.15) rotate(-3deg);
+    transform: scale(1.2) rotate(-8deg);
     z-index: 2;
   }
   .emoji-item:active { transform: scale(0.95); }
@@ -862,7 +956,7 @@
     line-height: 1.5;
   }
 
-  /* === НОВЫЕ СТИЛИ ДЛЯ ПРЕСЕТОВ === */
+  /* === ПРЕСЕТЫ === */
   .preset-list {
     display: flex;
     flex-direction: column;
@@ -885,13 +979,18 @@
     transition: all 0.2s ease;
     text-align: left;
     width: 100%;
+    animation: presetIn 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  @keyframes presetIn {
+    from { opacity: 0; transform: translateX(-15px); }
+    to { opacity: 1; transform: translateX(0); }
   }
   .preset-btn:hover {
     background: #222;
     border-color: #444;
-    transform: translateX(3px);
+    transform: translateX(4px);
   }
-  .preset-btn:active { transform: translateX(3px) scale(0.98); }
+  .preset-btn:active { transform: translateX(4px) scale(0.98); }
   .preset-btn .preset-desc {
     font-size: 10px;
     color: #666;
@@ -978,6 +1077,12 @@
     border-radius: 8px;
     padding: 7px 10px;
     font-size: 12px;
+    animation: presetIn 0.3s ease both;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+  }
+  .custom-item:hover {
+    transform: translateX(4px);
+    border-color: #3a3a3a;
   }
   .custom-item .cname {
     flex: 1;
@@ -1005,14 +1110,42 @@
     font-family: inherit;
     transition: all 0.18s ease;
   }
-  .custom-item .capply:hover { background: #1a2a1a; border-color: #2a5a2a; color: #88ff88; }
-  .custom-item .cdel:hover { background: #2a1515; border-color: #4a2020; color: #ff6b6b; }
+  .custom-item .capply:hover { background: #1a2a1a; border-color: #2a5a2a; color: #88ff88; transform: scale(1.05); }
+  .custom-item .cdel:hover { background: #2a1515; border-color: #4a2020; color: #ff6b6b; transform: scale(1.05) rotate(90deg); }
 
   .preset-divider {
     height: 1px;
     background: #222;
     margin: 12px 0;
   }
+
+  /* === СЛАБЫЕ УСТРОЙСТВА === */
+  body.perf-low * {
+    animation-duration: 0.01s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.1s !important;
+  }
+  body.perf-low .logo { animation: none; }
+  body.perf-low .pointer { animation: none; }
+  body.perf-low .center-gif { animation: none; }
+  body.perf-low .spin-btn { animation: none; }
+  body.perf-low .winner-glow { animation: none; filter: blur(30px); }
+  body.perf-low .bg-canvas { opacity: 0.4; }
+  body.perf-low .modal,
+  body.perf-low .overlay,
+  body.perf-low .side-panel,
+  body.perf-low .variant-row,
+  body.perf-low .setting,
+  body.perf-low .emoji-item,
+  body.perf-low .preset-btn {
+    animation: none !important;
+  }
+
+  body.no-anim * {
+    animation: none !important;
+    transition: none !important;
+  }
+  body.no-anim .pointer { transform: translateX(-50%) !important; }
 
   @media (max-width: 1100px) {
     .side-panel { width: 340px; }
@@ -1025,6 +1158,14 @@
     .wheel-outer { width: min(80vw, 500px); }
     .side-panel { width: 100%; }
     .logo { font-size: 20px; top: 14px; left: 14px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
   }
 </style>
 </head>
@@ -1194,6 +1335,15 @@
     </div>
 
     <div class="setting">
+      <label>Анимации</label>
+      <label class="switch-row">
+        <span>Плавные анимации интерфейса</span>
+        <input type="checkbox" id="animToggle" checked>
+      </label>
+      <div class="hint">Отключите, если сайт лагает на слабом устройстве.</div>
+    </div>
+
+    <div class="setting">
       <label>Время вращения</label>
       <input type="range" id="spinTimeRange" min="0" max="300" value="5" step="1">
       <div class="time-row">
@@ -1248,10 +1398,10 @@
 
       <label style="font-size:11px; color:#888; text-transform:uppercase; letter-spacing:0.8px; margin-bottom:7px; display:block;">Код пресета</label>
       <div class="preset-code-row">
-        <input type="text" id="presetCodeInput" placeholder="ZV-INCREASE-PRESET-01-2">
+        <input type="text" id="presetCodeInput" placeholder="Введите код">
         <button class="btn" id="applyPresetCodeBtn">Применить</button>
       </div>
-      <div class="hint" id="presetHint">Введите код и нажмите «Применить». Пресет добавится в список.</div>
+      <div class="hint" id="presetHint">Введите код и нажмите «Применить».</div>
     </div>
     <!-- === /ПРЕСЕТЫ === -->
 
@@ -1303,13 +1453,28 @@
 (function(){
   'use strict';
 
+  // ============ АВТО-ДЕТЕКТ СЛАБОГО УСТРОЙСТВА ============
+  function detectLowPerf() {
+    const ua = navigator.userAgent || '';
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua);
+    const cores = navigator.hardwareConcurrency || 2;
+    const mem = navigator.deviceMemory || 2;
+    const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    // Слабое, если: мобилка, или <=2 ядра, или мало памяти, или пользователь просил reduced
+    return reduced || isMobile || cores <= 2 || mem <= 2;
+  }
+
+  const LOW_PERF = detectLowPerf();
+  if (LOW_PERF) document.body.classList.add('perf-low');
+
   const MAX_NAME_LENGTH = 15;
   const MAX_VARIANTS = 15;
-  const BG_FRAME_INTERVAL = 1000 / 30;
-  const PARTICLE_LINK_DIST_SQ = 150 * 150;
-  const PARTICLE_LINK_DIST = 150;
+  const BG_FRAME_INTERVAL = LOW_PERF ? 1000 / 20 : 1000 / 30;
+  const PARTICLE_LINK_DIST = LOW_PERF ? 90 : 150;
+  const PARTICLE_LINK_DIST_SQ = PARTICLE_LINK_DIST * PARTICLE_LINK_DIST;
   const CUSTOM_PRESETS_KEY = 'fortuneWheelCustomPresets_v1';
   const UNLOCKED_PRESETS_KEY = 'fortuneWheelUnlockedPresets_v1';
+  const ANIM_TOGGLE_KEY = 'fortuneWheelAnimEnabled_v1';
 
   let state = {
     variants: [],
@@ -1318,10 +1483,11 @@
     spinDuration: 5,
     easing: 'easeInOut',
     pattern: 'random',
-    gifUrl: ''
+    gifUrl: '',
+    animEnabled: true
   };
 
-  // Встроенные пресеты
+  // Встроенные пресеты (видны в списке)
   const BUILTIN_PRESETS = [
     {
       id: 'builtin_12345',
@@ -1346,10 +1512,10 @@
     }
   ];
 
-  // Известные коды пресетов
-  const PRESET_CODES = {
+  // СЕКРЕТНЫЕ коды — НЕ показываются в списке, применяются только по коду
+  const SECRET_PRESET_CODES = {
     'ZV-INCREASE-PRESET-01-2': {
-      id: 'code_zv_increase_01_2',
+      id: 'secret_zv_increase_01_2',
       name: 'ZV-INCREASE-PRESET-01-2',
       desc: '5 участников · равные шансы',
       variants: [
@@ -1363,7 +1529,6 @@
   };
 
   let customPresets = [];
-  let unlockedPresets = [];
 
   const lightColorCache = new Map();
   function isLightColor(hex) {
@@ -1438,6 +1603,12 @@
     } catch (e) {
       state.variants = defaultVariants();
     }
+    // Анимации
+    const savedAnim = localStorage.getItem(ANIM_TOGGLE_KEY);
+    if (savedAnim === '0') state.animEnabled = false;
+    else if (savedAnim === '1') state.animEnabled = true;
+    else state.animEnabled = !LOW_PERF;
+
     sanitizePercents();
   }
 
@@ -1449,19 +1620,10 @@
         if (Array.isArray(parsed)) customPresets = parsed;
       }
     } catch (e) { customPresets = []; }
-
-    try {
-      const raw = localStorage.getItem(UNLOCKED_PRESETS_KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed)) unlockedPresets = parsed;
-      }
-    } catch (e) { unlockedPresets = []; }
   }
 
   function savePresets() {
     try { localStorage.setItem(CUSTOM_PRESETS_KEY, JSON.stringify(customPresets)); } catch (e) {}
-    try { localStorage.setItem(UNLOCKED_PRESETS_KEY, JSON.stringify(unlockedPresets)); } catch (e) {}
   }
 
   let saveTimer = null;
@@ -1497,6 +1659,9 @@
     const el = document.getElementById('variantCounter');
     if (!el) return;
     el.textContent = state.variants.length + '/' + MAX_VARIANTS;
+    el.classList.remove('bump');
+    void el.offsetWidth;
+    el.classList.add('bump');
   }
 
   const canvas = document.getElementById('wheelCanvas');
@@ -1521,6 +1686,7 @@
   const openSettingsBtn = document.getElementById('openSettingsBtn');
   const closeSettingsBtn = document.getElementById('closeSettingsBtn');
   const soundToggle = document.getElementById('soundToggle');
+  const animToggle = document.getElementById('animToggle');
   const spinTimeRange = document.getElementById('spinTimeRange');
   const spinTimeValue = document.getElementById('spinTimeValue');
   const easingSelect = document.getElementById('easingSelect');
@@ -1535,6 +1701,7 @@
   // ---------- АУДИО ----------
   let audioCtx = null;
   let isSpinning = false;
+  let soundThrottle = 0;
 
   function initAudio() {
     if (!audioCtx) {
@@ -1545,6 +1712,12 @@
 
   function playTick() {
     if (!state.soundEnabled || !audioCtx) return;
+    // Троттлинг тиков на слабых устройствах
+    if (LOW_PERF) {
+      const now = performance.now();
+      if (now - soundThrottle < 60) return;
+      soundThrottle = now;
+    }
     try {
       const osc = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
@@ -1578,6 +1751,7 @@
 
   function playHover() {
     if (!state.soundEnabled || !audioCtx) return;
+    if (LOW_PERF) return; // на слабых не играем hover
     try {
       const osc = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
@@ -1669,13 +1843,15 @@
   let bgLastFrame = 0;
   let bgRunning = true;
   let bgPaused = false;
+  let bgReduced = LOW_PERF;
 
   function initBg() {
     bgW = bgCanvas.width = window.innerWidth;
     bgH = bgCanvas.height = window.innerHeight;
 
     bgParticles = [];
-    const count = Math.min(60, Math.floor((bgW * bgH) / 30000));
+    const baseCount = bgReduced ? 25 : 60;
+    const count = Math.min(baseCount, Math.floor((bgW * bgH) / 30000));
     for (let i = 0; i < count; i++) {
       bgParticles.push({
         x: Math.random() * bgW,
@@ -1690,7 +1866,8 @@
     }
 
     bgNebulae = [];
-    for (let i = 0; i < 3; i++) {
+    const nebCount = bgReduced ? 2 : 3;
+    for (let i = 0; i < nebCount; i++) {
       bgNebulae.push({
         x: Math.random() * bgW,
         y: Math.random() * bgH,
@@ -1743,17 +1920,16 @@
       if (n.y > bgH + n.r) n.y = -n.r;
 
       const key = i + '_' + Math.round(n.hue);
-      let grad = nebGradCache.get(key);
       const cx = Math.round(n.x / 20) * 20;
       const cy = Math.round(n.y / 20) * 20;
       const cacheKey = key + '_' + cx + '_' + cy;
-      grad = nebGradCache.get(cacheKey);
+      let grad = nebGradCache.get(cacheKey);
       if (!grad) {
         grad = bgCtx.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.r);
         grad.addColorStop(0, `hsla(${n.hue}, 80%, 50%, ${n.a})`);
         grad.addColorStop(0.5, `hsla(${n.hue}, 70%, 40%, ${n.a * 0.4})`);
         grad.addColorStop(1, 'transparent');
-        if (nebGradCache.size > 60) nebGradCache.clear();
+        if (nebGradCache.size > 40) nebGradCache.clear();
         nebGradCache.set(cacheKey, grad);
       }
       bgCtx.fillStyle = grad;
@@ -1781,28 +1957,31 @@
       bgCtx.fill();
     }
 
-    const linkableParticles = bgParticles;
-    for (let i = 0; i < linkableParticles.length; i++) {
-      const pi = linkableParticles[i];
-      for (let j = i + 1; j < linkableParticles.length; j++) {
-        const pj = linkableParticles[j];
-        const dx = pi.x - pj.x;
-        const dy = pi.y - pj.y;
-        const distSq = dx*dx + dy*dy;
-        if (distSq < PARTICLE_LINK_DIST_SQ) {
-          const dist = Math.sqrt(distSq);
-          const alpha = 0.12 * (1 - dist/PARTICLE_LINK_DIST);
-          bgCtx.beginPath();
-          bgCtx.moveTo(pi.x, pi.y);
-          bgCtx.lineTo(pj.x, pj.y);
-          bgCtx.strokeStyle = `hsla(220, 60%, 60%, ${alpha})`;
-          bgCtx.lineWidth = 0.6;
-          bgCtx.stroke();
+    // Связи — только если не reduced
+    if (!bgReduced) {
+      const linkableParticles = bgParticles;
+      for (let i = 0; i < linkableParticles.length; i++) {
+        const pi = linkableParticles[i];
+        for (let j = i + 1; j < linkableParticles.length; j++) {
+          const pj = linkableParticles[j];
+          const dx = pi.x - pj.x;
+          const dy = pi.y - pj.y;
+          const distSq = dx*dx + dy*dy;
+          if (distSq < PARTICLE_LINK_DIST_SQ) {
+            const dist = Math.sqrt(distSq);
+            const alpha = 0.12 * (1 - dist/PARTICLE_LINK_DIST);
+            bgCtx.beginPath();
+            bgCtx.moveTo(pi.x, pi.y);
+            bgCtx.lineTo(pj.x, pj.y);
+            bgCtx.strokeStyle = `hsla(220, 60%, 60%, ${alpha})`;
+            bgCtx.lineWidth = 0.6;
+            bgCtx.stroke();
+          }
         }
       }
     }
 
-    if (Math.floor(bgTime * 50) % 2 === 0) {
+    if (!bgReduced && Math.floor(bgTime * 50) % 2 === 0) {
       bgCtx.globalCompositeOperation = 'lighter';
       for (let k = 0; k < 2; k++) {
         const t = bgTime + k * 2.1;
@@ -1832,6 +2011,10 @@
 
   function shakePointer() {
     if (pointerAnimId) cancelAnimationFrame(pointerAnimId);
+    if (!state.animEnabled) {
+      pointerEl.style.transform = 'translateX(-50%) rotate(0deg)';
+      return;
+    }
 
     const startTime = performance.now();
     const DURATION = 1200;
@@ -1954,6 +2137,7 @@
     state.variants.forEach((v, i) => {
       const row = document.createElement('div');
       row.className = 'variant-row';
+      if (state.animEnabled && !LOW_PERF) row.style.animationDelay = (i * 0.03) + 's';
 
       const dot = document.createElement('input');
       dot.type = 'color';
@@ -2237,7 +2421,7 @@
     const fullTurns = Math.round((startAngle - targetAngle) / (Math.PI * 2));
     const targetAngleNear = targetAngle + fullTurns * Math.PI * 2;
 
-    const duration = 900;
+    const duration = state.animEnabled ? 900 : 200;
     const startTime = performance.now();
 
     function springEase(t) {
@@ -2303,9 +2487,11 @@
     void winnerGlow.offsetWidth;
     winnerGlow.style.opacity = '0.55';
 
-    resultText.style.animation = 'none';
-    void resultText.offsetWidth;
-    resultText.style.animation = '';
+    if (state.animEnabled && !LOW_PERF) {
+      resultText.style.animation = 'none';
+      void resultText.offsetWidth;
+      resultText.style.animation = '';
+    }
 
     resultActions.innerHTML = '';
     if (isEliminate) {
@@ -2332,9 +2518,11 @@
           resultText.style.color = last.color;
           resultText.style.textShadow = '0 2px 12px rgba(0,0,0,0.95), 0 4px 24px rgba(0,0,0,0.8), 0 0 40px rgba(0,0,0,0.6)';
           winnerGlow.style.background = `radial-gradient(circle at center, ${last.color}, transparent 70%)`;
-          resultText.style.animation = 'none';
-          void resultText.offsetWidth;
-          resultText.style.animation = '';
+          if (state.animEnabled && !LOW_PERF) {
+            resultText.style.animation = 'none';
+            void resultText.offsetWidth;
+            resultText.style.animation = '';
+          }
           resultActions.innerHTML = '';
           const closeBtn = document.createElement('button');
           closeBtn.className = 'btn';
@@ -2358,25 +2546,12 @@
     resultModal.classList.remove('hidden');
   }
 
-  // ---------- ПРЕСЕТЫ: ЛОГИКА ----------
-  function getAllPresets() {
+  // ---------- ПРЕСЕТЫ ----------
+  function getAllVisiblePresets() {
     const all = BUILTIN_PRESETS.slice();
-
-    // Разблокированные коды
-    unlockedPresets.forEach(code => {
-      const preset = PRESET_CODES[code];
-      if (preset && !all.find(p => p.id === preset.id)) {
-        all.push(preset);
-      }
-    });
-
-    // Пользовательские
     customPresets.forEach(p => {
-      if (!all.find(x => x.id === p.id)) {
-        all.push(p);
-      }
+      if (!all.find(x => x.id === p.id)) all.push(p);
     });
-
     return all;
   }
 
@@ -2402,11 +2577,12 @@
     if (!list) return;
 
     list.innerHTML = '';
-    const all = getAllPresets();
+    const all = getAllVisiblePresets();
 
-    all.forEach(p => {
+    all.forEach((p, idx) => {
       const btn = document.createElement('button');
       btn.className = 'preset-btn';
+      if (state.animEnabled && !LOW_PERF) btn.style.animationDelay = (idx * 0.05) + 's';
       btn.innerHTML = `<span>${escapeHtml(p.name)}<span class="preset-desc">${escapeHtml(p.desc || '')}</span></span>`;
 
       // Удаление для кастомных
@@ -2426,7 +2602,6 @@
 
       btn.addEventListener('click', () => {
         applyPreset(p);
-        // Визуальный фидбек
         btn.style.background = '#1a2a1a';
         btn.style.borderColor = '#2a5a2a';
         setTimeout(() => {
@@ -2446,7 +2621,6 @@
     if (!list) return;
 
     list.innerHTML = '';
-
     if (!customPresets.length) return;
 
     customPresets.forEach(p => {
@@ -2539,17 +2713,17 @@
       hint.textContent = 'Введите код пресета';
       hint.style.color = '#ff8888';
       setTimeout(() => {
-        hint.textContent = 'Введите код и нажмите «Применить». Пресет добавится в список.';
+        hint.textContent = 'Введите код и нажмите «Применить».';
         hint.style.color = '';
       }, 2000);
       return;
     }
 
-    // Ищем в известных кодах (регистронезависимо)
+    // Ищем в секретных кодах (регистронезависимо)
     let found = null;
-    for (const key in PRESET_CODES) {
+    for (const key in SECRET_PRESET_CODES) {
       if (key.toUpperCase() === code) {
-        found = PRESET_CODES[key];
+        found = SECRET_PRESET_CODES[key];
         break;
       }
     }
@@ -2558,29 +2732,21 @@
       hint.textContent = 'Неизвестный код пресета';
       hint.style.color = '#ff8888';
       setTimeout(() => {
-        hint.textContent = 'Введите код и нажмите «Применить». Пресет добавится в список.';
+        hint.textContent = 'Введите код и нажмите «Применить».';
         hint.style.color = '';
       }, 2500);
       return;
     }
 
-    // Добавляем в разблокированные, если ещё нет
-    const codeKey = Object.keys(PRESET_CODES).find(k => PRESET_CODES[k].id === found.id);
-    if (codeKey && !unlockedPresets.includes(codeKey)) {
-      unlockedPresets.push(codeKey);
-      savePresets();
-    }
-
-    // Применяем
+    // Применяем (в список НЕ добавляем — код секретный)
     applyPreset(found);
 
-    hint.textContent = 'Пресет «' + found.name + '» применён!';
+    hint.textContent = '✓ Пресет «' + found.name + '» применён!';
     hint.style.color = '#88ff88';
     input.value = '';
 
-    renderPresetList();
     setTimeout(() => {
-      hint.textContent = 'Введите код и нажмите «Применить». Пресет добавится в список.';
+      hint.textContent = 'Введите код и нажмите «Применить».';
       hint.style.color = '';
     }, 2500);
   }
@@ -2672,6 +2838,7 @@
   openSettingsBtn.addEventListener('click', () => {
     if (isSpinning) return;
     soundToggle.checked = state.soundEnabled;
+    animToggle.checked = state.animEnabled;
     spinTimeRange.value = state.spinDuration;
     spinTimeValue.textContent = state.spinDuration + ' сек';
     easingSelect.value = state.easing;
@@ -2679,7 +2846,7 @@
     gifUrlInput.value = state.gifUrl || '';
     renderPresetList();
     renderCustomList();
-    document.getElementById('presetHint').textContent = 'Введите код и нажмите «Применить». Пресет добавится в список.';
+    document.getElementById('presetHint').textContent = 'Введите код и нажмите «Применить».';
     document.getElementById('presetHint').style.color = '';
     settingsModal.classList.remove('hidden');
   });
@@ -2690,9 +2857,21 @@
     state.easing = easingSelect.value;
     state.pattern = patternSelect.value;
     state.gifUrl = gifUrlInput.value.trim();
+
+    // Анимации
+    state.animEnabled = animToggle.checked;
+    try { localStorage.setItem(ANIM_TOGGLE_KEY, state.animEnabled ? '1' : '0'); } catch (e) {}
+    document.body.classList.toggle('no-anim', !state.animEnabled);
+    if (!state.animEnabled) bgReduced = true;
+    else bgReduced = LOW_PERF;
+
     saveState();
     updateCenterGif();
     settingsModal.classList.add('hidden');
+  });
+
+  animToggle.addEventListener('change', () => {
+    document.body.classList.toggle('no-anim', !animToggle.checked);
   });
 
   spinTimeRange.addEventListener('input', (e) => {
@@ -2717,10 +2896,14 @@
   function renderEmojiGrid() {
     const grid = document.getElementById('emojiGrid');
     const frag = document.createDocumentFragment();
+    const maxItems = LOW_PERF ? 100 : EMOJI_DATA.length;
 
-    EMOJI_DATA.forEach((e) => {
+    EMOJI_DATA.slice(0, maxItems).forEach((e, i) => {
       const item = document.createElement('div');
       item.className = 'emoji-item';
+      if (state.animEnabled && !LOW_PERF) {
+        item.style.animationDelay = Math.min(i * 0.005, 0.5) + 's';
+      }
       item.textContent = e;
       item.addEventListener('click', () => {
         let svg = emojiSvgCache.get(e);
@@ -2786,12 +2969,20 @@
       drawWheel();
       initBg();
       rebuildBaseGradient();
-    }, 150);
+    }, 200);
   }
 
   function init() {
+    // Применяем настройки анимаций
+    if (!state.animEnabled || LOW_PERF) {
+      document.body.classList.toggle('no-anim', !state.animEnabled);
+    }
+
     loadState();
     loadPresets();
+
+    if (!state.animEnabled) document.body.classList.add('no-anim');
+
     renderVariantList();
     drawWheel();
     updateCenterGif();
